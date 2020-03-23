@@ -1,0 +1,188 @@
+---
+title: "Wine_Word_Cloud"
+author: "Ellis Hughes"
+date: "3/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidytuesdayR)
+library(tidytext)
+library(tidyverse)
+library(reshape2)
+library(wordcloud)
+
+```
+
+## Wine Mag Ratings
+
+This dataset comes from Wine Enthusiast, scrapped from their website.
+It was posted to Kaggle for folks to have fun going through the data, and was scraped November 2017
+
+```{r load_data}
+wine_mag <- tt_load(2019,week = 22)
+wine_mag
+```
+
+## Description Sentiment vs Score
+
+My curiousity is based on the sentiment of the description, is there on average a higher score?
+I would assume there would be, but wine might have some unique word meanings not identified by the standard bing sentiment.
+
+```{r parse-descriptions}
+wine_mag_tokened <- wine_mag$`winemag-data-130k-v2` %>% 
+  unnest_tokens(output = word,input = description) %>% 
+  anti_join(get_stopwords(), by = "word") %>% 
+  glimpse()
+
+```
+
+Get sentiments based on the "Bing" data for each word.
+
+```{r bing-sentiment}
+
+bing <- get_sentiments("bing")
+
+wine_mag_bing_sentiments <- wine_mag_tokened %>% 
+  inner_join(bing, by = "word")
+
+```
+
+Take stock of what the top words.
+
+```{r top-words}
+
+wine_mag_bing_sentiments %>%
+  group_by(word) %>% 
+  summarise(n = n(), sentiment = first(sentiment)) %>%
+  arrange(desc(n)) %>% 
+  head(n=10)
+  
+```
+
+Calculate Wine sentiment by score:
+
+```{r score-sentiment}
+
+wine_mag_score_sentiments <- 
+  wine_mag_bing_sentiments %>%
+  group_by(points) %>%
+  summarize(
+    n = n(),
+    negative = sum(sentiment == "negative"),
+    positive = sum(sentiment == "positive")
+  ) %>%
+  mutate(norm_neg = negative / n,
+         norm_pos = positive / n) %>%
+  mutate(sentiment_score = norm_pos - norm_neg)
+
+wine_mag_score_sentiments %>% 
+  mutate(sent_dummy = ifelse(sentiment_score<0, 'More Negative', 'More Positive')) %>%
+  mutate(points = factor(points)) %>%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = points,
+      y = sentiment_score,
+      fill = sent_dummy
+    ),
+    stat = "identity"
+  ) + 
+  coord_flip() +
+  labs(y='Average sentiment of scores \n (Positive - Negative Words)/(total words)', x = 'Score') +
+  theme_bw() + 
+  theme(legend.position='none', axis.text.x=element_text(size=12), axis.title.x = element_text(size=14, face = 'bold'),
+        axis.text.y=element_text(size=12), axis.title.y=element_text(size=14, face='bold'))
+
+```
+
+## Obligatory Word Cloud
+
+Generate word cloud of most positive and negative words
+
+```{r word-cloud, echo = FALSE}
+
+
+whites <-
+  c(
+    "AlbariÃ±o",
+    "Bordeaux-style White Blend",
+    "Champagne Blend",
+    "Chardonnay",
+    "Chenin Blanc",
+    "GewÃ¼rztraminer",
+    "Glera",
+    "GrÃ¼ner Veltliner",
+    "Moscato",
+    "Pinot Blanc",
+    "Pinot Grigio",
+    "Pinot Gris",
+    "Portuguese White",
+    "RhÃ´ne-style White Blend",
+    "Riesling",
+    "Sauvignon Blanc",
+    "Sparkling Blend",
+    "Viognier",
+    "White Blend"
+  )
+reds <-
+  c(
+    "Aglianico",
+    "Barbera",
+    "Bordeaux-style Red Blend",
+    "Cabernet Franc",
+    "Cabernet Sauvignon",
+    "CarmenÃ¨re",
+    "Corvina, Rondinella, Molinara",
+    "Gamay",
+    "Garnacha",
+    "Grenache",
+    "Malbec",
+    "Merlot",
+    "Nebbiolo",
+    "Nero d'Avola",
+    "Petite Sirah",
+    "Pinot Noir",
+    "Port",
+    "Portuguese Red",
+    "Red Blend",
+    "RhÃ´ne-style Red Blend",
+    "Sangiovese",
+    "Sangiovese Grosso",
+    "Sauvignon",
+    "Shiraz",
+    "Syrah",
+    "Tempranillo",
+    "Tempranillo Blend",
+    "Zinfandel"
+  )
+rose <- c("RosÃ©", "Rose")
+
+wine_word_relation <- wine_mag_bing_sentiments %>%
+  mutate(
+    variety = case_when(
+    variety %in% whites ~ "white",
+    variety %in% reds ~ "red",
+    variety %in% rose ~ "rose",
+    TRUE ~ "other")) %>%
+  group_by(word) %>%
+  summarize(
+    red = sum(variety == "red"),
+    white = sum(variety == "white"),
+    rose = sum(variety == "rose"),
+    other = sum(variety == "other")) %>% 
+  gather("variety","val",red,white,rose,other) %>% 
+  filter(variety %in% c("red","white")) %>% 
+  reshape2::acast(word~variety, value.var='val', fill = 0)
+
+
+par(bg="black") 
+wine_word_relation %>% 
+  comparison.cloud(
+    colors=c("#972726","#efe1a1"))
+
+
+
+
+```

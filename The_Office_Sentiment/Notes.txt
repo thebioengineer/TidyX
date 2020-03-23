@@ -1,0 +1,18 @@
+Wordcloud - The Office - Script NOTES
+
+https://twitter.com/SifreRobin/status/1240424091074641921
+
+> Uses functions from the tidytext package. You can learn more from Julia Silge and David Robinsons’ book, Text Mining with R (https://www.tidytextmining.com/)
+
+
+1) Only need to load tidyverse instead of each package separately
+2) Why call out each package in front of each function?
+3) Equal sign for element assignment (more of a personal preference thing)
+4) Nice use of anti_join() to remove stop words
+5) Nice use of printing data vis out to PDF
+
+Key functions to explain/discuss:
+
+> unnest_tokens() — takes single words in a string and parses them into one word (token) per row in a long data frame format
+> stop_words() — removes words that are generally not useful for analysis
+> get_sentiments() — used “bing” for positive and negative connotation words
