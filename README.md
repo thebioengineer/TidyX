@@ -1,14 +1,16 @@
 
 # TidyX
 
-#### Hosts
-[Ellis Hughes](https://twitter.com/Ellis_hughes) and [Patrick Ward](https://twitter.com/OSPpatrick)
-<!-- badges: start -->
-<!-- badges: end -->
+### Hosts
+[Ellis Hughes](https://twitter.com/Ellis_hughes) and [Patrick Ward](https://twitter.com/OSPpatrick). 
 
-#### Description
+Ellis has been working with R since 2015 and has a background working as a statistical programmer in support of both Statistical Genetics and HIV Vaccines. He also runs the Seattle UseR Group. 
 
-The goal of TidyX is to explain how submissions to the #TidyTuesday Project work. 
+Patrick's current work centers on research and development in professional sport with an emphasis on data analysis in American football. Previously, He was a sport scientist within the Nike Sports Research Lab. Research interests include training and competition analysis as they apply to athlete health, injury, and performance.
+
+### Description
+
+The goal of TidyX is to explain how R code works. We are focusing on submissions to the #TidyTuesday Project to help promote the great work being done there. 
 
 In this repository, you will find copies of the code we've explained, and the code we wrote to show the concept on a new dataset.
 
