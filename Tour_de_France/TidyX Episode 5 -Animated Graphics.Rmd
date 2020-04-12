@@ -1,0 +1,140 @@
+---
+title: "TidyX Episode 5 - Animated Graphics"
+author: "Patrick Ward"
+date: "4/9/2020"
+output: html_document
+---
+
+##### Data comes from the `nwslR` package: https://github.com/adror1/nwslR
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    # remotes::install_github("adror1/nwslR")
+    library(nwslR)
+    library(tidyverse)
+    library(gganimate)
+  })
+})
+
+
+theme_set(theme_bw())
+
+```
+
+
+##### Game data for the 2019 season
+
+```{r echo = F, include = T}
+# get 2019 data
+season <- game %>% filter(season == "2019")
+season %>% head() %>% knitr::kable()
+
+```
+
+
+```{r echo = F, include = F}
+
+############# Pre-processing steps #######################
+##########################################################
+
+# create a data frame for when each team was the home team and when they were the away team
+home <- season %>%
+  select(game_date, team = home_team, pts = home_pts)
+
+away <- season %>%
+  select(game_date, team = away_team, pts = away_pts)
+
+# bind these two data frames together and arrange by data
+
+season_total_pts <- bind_rows(home, away) %>%
+  arrange(game_date)
+
+season_total_pts %>% head()
+
+# create a cummulative points total for each team
+season_total_pts <- season_total_pts %>%
+  group_by(team) %>%
+  mutate(total_pts = cumsum(pts)) %>%
+  arrange(team, game_date)
+
+season_total_pts %>% filter(team == "SEA")
+ 
+```
+
+
+##### Data Visualizations
+
+```{r echo = F, include = T}
+season_total_pts %>%
+  group_by(team) %>%
+  summarize(total_season_pts = max(total_pts)) %>%
+  ggplot(aes(x = total_season_pts, y = reorder(team, total_season_pts))) +
+  geom_col(fill = "blue", alpha = 0.5, color = "black") +
+  geom_label(aes(label = paste(total_season_pts, "pts", sep = " ")), size = 4) +
+  annotate("text", x = 30, y = 9, label = "League Winner", size = 10, color = "red") +
+  labs(x = "Total Season Points",
+       y = "",
+       title = "Total Point Scoring",
+       subtitle = "2019 NWSL Season",
+       caption = "Data: https://github.com/adror1/nwslR") +
+  theme(axis.text.x = element_text(face = "bold", size = 11),
+        axis.text.y = element_text(face = "bold", size = 11),
+        axis.title.x = element_text(face = "bold", size = 13),
+        plot.title = element_text(size = 17),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10, face = "bold"))
+```
+
+
+
+```{r echo = F, include = T}
+
+animate_plot <- season_total_pts %>%
+  mutate(Game_Number = seq_along(team)) %>%
+  ggplot(aes(x = total_pts, y = team)) +
+  geom_col(aes(fill = total_pts)) +
+  scale_fill_gradient(low = "red", high = "green") +
+  transition_time(Game_Number) +
+  labs(x = "Total Season Points",
+       y = "",
+       title = "Total Point Scoring",
+       subtitle = "2019 NWSL Season",
+       caption = "Data: https://github.com/adror1/nwslR") +
+  theme(axis.text.x = element_text(face = "bold", size = 11),
+        axis.text.y = element_text(face = "bold", size = 11),
+        axis.title.x = element_text(face = "bold", size = 13),
+        plot.title = element_text(size = 17),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10, face = "bold"))
+  
+animate(animate_plot, end_pause = 12)
+
+```
+
+
+```{r echo = F, include = T}
+animate_line <- season_total_pts %>%
+  mutate(Game_Number = seq_along(team)) %>%
+  ggplot(aes(x = Game_Number, y = total_pts, group = team)) +
+  geom_line(aes(color = team)) +
+  transition_time(Game_Number) +
+  labs(x = "Game Number",
+       y = "Total Points",
+       title = "Total Point Scoring",
+       subtitle = "2019 NWSL Season",
+       caption = "Data: https://github.com/adror1/nwslR") +
+  theme(axis.text.x = element_text(face = "bold", size = 11),
+        axis.text.y = element_text(face = "bold", size = 11),
+        axis.title.x = element_text(face = "bold", size = 13),
+        plot.title = element_text(size = 17),
+        plot.subtitle = element_text(size = 15),
+        plot.caption = element_text(size = 10, face = "bold")) +   
+  transition_reveal(Game_Number)
+  
+animate(animate_line, end_pause = 12)
+```
+
