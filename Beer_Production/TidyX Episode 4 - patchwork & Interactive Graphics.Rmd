@@ -1,0 +1,152 @@
+---
+title: "TidyX Episode 4 - patchwork & Interactive Graphics"
+author: "Patrick Ward"
+date: "4/5/2020"
+output: html_document
+---
+
+```{r setup, echo = F, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+### Load packages ----------------------------------------------------------------------
+
+suppressPackageStartupMessages(suppressWarnings(library(tidyverse)))
+suppressPackageStartupMessages(suppressWarnings(library(plotly)))
+suppressPackageStartupMessages(suppressWarnings(library(reshape2)))
+suppressPackageStartupMessages(suppressWarnings(library(rvest)))
+suppressPackageStartupMessages(suppressWarnings(library(patchwork)))
+suppressPackageStartupMessages(suppressWarnings(library(conflicted)))
+
+conflict_prefer("pluck","purrr")
+conflict_prefer("filter","dplyr")
+
+theme_set(theme_bw())
+
+### Scrape Data ------------------------------------------------------------------------
+# www.basketball-reference.com
+
+# get URL
+url <- read_html("https://www.basketball-reference.com/leagues/NBA_2019_totals.html")
+
+# Extract the table of interest form the per webpage
+
+nba <- url %>% 
+  html_table(fill = T) %>% 
+  pluck(1) %>%
+  filter(Rk != "Rk")
+
+### Data Pre-process ------------------------------------------------------------------------
+
+nba %>% glimpse()
+
+# Chanage columns to numeric
+numeric_cols <- c(1, 4, 6:30)
+nba[,numeric_cols] <- apply(nba[,numeric_cols], 2, function(x) as.numeric(as.character(x)))
+nba %>% glimpse()
+
+# Some players played for multiple teams so aggregate over the season
+nba_main <- nba %>%
+  group_by(Player, Pos, Age) %>%
+  summarize_at(vars(G:PTS), .funs = sum)
+
+
+```
+
+
+#### Data Visualizations
+
+Pts influenced by Minutes Played
+
+```{r echo = F}
+## Min ~ Pts plot
+# build static plot
+min_pts <- ggplot(nba_main, aes(x = MP, y = PTS, label = Player)) +
+  geom_point(aes(color = Pos), size = 3, alpha = 0.6) +
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 17),
+        plot.subtitle = element_text(size = 14),
+        plot.caption = element_text(size  = 11, face = "bold")) +
+  labs(title = "PTS ~ Minutes Played", 
+          subtitle = "2019 NBA Season", 
+          caption = "www.basketball-reference.com")
+
+# Static plot
+min_pts
+
+# Make the plot interactive
+min_pts_interactive <- highlight(ggplotly(min_pts), "plotly_selected")
+min_pts_interactive
+```
+
+
+Three Point Shooting by Position
+
+```{r echo = F}
+
+three_pt <- nba_main %>%
+  filter(!Pos %in% c("SG-PF", "SG-SF")) %>%
+  rename(three_pt_att = '3PA') %>%
+  ggplot(aes(x = reorder(Pos, three_pt_att), y = three_pt_att)) +
+  geom_boxplot(aes(fill = Pos)) +
+  coord_flip() +
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 17),
+        plot.subtitle = element_text(size = 14),
+        plot.caption = element_text(size  = 11, face = "bold")) +
+  labs(x = "", 
+       y = "3PT Att", 
+       title = "3PT Attempts by Position",
+       subtitle = "2019 NBA Season",
+       caption = "www.basketball-reference.com")
+
+three_pt
+```
+
+
+Shooting Guards -- Steals & Points per minute
+
+```{r echo = F}
+xy_plot <- nba %>%
+  filter(MP >= quantile(.$MP, prob = 0.25),
+         Pos == "SG") %>%
+  mutate(STL_min = STL/MP,
+         PTS_min = PTS/MP,
+         Stl_z = scale(STL_min),
+         Pts_z = scale(PTS_min)) %>% 
+  ggplot(aes(x = Stl_z, y = Pts_z, label = Player)) +
+  geom_hline(aes(yintercept = 0), linetype = "dashed", size = 1.1) +
+  geom_vline(aes(xintercept = 0), linetype = "dashed", size = 1.1) +
+  geom_point(size = 3, color = "blue", alpha = 0.6) +
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 17),
+        plot.subtitle = element_text(size = 14),
+        plot.caption = element_text(size  = 11, face = "bold")) +
+  labs(x = "STL/min",
+       y = "PTS/min",
+       title = "Shooting Guard PTS & STL per Min",
+       subtitle = "2019 NBA Season",
+       caption = "www.basketball-reference.com")
+
+xy_plot
+  
+xy_interactive <- highlight(ggplotly(xy_plot), "plotly_selected")
+xy_interactive
+```
+
+
+#### patchwork the static plots together all together
+
+```{r echo = F}
+min_pts | (three_pt / xy_plot)
+```
+
+
+#### Use subplot() fromthe plotly package to combine interactive plots in one figure
+
+```{r echo = F, warning = FALSE}
+subplot(min_pts_interactive, three_pt, xy_plot, nrows = 2)
+```
+

@@ -1,0 +1,55 @@
+---
+title: "Beer Production"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+
+Set up working space
+```{r}
+rm(list=ls())
+```
+
+```{r}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(patchwork)
+library(lubridate)
+library(hrbrthemes)
+library(wesanderson)
+library(ggridges)
+```
+load data
+```{r}
+brewing_materials <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewing_materials.csv')
+```
+```{r}
+head(brewing_materials)
+```
+```{r}
+unique(brewing_materials$data_type)
+```
+```{r}
+type1<-brewing_materials %>% 
+    mutate(year_month=make_datetime(year,month)) %>% 
+    select(year_month,type,month_current) %>%
+    filter(!type %in% c('Total Used','Total Grain products','Total Non-Grain products')) %>% 
+    ggplot(aes(x=year_month,y=month_current,fill=type))+  geom_density(color=NA,stat='identity',position="fill") + theme_classic() + scale_fill_manual(values=c(wes_palette("Darjeeling1"),wes_palette("Darjeeling2")))  + xlab('Pounds of Materials Used') +  ylab('Time (month/year)') +  theme(legend.position ='bottom',legend.text = element_text(size=5))
+type1
+```
+```{r}
+type2<-brewing_materials %>% 
+    mutate(year_month=make_datetime(year,month)) %>% 
+    select(year_month,type,month_current) %>%
+    filter(!type %in% c('Total Used','Total Grain products','Total Non-Grain products')) %>% 
+  ggplot(aes(x=month_current,y=type,fill=type)) + geom_density_ridges()+ theme_classic() + scale_fill_manual(values=c(wes_palette("Darjeeling1"),wes_palette("Darjeeling2")))+ xlab('Pounds of Materials Used') + guides(fill=F)
+type2
+```
+```{r}
+type2 / type1 + plot_layout(heights = c(2,1)) + ggsave('Beer_brewing.pdf',height=5,width=8)
+```
