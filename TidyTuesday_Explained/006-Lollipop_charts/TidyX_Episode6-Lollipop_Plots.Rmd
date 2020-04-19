@@ -38,7 +38,9 @@ adv_stats <- adv_team_stats %>%
 
 ```
 
+<div style='width:200px; margin:auto;'>
 <img src='img/national_womens_soccer_league.png' style = "margin:auto;height: 200px"/>
+</div>
 
 ## Home Point Margins & Attendance
 
