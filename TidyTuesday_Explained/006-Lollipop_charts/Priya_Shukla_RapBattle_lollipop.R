@@ -6,7 +6,7 @@ library(patchwork)
 library(wordcloud2)
 library(tm)
 library(webshot)
-webshot::install_phantomjs(force = TRUE)
+# webshot::install_phantomjs(force = TRUE)
 library(htmlwidgets)
 
 
