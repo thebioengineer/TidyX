@@ -2,6 +2,8 @@
 title: "NWSL Statistics"
 author: "Patrick Ward and Ellis Hughes"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -11,14 +13,13 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, error = FALSE, warning = FA
 ```{r load-libraries}
 #### Load Packages ----------------------------------------------
 suppressPackageStartupMessages({
-# remotes::install_github("adror1/nwslR")
-library(nwslR)
-library(tidyverse)
-library(patchwork)
-library(wordcloud2)
-library(ggimage)
-library(gganimate)
-library(here)
+  # remotes::install_github("adror1/nwslR")
+  library(nwslR)
+  library(tidyverse)
+  library(patchwork)
+  library(ggimage)
+  library(gganimate)
+  library(here)
 })
 theme_set(theme_bw())
 ```
@@ -54,13 +55,13 @@ home_advantage <- season %>%
   arrange(desc(home_edge)) %>%
   mutate(
     home_team = fct_reorder(home_team, home_edge)
-  ) 
+  )
 
 edge_plot <- home_advantage%>% 
   ggplot(aes(x = home_team, y = home_edge)) +
   geom_hline(aes(yintercept = 0), size = 1.2) +
   geom_segment(aes(x = home_team, xend = home_team, y = 0, yend = home_edge)) +
-  geom_point(size = 12, color = "pale green") +
+  geom_point(size = 12, color = "lightblue") +
   geom_text(aes(label = round(home_edge, 1)), color = "black") +
   labs(title = "NWSL 2019 Season Home Edge",
        subtitle = "NC won the Championship",
@@ -77,7 +78,7 @@ edge_plot <- home_advantage%>%
         plot.caption = element_text(size = 10),
         panel.grid.major = element_line(color = "light grey"),
         panel.background = element_rect(fill = "light grey",color = "light grey"),
-        plot.background = element_rect(fill = "light grey", colour = "light grey")
+        plot.background = element_rect(fill = "light grey", color = "light grey")
         )
 
 ```
@@ -104,7 +105,7 @@ attendance_plot <- game_grounds %>%
         plot.caption = element_text(size = 10),
         panel.grid.major = element_line(color = "light grey"),
         panel.background = element_rect(fill = "light grey",color = "light grey"),
-        plot.background = element_rect(fill = "light grey", colour = "light grey"))
+        plot.background = element_rect(fill = "light grey", color = "light grey"))
 
 ```
 
@@ -140,34 +141,34 @@ team_logos <-
   )
 
 shots_on_goal <- adv_stats %>%
-  select(team_id, game_id, shots = total_scoring_att, goals) %>%
+  select(team_id, game_id, shots = total_shots, goals) %>%
   mutate(game_id = gsub("(.+-)(2019-.+)", "\\2", game_id)) %>% 
   group_by(team_id) %>%
   arrange(game_id) %>%
   mutate(
-    total_shots = cumsum(shots) + cumsum(goals),
+    total_shots = cumsum(shots),
+    total_goal_perc  = cumsum(goals) / total_shots,
     game_number = row_number()
   ) %>%
-  group_by(game_number) %>%
-  mutate(
-    rank = rank( -total_shots, ties.method = "last") # set ranks and prevent ties
-  ) %>% 
+  ungroup %>% 
   left_join(team_logos, by = c("team_id" = "team")) %>%  # joining by different column names
   mutate(
-    logo = here("TidyTuesday_Explained/006-Lollipop_charts",logo)
+    logo = here("TidyTuesday_Explained/006-Lollipop_charts",logo),
+    team_id = fct_relevel(team_id,levels(home_advantage$home_team)) # preserve order of first plot
   ) %>% 
   filter(!game_number %in% c(25,26)) # remove championship tournament
 
 shots_plot <- shots_on_goal %>%
-  ggplot(aes(x = -rank, y = total_shots)) +
-  geom_hline(aes(yintercept = 0), size = 1.2) +
-  geom_segment(aes(x = -rank, xend = -rank, y = 0, yend = total_shots), size = 2) +
-  geom_image(aes(image = logo), size = .10,) +
+  ggplot(aes(x = team_id, y = total_shots)) +
+  geom_col(aes(x = team_id, y = total_shots), width = .1) +
+  geom_image(aes(x = team_id, y = total_shots, image = logo), size = .08) +
+  geom_label(aes(label = paste("Goal %:",scales::percent(total_goal_perc, accuracy = .1)), y = total_shots + 100), size = 5) +
   labs(title = "NWSL 2019 Season Shots on Goal",
        subtitle = "Game Number: {closest_state}",
        caption = "Data: https://github.com/adror1/nwslR",
        x = NULL,
        y = "Shots") +
+  ylim(0,max(shots_on_goal$total_shots)+200) +
   coord_flip() +
   theme(axis.text.y = element_blank(),
         axis.line.y = element_blank(),
@@ -181,10 +182,15 @@ shots_plot <- shots_on_goal %>%
         panel.background = element_rect(fill = "light grey"),
         panel.grid.major = element_line(color = "light grey"),
         plot.background = element_rect(fill = "light grey")) +
-  transition_states(game_number)+
-  ease_aes('cubic-in-out')
+  transition_states(game_number)
 
-animate(shots_plot,end_pause = 10)
+animate(
+  shots_plot,
+  nframes = 200,
+  fps = 20,
+  height = 900,
+  width = 800
+)
 ```
 
 
