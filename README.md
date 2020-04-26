@@ -47,5 +47,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/OwenChurches/status/1247399385933049863)
   - [Source Code](https://gist.github.com/ofchurches/7589c60c4bfbe434b4309c0634740cfa)
 
-
+- [Episode 6: Lollipop Charts](https://youtu.be/XKjhws2ryFw)
+  - UseR Highlighted: [Priya Shukla](https://twitter.com/priyology)
+  - [Original Tweet](https://twitter.com/priyology/status/1250267330380050432)
+  - [Source Code](https://github.com/priyology/TidyTuesday/tree/master/scripts)
 
