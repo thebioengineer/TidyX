@@ -42,7 +42,9 @@ NBA_Teams <- tibble(
 
 ## Set up function for scraping
 scrape_history <- function(team_table){
+  
   message(paste("scraping team:",team_table$team))
+  
   url <- file.path("https://www.basketball-reference.com/teams",team_table$code,"stats_basic_totals.html")
   tab <- read_html(url) %>% 
     html_table() %>% 
@@ -86,7 +88,8 @@ stats_of_interest <- active_NBA_stats %>%
   mutate(
     "Win Percent" = (Wins / (Wins + Losses)) * 100,
     "Win Division" = Finish == 1,
-    Season = as.numeric(gsub("(\\d+)-(\\d+)", "\\1", Season))) %>%  # keep only the start year) %>%
+    Season = as.numeric(gsub("(\\d+)-(\\d+)", "\\1", Season))
+    ) %>%  # keep only the start year) %>%
   gather(
     "Statistic",
     "Value",
@@ -118,7 +121,7 @@ TOI <- "GSW"
 plotting_data <- stats_of_interest %>%
   filter( ! Statistic %in% c("Wins","Losses"))
 
-Won_league <- plotting_data %>% 
+Won_division <- plotting_data %>% 
   filter(`Win Division` == TRUE,
          team_id == TOI)
 
@@ -137,7 +140,7 @@ hist_plot <- plotting_data %>%
   
   ## Add points of note, such as winning the division
   geom_point(
-    data = Won_league,
+    data = Won_division,
     shape = 23,
     color = "gold"
   ) +
@@ -186,11 +189,13 @@ hist_plot <- plotting_data %>%
         panel.grid.major.y = element_line(color = "#e6e6e6"),
         panel.grid.major.x = element_blank())
 
+hist_plot
+
 ## Add NBA Logo
 logo_file <- here("TidyTuesday_Explained/008-Line_Traces_and_COVID/img/National_Basketball_Association_logo.svg")
-my_plot_2 <- ggdraw() +
+ggdraw() +
   draw_plot(hist_plot) +
-  draw_image(logo_file,  x = -.45, y = 0.46, scale = .06)
+  draw_image(logo_file,  x = -.45, y = 0.44, scale = .1)
   
 
 ggsave(here(
