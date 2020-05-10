@@ -1,0 +1,206 @@
+---
+title: "Animal Crossing"
+author: "Ted Laderas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(DT)
+library(ggimage)
+```
+
+
+# What was your dataset?
+
+Load your dataset in with the function below. The input is the date the dataset was issued. You should be able to get this from the `tt_available()` function.
+
+```{r}
+critic <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/critic.tsv')
+user_reviews <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/user_reviews.tsv')
+items <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/items.csv')
+villagers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/villagers.csv')
+
+```
+
+# Villagers
+
+```{r}
+skimr::skim(villagers)
+```
+
+## Personalities by Species
+
+```{r fig.width=10, fig.height=3}
+species_count <- villagers %>%
+  group_by(species)  %>%
+  summarize(species_count = n()) %>%
+  arrange(species_count)
+
+datatable(species_count)
+
+level_order <- villagers %>%
+  group_by(species) %>% count() %>%
+  arrange(desc(n)) %>%
+  pull(species)
+
+villagers %>%
+  mutate(species=factor(species, levels=level_order)) %>%
+  ggplot() + aes(x=species, y=personality, color=personality) %>%
+  geom_count() + 
+   theme_light() + theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 90)) 
+```
+
+```{r}
+
+villagers %>% select(name, species, personality, url) %>%
+  mutate(combo = paste(species, personality)) %>% select(name, combo, url) -> villager_index
+
+unique_combos <- villagers %>%
+  group_by(species, personality) %>% summarize(n=n()) %>%
+  filter(n == 1) %>% mutate(combo=paste(species, personality)) %>%
+  inner_join(y=villager_index, by=c("combo")) %>% ungroup()
+
+out_image <- unique_combos %>%
+  mutate(species=factor(species, levels=level_order)) %>%
+  ggplot() + aes(x=species, y=personality, image=url, name=name) +
+  geom_count() +
+  geom_raster(fill="white", color="black") +
+  geom_image(asp=1.5, size=0.025) + 
+   theme_minimal() + theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 90)) + labs(title="There can be only one", subtitle = "Unique Personality/Species combos in Animal Crossing")
+
+out_image
+
+ggsave(plot=out_image, filename = "unique_animal_personalities.png", width=10, height = 5, dpi = 150)
+```
+
+```{r}
+pers_vil <- villagers %>% 
+  group_by(personality, species) %>%
+  summarize(count=n()) %>%
+  #filter(count==1) %>%
+  arrange(species) 
+
+pers_vil %>%
+  arrange(desc(count)) %>%
+  datatable()
+```
+
+# Items
+
+```{r}
+skimr::skim(items)
+```
+
+```{r}
+library(tidyverse)
+items %>% ggplot() +
+  aes(x=category, y=buy_value) +
+  geom_boxplot() +
+  ylim(c(0,75000)) +
+  theme(axis.text.x  = element_text(angle = 90))
+```
+
+# Most Expensive Items
+
+```{r}
+library(gt)
+
+most_expensive <- function(category_name=NULL){
+  
+  if(!is.null(category_name)){
+    items <- items %>%
+      filter(category == category_name)
+  }
+  
+  items %>% 
+  top_n(10, sell_value) %>%
+  arrange(desc(sell_value)) %>%
+  select(name, sell_value, buy_value, category, image=image_url) %>%
+  gt() %>%
+   text_transform(
+    locations = cells_body(vars(image)),
+    fn = function(x) {
+      web_image(
+        url = x,
+        height = 50
+      )
+    }
+  )
+  
+}
+
+
+most_expensive("Hats")
+
+```
+
+
+
+```{r}
+most_expensive()
+```
+
+# Most Expensive Furniture
+
+```{r}
+most_expensive("Furniture")
+```
+
+
+# Most Expensive Hats
+
+```{r}
+library(gt)
+most_expensive("Hats")
+```
+
+```{r}
+most_expensive("Flooring")
+
+```
+
+
+```{r}
+most_expensive("Fossils")
+```
+
+# Priceless Items by Category
+
+```{r}
+items %>%
+  filter(is.na(buy_value)) %>%
+  ggplot(aes(x=category)) + geom_bar() +
+  theme(axis.text.x = element_text(angle=90))
+```
+
+
+# What was your question?
+
+Given your inital exploration of the data, what was the question you wanted to answer?
+
+# What were your findings?
+
+Put your findings and your visualization code here.
+
+```{r}
+library(ggalluvial)
+
+pers_vil %>% filter(species %in% c("cat", "rabbit", "dog")) %>%
+ggplot(
+       aes(y = count,
+           axis1 = personality, axis2 = species)) +
+           geom_alluvium(aes(fill = count),
+                width = 0, knot.pos = 0, reverse = FALSE) +
+  guides(fill = FALSE) +
+  geom_stratum(width = 1/8, reverse = FALSE) +
+    geom_text(stat = "stratum", infer.label = TRUE, reverse = FALSE) 
+```
+
+# What did you learn?
+
+Were there any lessons you learned? Any cool packages you want to talk about?
