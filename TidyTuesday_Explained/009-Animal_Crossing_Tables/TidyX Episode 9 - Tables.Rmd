@@ -1,0 +1,230 @@
+---
+title: "TidyX Episode 9: Tables"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup}
+library(tidyverse)
+library(rvest)
+```
+
+## Data Source
+
+Data that we are looking at this week comes directly from the publically available data from the NFl. In this case, we will be looking at the kickers of the 2019 season. 
+
+```{r load-data}
+#### Data Loading & Clean Up ---------------------------------------------------------------
+
+## get data table
+kickers <- read_html("http://www.nfl.com/stats/categorystats?archive=false&conference=null&statisticCategory=FIELD_GOALS&season=2019&seasonType=REG&experience=&tabSeq=0&qualified=false&Submit=Go") %>%
+  html_nodes("table") %>%
+  html_table() %>%
+  purrr::pluck(1)
+
+kickers %>% head()
+names(kickers)
+```
+
+If you take a close look at the URL, you can see there are pieces that look like they are arguments, similar to R. We can use those to traverse statistics across 
+multiple years to get more information. In this episode, we will limit the analysis to the 2019 season.
+
+## Data Cleaning
+
+After the reading a table from a website, it can have formatted elements that make it difficult to analyze initially. For this example, it included 2 levels of headers, where the upper level headers that cross multiple margins.
+
+To handle this, we need to clean up and make column names that are all unique.
+
+```{r clean-data}
+
+kickers_rename <- kickers
+
+## Get columns for analysis
+row1 <- kickers_rename[1,]
+colnames(kickers_rename) <- row1
+kickers_rename <- kickers_rename[-1,]
+
+kickers_clean <- kickers_rename[,c(2,3,5,6,10,12,14,16,18)]
+colnames(kickers_clean) <- c("Player", 
+                       "Team", 
+                       "Made", 
+                       "Att", 
+                       "X1_to_19",
+                       "X20_to_29",
+                       "X30_to_39",
+                       "X40_to_49",
+                       "X50_plus")
+
+```
+
+```{r clean-data2, eval = FALSE}
+
+kickers_rename <- kickers
+
+## Set column names for analysis
+colnames(kickers_rename) <- trimws(paste( kickers_rename[1,], colnames(kickers_rename)))
+kickers_rename <- kickers_rename[-1,]
+
+kickers_clean <- kickers_rename %>% 
+  select(
+    Player, 
+    Team, 
+    Made = `FGM FG Overall`,
+    Att = `FG Att FG Overall`,
+    contains("A-M")
+  )
+
+```
+
+
+```{r process-data}
+kickers_statline <- kickers_clean %>%
+  separate(X1_to_19, into = c("X1_to_19_Att", "X1_to_19_Made"), sep = "-") %>%
+  separate(X20_to_29, into = c("X20_to_29_Att", "X20_to_29_Made"), sep = "-") %>%
+  separate(X30_to_39, into = c("X30_to_39_Att", "X30_to_39_Made"), sep = "-") %>%
+  separate(X40_to_49, into = c("X40_to_49_Att", "X40_to_49_Made"), sep = "-") %>%
+  separate(X50_plus, into = c("X50_plus_Att", "X50_plus_Made"), sep = "-")
+
+## Turn characters into numeric
+numeric_cols <- c(3:14)
+kickers_statline[, numeric_cols] <-
+  apply(kickers_statline[, numeric_cols], 2, function(x)
+    as.numeric(as.character(x)))
+
+```
+
+```{r process-data2, eval = FALSE}
+## Separate strings
+
+kickers_statline <- kickers_clean %>%
+  gather("Distance","statline",contains("A-M")) %>% 
+  separate(statline, into = c("A","M"), sep = "-") %>% 
+  mutate(
+    Att = as.numeric(Att),
+    Made = as.numeric(Made),
+    A = as.numeric(A),
+    M = as.numeric(M),
+    Distance = gsub("A-M\\s+","",Distance)
+  )
+
+glimpse(kickers_statline)
+
+```
+
+```{r adjusting}
+
+## Distance Adjustment ------------------------------------------------------------
+
+X1_to_19 <- with(kickers_statline, sum(X1_to_19_Att, na.rm = T) / sum(Att, na.rm = T))
+X20_to_29 <- with(kickers_statline, sum(X20_to_29_Att, na.rm = T) / sum(Att, na.rm = T))
+X30_to_39 <- with(kickers_statline, sum(X30_to_39_Att, na.rm = T) / sum(Att, na.rm = T))
+X40_to_49 <- with(kickers_statline, sum(X40_to_49_Att, na.rm = T) / sum(Att, na.rm = T))
+X50_plus <- with(kickers_statline, sum(X50_plus_Att, na.rm = T) / sum(Att, na.rm = T))
+
+X1_to_19
+X20_to_29
+X30_to_39
+X40_to_49
+X50_plus
+
+## Apply Adjsutment to each player ---------------------------------------
+kickers_adj <- kickers_statline
+
+kickers_adj$X1_to_19_adj <- ifelse(kickers_adj$X1_to_19_Att > 0, 
+                                   kickers_adj$X1_to_19_Made / kickers_adj$X1_to_19_Att * X1_to_19,
+                                   0)
+kickers_adj$X20_to_29_adj <- ifelse(kickers_adj$X20_to_29_Att > 0, 
+                                    kickers_adj$X20_to_29_Made / kickers_adj$X20_to_29_Att * X20_to_29, 
+                                    0)
+kickers_adj$X30_to_39_adj <- ifelse(kickers_adj$X30_to_39_Att > 0, kickers_adj$X30_to_39_Made / kickers_adj$X30_to_39_Att * X30_to_39, 0)
+kickers_adj$X40_to_49_adj <- ifelse(kickers_adj$X40_to_49_Att > 0, kickers_adj$X40_to_49_Made / kickers_adj$X40_to_49_Att * X40_to_49, 0)
+kickers_adj$X50_plus_adj <- ifelse(kickers_adj$X50_plus_Att > 0, kickers_adj$X50_plus_Made / kickers_adj$X50_plus_Att * X50_plus, 0)
+
+Kickers_Att <- kickers_adj
+
+Kickers_Att$Adj_FG_Pct <- with(Kickers_Att, X1_to_19_adj + X20_to_29_adj + X30_to_39_adj + X40_to_49_adj + X50_plus_adj)
+Kickers_Att$UnAdj_FG_Pct <- with(Kickers_Att, Made / Att)
+head(kickers)
+
+```
+
+```{r adjusting2, eval = FALSE}
+## Distance Adjustment ------------------------------------------------------------
+
+Kickers_Att <- kickers_statline %>% 
+  group_by(Distance) %>% 
+  summarize(
+    Att_Percent = sum(A, na.rm = TRUE )/sum(Att, na.rm = TRUE)
+  )
+
+Kickers_Att
+
+## Apply Adjsutment to each player ---------------------------------------
+
+Kickers_Adj <- kickers_statline %>% 
+  left_join(Kickers_Att, by = "Distance") %>% 
+  mutate(
+    M_adj = ifelse( A > 0, M/A * Att_Percent, 0 )
+  ) %>% 
+  group_by(Player, Team, Made, Att) %>% 
+  summarize(
+    Adj_FG_Pct = sum(M_adj),
+    UnAdj_FG_Pct = sum(M) / sum(A)
+  ) %>% 
+  ungroup()
+
+```
+
+## Different approaches to creating tables
+
+```{r gt}
+
+library(gt)
+
+## gt package
+Kickers_Att %>%
+  mutate(Adj_FG_Pct = round(Adj_FG_Pct * 100, 1),
+         UnAdj_FG_Pct = round(UnAdj_FG_Pct * 100, 1)) %>%
+  arrange(desc(Adj_FG_Pct)) %>%
+  select(Player, Team, 'Overall Att' = Att, 'Adj FG%' = Adj_FG_Pct, 'Raw FG%' = UnAdj_FG_Pct) %>% 
+  gt()
+
+```
+
+
+```{r condformat}
+## condformat package
+
+library(condformat)
+
+Kickers_Att %>%
+  mutate(Adj_FG_Pct = round(Adj_FG_Pct * 100, 1),
+         UnAdj_FG_Pct = round(UnAdj_FG_Pct * 100, 1)) %>%
+  arrange(desc(Adj_FG_Pct))  %>%
+    select(Player, Team, 'Overall Att' = Att, 'Adj FG%' = Adj_FG_Pct, 'Raw FG%' = UnAdj_FG_Pct) %>% 
+  
+  condformat() %>%
+  rule_fill_gradient(`Adj FG%`, 
+                     low = "blue", 
+                     high = "green")
+```
+
+```{r colortable}
+## colortable package
+
+# remotes::install_github("thebioengeer/colortable)
+library(colortable)
+
+Kickers_Att  %>% 
+  tibble() %>%
+  mutate(Adj_FG_Pct = round(Adj_FG_Pct * 100, 1),
+         UnAdj_FG_Pct = round(UnAdj_FG_Pct * 100, 1)) %>%
+  arrange(desc(Adj_FG_Pct))  %>%
+  mutate(Adj_FG_Pct = color_vctr(Adj_FG_Pct, text_color = color_scale(colorRamp(c(
+    "blue", "green"
+  ))))) %>%
+  select(Player, Team, 'Overall Att' = Att, 'Adj FG%' = Adj_FG_Pct, 'Raw FG%' = UnAdj_FG_Pct) %>% 
+  knitr::kable()
+
+```
