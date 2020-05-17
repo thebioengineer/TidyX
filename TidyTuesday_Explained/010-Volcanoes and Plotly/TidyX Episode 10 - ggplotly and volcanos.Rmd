@@ -1,0 +1,283 @@
+---
+title: "TidyX Episode 10: ggplotly and volcanos"
+author: "Patrick Ward"
+date: "5/16/2020"
+output: html_document
+---
+
+## Load Packages & Get Data
+
+```{r setup, include=T}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(plotly)
+  })
+})
+
+theme_set(theme_light())
+
+
+tt <- tidytuesdayR::tt_load("2020-05-12")
+
+volcano <- tt$volcano
+
+eruptions <- tt$eruptions 
+
+events <- tt$events %>%
+  select(volcano_number, volcano_name, eruption_number, event_type)
+
+
+# Get info about the volcanos in each country and region
+volcano_info <- volcano %>%
+  select(volcano_number, volcano_name, country, region, population_within_100_km)
+
+# Combine the volcano info with the eruption info
+dat <- eruptions %>%
+  filter(eruption_category == "Confirmed Eruption") %>%
+  inner_join(volcano_info)  %>%
+  filter(!is.na(start_year)) %>%
+  mutate(
+    end   = as.Date(
+      paste(end_year, ifelse(end_month == 0, "01", end_month), ifelse(end_day == 0, "01", end_day), sep = "-")),
+    start = as.Date(
+      paste(start_year, ifelse(start_month == 0, "01", start_month), ifelse(start_day == 0, "01", start_day), sep = "-"))
+  ) %>% 
+  mutate(
+    Length_of_Eruption = as.numeric(difftime(end, start, units = "days"))
+  )
+
+# add n the invormation about the eruption events
+dat <- dat %>%
+  left_join(events)
+
+
+```
+
+## EDA
+
+How many different volcano's does each country have?
+
+```{r}
+
+volcano %>%
+  
+  count(country, sort = T) %>%
+  top_n(10) %>%
+  
+  ggplot(aes(x = n, y = reorder(country, n))) +
+  geom_col(fill = "pale green", 
+           alpha = 0.8,
+           color = "black") +
+  labs(title = "Number of Volcanos per Country",
+       subtitle = "Top 10 Countries",
+       x = "",
+       y = "",
+       caption = "TidyTuesday Project") +
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 13),
+        plot.caption = element_text(face = "bold"))
+```
+
+
+What is the distribution of volcano intensity (vei)?
+
+```{r}
+## histogram
+eruptions %>%
+  
+  ggplot(aes(x = vei)) +
+  
+  geom_histogram(fill = "pale green", 
+           alpha = 0.8,
+           color = "black") +
+  
+  labs(title = "Distribution of VEI",
+       x = "",
+       y = "",
+       caption = "TidyTuesday Project") +
+  
+  expand_limits(x = c(0,8)) +
+  
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 16),
+        plot.caption = element_text(face = "bold"))
+
+# quantile table
+quantile(eruptions$vei, na.rm = T) %>% 
+  t() %>%
+  knitr::kable()
+
+## violin plot of the top 5 countries
+countries <- volcano %>%
+  count(country, sort = T) %>%
+  top_n(5)  %>%
+  pull(country)
+
+dat %>%
+  
+  filter(country %in% countries) %>%
+  
+  ggplot(aes(x = country, y = vei)) +
+  
+  ggforce::geom_sina(alpha = 0.5, color = "light grey") +
+  
+  geom_violin(aes(fill = country),
+              alpha = 0.5) +
+  
+  labs(title = "Distribution of VEI by Country",
+       x = "",
+       y = "",
+       caption = "TidyTuesday Project") +
+  
+  scale_y_continuous(breaks = c(0:8)) +
+  
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 16),
+        plot.caption = element_text(face = "bold"),
+        legend.position = "none")
+
+```
+
+
+What type of eruption categories are available?
+
+
+```{r}
+eruptions %>%
+  count(eruption_category, sort = T) %>%
+  knitr::kable()
+```
+
+
+What years do we have confirmed eruptions for?
+
+```{r}
+
+dat %>%
+  
+  count(start_year, sort = T) %>%
+  top_n(10) %>%
+  
+  ggplot(aes(x = n, y = reorder(as.factor(start_year), n))) +
+  
+  geom_col(fill = "pale green", 
+           alpha = 0.8,
+           color = "black") +
+  
+  labs(title = "N Eruptions per Year, top 10",
+       x = "",
+       y = "",
+       caption = "TidyTuesday Project") +
+  
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 13),
+        plot.caption = element_text(face = "bold"))
+
+```
+
+How many confirmed in the 2000s?
+
+```{r}
+dat %>%
+  filter(start_year >= 2000) %>%
+  
+  count(start_year, sort = T) %>%
+  
+  ggplot(aes(x = n, y = as.factor(start_year))) +
+    geom_col(fill = "pale green", 
+           alpha = 0.8,
+           color = "black") +
+  labs(title = "Confirmed Eruptions since 2000 CE",
+       x = "",
+       y = "",
+       caption = "TidyTuesday Project") +
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 13),
+        plot.caption = element_text(face = "bold"))
+
+```
+
+How many intense have the eruptions been on the VEI scale in the 2000s?
+
+```{r}
+dat %>%
+  
+  filter(start_year >= 2000,
+         !is.na(vei)) %>%
+  
+  count(vei, sort = T) %>%
+  
+  ggplot(aes(x = vei, y = n)) +
+  geom_col(fill = "pale green", 
+           alpha = 0.8,
+           color = "black") +
+  expand_limits(x = c(0, 8)) +
+  labs(title = "Number of VEI Eruptions Since 2000",
+       x = "VEI Index",
+       y = "",
+       caption = "TidyTuesday Project") +
+  
+  theme(axis.text.x = element_text(face = "bold", size = 12),
+        axis.text.y = element_text(face = "bold", size = 12),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 13),
+        plot.caption = element_text(face = "bold"))
+
+```
+
+
+`ggplotly` of USA eruptions >= 1950
+
+```{r}
+
+usa_plot <- dat %>%
+  
+  filter( country %in% c("United States"), start_year > 1950) %>%
+  
+  group_by(volcano_name, eruption_number) %>%
+  
+  summarize(
+    start_year = first(start_year),
+    event_type = first(eruption_category),
+    vei = max(vei),
+    eruption_duration = max(Length_of_Eruption),
+    pop = first(population_within_100_km)
+  ) %>% 
+  
+  ungroup() %>% 
+  
+  filter( !is.na(eruption_duration) ) %>% 
+  
+  mutate(
+    Volcano = paste( volcano_name,"<br>",
+                "Start Year:", start_year,"<br>",
+                "Category:", event_type,"<br>",
+                "Duration (days):", eruption_duration,"<br>",
+                "Population within 100km:", pop)
+  ) %>% 
+  
+  ggplot(aes(x = start_year, 
+             y = eruption_duration,
+             size = pop,
+             color = vei,
+             label = Volcano)) +
+  geom_point() +
+  scale_y_log10() + 
+  labs(
+    x = "Year",
+    y = "Eruption Duration (Days)"
+  )
+
+ggplotly(usa_plot, tooltip = "label")
+
+```
