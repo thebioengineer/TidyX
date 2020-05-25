@@ -1,0 +1,444 @@
+---
+title: "TidyX Episode 11 - Time Series Plots"
+author: "Patrick Ward"
+date: "5/22/2020"
+output: html_document
+---
+
+Load & Process Data
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(tidytuesdayR)
+    library(patchwork)
+    library(shiny)
+    library(ggrepel)
+  })
+})
+
+theme_set(theme_light())
+```
+
+```{r load-data}
+## get data
+tt <- tt_load(2020, week = 21)
+
+readme(tt)
+
+vb <- tt$vb_matches
+
+vb %>% 
+  glimpse()
+
+```
+
+```{r processing}
+
+## create teams outcome data set
+teams <- vb %>%
+  rowwise() %>% # row wise tells mutate by each row, rather than vectorizing
+  mutate(w_team = paste(sort(c(w_player1, w_player2)), collapse = ", "),
+         l_team = paste(l_player1, l_player2, sep = ", "),
+         w_team_avg_age = mean(c(w_p1_age,w_p2_age), na.rm = TRUE),
+         l_team_avg_age = mean(c(l_p1_age,l_p2_age), na.rm = TRUE)
+         ) %>%
+  select(year, 
+         date, 
+         gender,
+         tournament,
+         match_num,
+         matches("team"), # helper funcs that use 'regex' to identify fields to grab
+         ends_with("rank"),# helper funcs that use 'regex' to identify fields to grab & condition
+         score)
+
+```
+
+```{r success}
+## create a team success data set
+
+team_outcome <- teams %>% 
+  select(gender, date, year, match_num, w_team, l_team) %>% 
+  gather(
+    key = "outcome",
+    value = "team",
+    w_team,
+    l_team
+    ) %>% 
+  mutate(
+    outcome = gsub("_team","",outcome)
+  )
+
+team_outcome %>%
+  head()
+```
+
+
+### EDA
+
+```{r}
+
+team_outcome %>% 
+  count(team, sort = TRUE)
+
+team_win_pct <- team_outcome %>% 
+  group_by(team) %>%
+  filter(n() >= 200) %>%
+  arrange(date,match_num) %>% 
+  mutate(
+    cum_win_pct = mean(outcome == "w"),
+    rolling_win_pct = cumsum(outcome == "w")/ seq(1, n()),
+    game_num = seq(1, n())
+  ) %>% 
+  ungroup
+
+top_teams_w <- team_win_pct %>%
+  filter(gender == "W") %>% 
+  group_by(team) %>%
+  summarize(cum_win_pct = first(cum_win_pct),
+            ngames = max(game_num)) %>%
+  top_n(n = 5, cum_win_pct) %>% 
+  arrange(desc(cum_win_pct))
+
+## Played around with the plot you made, made this
+
+w_plot <- team_win_pct %>%
+  filter(team %in% top_teams_w$team) %>%
+  mutate(team = factor(team, levels = top_teams_w$team)) %>%
+  ggplot() +
+  geom_line(aes(
+    x = game_num,
+    y = rolling_win_pct,
+    group = team,
+    color = team
+  )) +
+  geom_point(
+    data = top_teams_w,
+    aes(
+      x = ngames,
+      y = cum_win_pct,
+      color = team,
+      )
+    ) +
+  geom_label_repel(
+    data = top_teams_w,
+    aes(
+      x = ngames,
+      y = cum_win_pct,
+      label = scales::percent(round(cum_win_pct, 2)),
+      ),
+    nudge_x = runif(5) * 10,
+    nudge_y = case_when(
+      top_teams_w$cum_win_pct > .85 ~ .05,
+      top_teams_w$cum_win_pct > .8 & top_teams_w$ngames < 300 ~ -.03,
+      TRUE ~ -.1)
+    ) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "game number",
+    y = "Win%",
+    title = "Career Win%",
+    subtitle = "Top 5 - Win Percentage with at least 200 matches"
+  ) +
+  theme(
+    axis.text = element_text(size = 12, face = "bold"),
+    plot.title = element_text(size = 18),
+    plot.subtitle = element_text(size = 15),
+    legend.position = "bottom"
+  ) +
+  guides(color = guide_legend(ncol= 3,
+                             nrow = 2,
+                             byrow = TRUE,
+                             title = NULL))
+
+
+# m_plot <- team_outcome %>% 
+#   group_by(team) %>%
+#   filter(n() >= 200,
+#          gender == "M") %>%
+#   summarize(win_pct = mean(outcome == "w"))%>% 
+#   top_n(10) %>%
+#   ggplot(aes(x = win_pct, y = reorder(team, win_pct))) +
+#     geom_col(fill = "light blue", 
+#              color = "black") +
+#   geom_label(aes(label = scales::percent(round(win_pct, 2)) )) +
+#   labs(x = "Win%",
+#        y = "",
+#        title = "Career Win%",
+#        subtitle = "Teams with 200 or more career matches") +
+#   theme(axis.text = element_text(size = 12, face = "bold"),
+#         plot.title = element_text(size = 18),
+#         plot.subtitle = element_text(size = 15))
+# 
+# w_plot / m_plot
+
+```
+
+
+
+Estimating True Win %
+
+```{r}
+## Get a vector of win% for teams with at least 10 matches
+win_pct <- team_outcome %>% 
+  group_by(team, year) %>%
+  filter(n() >= 10) %>%
+  summarize(win_pct = mean(outcome == "w")) %>% 
+  pull(win_pct) 
+
+# Identify the mean & SD of the population
+mean(win_pct)
+sd(win_pct)
+
+### Calculate the beta parameters (alpha & beta) using the mean and variance of the population
+
+# function for calculating alpha and beta
+beta_parameters <- function(dist_avg, dist_var){
+  alpha <- dist_avg * (dist_avg * (1 - dist_avg)/dist_var - 1)
+  beta <- alpha * (1 - dist_avg)/dist_avg
+  list(alpha = alpha,
+       beta = beta)
+}
+
+# try out the function
+beta_parameters(dist_avg = mean(win_pct), dist_var = sd(win_pct)^2)
+
+# extract alpha and beta from the list
+alpha <- beta_parameters(dist_avg = mean(win_pct), dist_var = sd(win_pct)^2)$alpha
+beta <- beta_parameters(dist_avg = mean(win_pct), dist_var = sd(win_pct)^2)$beta
+
+# show that the alpha and beta parameter produce the mean and SD of the population
+alpha / (alpha + beta)
+sqrt((alpha * beta) / ((alpha + beta)^2 * (alpha + beta + 1)))
+
+## Could have done the same thing with the fitdistr() function
+#MASS::fitdistr(x = win_pct, densfun = dbeta, start = list(shape1 = 1, shape2 = 10))
+
+
+## Plot the distribution based on our alpha and beta
+
+plot(x = seq(from = 0, to = 1, by = 0.001),
+     y = dbeta(x = seq(from = 0, to = 1, by = 0.001),
+               shape1 = alpha,
+               shape2 = beta),
+     type = "l")
+abline(v = alpha / (alpha + beta),
+       lwd = 2,
+       col = "red")
+
+### create a bayes adjustment
+
+team_outcome_bayes <- team_outcome %>%
+  arrange(team, year, match_num) %>%
+  mutate(outcomeID = ifelse(outcome == "w", 1, 0)) %>%
+  group_by(team) %>%
+  mutate(
+    cumulative_match_num = seq_along(team),
+    cumulative_wins = cumsum(outcomeID),
+    team_alpha = alpha + cumulative_wins,
+    team_beta = (beta + (cumulative_match_num- cumulative_wins)),
+    Un_Adj_Win_Pct = cumulative_wins / cumulative_match_num,
+    Bayes_Adj_Win_Pct = team_alpha / (team_alpha + team_beta),
+    Variance = (team_alpha * team_beta) / ((team_alpha + team_beta)^2 * (team_alpha + team_beta + 1)),
+    SD = sqrt(Variance)) 
+
+team_outcome_bayes %>% View()
+
+```
+
+
+Create a static plot of a few teams performance over time with their observed and adjusted rolling win%
+
+```{r}
+
+
+team_outcome_bayes %>%
+  filter(team == "Kerri Walsh Jennings, Misty May-Treanor") %>%
+  ggplot(aes(x = cumulative_match_num)) +
+  geom_hline(
+    aes(
+      yintercept = 0.50
+    ),
+    linetype = "dashed"
+  ) +
+  geom_line(
+    aes(
+      y = Un_Adj_Win_Pct
+  )) +
+  geom_line(
+    aes(
+      y = Bayes_Adj_Win_Pct
+      ),
+    col = "Red"
+  ) +
+  geom_ribbon(
+    aes(
+      ymin = Bayes_Adj_Win_Pct - 2*SD,
+      ymax = Bayes_Adj_Win_Pct + 2*SD
+      ),
+    alpha = .1,
+    color = "light grey"
+  ) +
+  geom_ribbon(
+    aes(
+      ymin = Bayes_Adj_Win_Pct - SD,
+      ymax = Bayes_Adj_Win_Pct + SD
+      ),
+    alpha = .3,
+    color = "light grey"
+  ) +
+  ylim(0, 1) +
+  labs(x = "Match Number",
+       y = "Win%",
+       title = "Walsh-Jennings & May-Treanor Rolling Win%",
+       subtitle = "Black = Observed Win%; Red = Adjusted Win%")
+
+team_outcome_bayes %>%
+  filter(team == "Phil Dalhausser, Todd Rogers") %>%
+  ggplot(aes(x = cumulative_match_num)) +
+  geom_hline(aes(yintercept = 0.50), linetype = "dashed") +
+  geom_line(aes(y = Un_Adj_Win_Pct)) +
+  geom_line(aes(y = Bayes_Adj_Win_Pct), col = "Red") +
+  ylim(0, 1) +
+  labs(x = "Match Number",
+       y = "Win%",
+       title = "Dalhausser & Rogers Win%",
+       subtitle = "Black = Observed Win%; Red = Adjusted Win%")
+
+
+team_outcome_bayes %>%
+  filter(team == "Aaron Boss, Alika Williams") %>%
+  ggplot(aes(x = cumulative_match_num)) +
+  geom_hline(aes(yintercept = 0.50), linetype = "dashed") +
+  geom_line(aes(y = Un_Adj_Win_Pct)) +
+  geom_line(aes(y = Bayes_Adj_Win_Pct), col = "Red") +
+  ylim(0, 1) +
+  labs(x = "Match Number",
+       y = "Win%",
+       title = "Boss & Williams Win%",
+       subtitle = "Black = Observed Win%; Red = Adjusted Win%")
+
+```
+
+
+Distributions to compare teams
+
+```{r}
+### Comparing Teams
+
+team_of_interest <- c("Mike Lambert, Stein Metzger",
+                      "Casey Patterson, Jake Gibb")
+
+
+team_outcome_bayes %>%
+  filter(team %in% team_of_interest) %>%
+  group_by(team) %>%
+  summarize(Matches = n(),
+            W = sum(outcome == "w"),
+            L = Matches - W,
+            Win_Pct = W / Matches) %>%
+  crossing(nsim = 1:10000) %>%
+  mutate(beta_sim = rbeta(n = nsim,
+                        shape1 = alpha + W,
+                        shape2 = beta + L)) %>%
+  ggplot(aes(x = beta_sim)) +
+  geom_density(aes(fill = team),
+               alpha = 0.5) +
+  xlim(0.4, 1) +
+  labs(title = "Team Comparison")
+
+```
+
+Shiny App
+
+```{r}
+
+male_outcome <- team_outcome %>% filter(gender == "M",
+                                        cumulative_match_num >= 10)
+female_outcome <- team_outcome %>% filter(gender == "W",
+                                          cumulative_match_num >= 10)
+
+## UI
+ui <- fluidPage(
+  
+  tabsetPanel(
+    tabPanel("Male Team Win%", fluid = T,
+             selectizeInput(
+               inputId = "team",
+               label = "Team",
+               choices = male_outcome %>% distinct(., team) %>% pull(team),
+               selected = "Phil Dalhausser, Todd Rogers",
+               multiple = FALSE
+             ),
+             mainPanel(plotOutput(outputId = "m_plot"))),
+    
+    tabPanel("Female Team Win%", fluid = T,
+             selectizeInput(
+               inputId = "team2",
+               label = "Team",
+               choices = female_outcome %>% distinct(., team) %>% pull(team),
+               selected = "Kerri Walsh Jennings, Misty May-Treanor",
+               multiple = FALSE
+             ),
+             mainPanel(plotOutput(outputId = "f_plot")))
+  )
+)
+
+
+
+## Server
+server <- function(input, output){
+  
+  # get data
+  m_dat <- reactive({
+    dataset1 <- male_outcome %>%
+      filter(team %in% input$team)
+    dataset1
+  })
+  
+  f_dat <- reactive({
+    dataset2 <- female_outcome %>%
+      filter(team %in% input$team2)
+    dataset2
+  })
+  
+  # render the plots
+  output$m_plot <- renderPlot({
+    
+  m_plot <- ggplot(m_dat(), aes(x = cumulative_match_num)) +
+    geom_hline(aes(yintercept = 0.50), linetype = "dashed") +
+    geom_line(aes(y = Un_Adj_Win_Pct)) +
+    geom_line(aes(y = Bayes_Adj_Win_Pct), col = "Red") +
+    ylim(0, 1) +
+    labs(x = "Match Number",
+       y = "Win%",
+       title =  "Black = Observed Win%; Red = Adjusted Win%")
+    
+    print(m_plot)
+  })
+  
+  output$f_plot <- renderPlot({
+    
+  f_plot <- ggplot(f_dat(), aes(x = cumulative_match_num)) +
+  geom_hline(aes(yintercept = 0.50), linetype = "dashed") +
+  geom_line(aes(y = Un_Adj_Win_Pct)) +
+  geom_line(aes(y = Bayes_Adj_Win_Pct), col = "Red") +
+  ylim(0, 1) +
+  labs(x = "Match Number",
+       y = "Win%",
+       title =  "Black = Observed Win%; Red = Adjusted Win%")
+    
+    print(f_plot)
+  })
+}
+
+shinyApp(ui, server)
+
+
+
+
+```
+
