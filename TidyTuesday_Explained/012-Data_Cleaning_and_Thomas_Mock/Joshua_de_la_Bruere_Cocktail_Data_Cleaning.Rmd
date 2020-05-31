@@ -1,0 +1,386 @@
+---
+title: "Cocktails"
+output: github_document
+---
+
+
+## Fetching the data/setup
+
+As always I begin by fetching the data from the tidytuesday repo. 
+### Packages:
+These are the package I plan on using today:
+
++ tidyverse (It's what this is all about)
++ ggtext (A wonderful package by [@ClausWilke](https://twitter.com/ClausWilke) that enables better control over text rendering)
++ patchwork (By the amazing [@thomasp85](https://twitter.com/thomasp85) allows for easy combining of plots)
++ janitor (makes it easy to clean the names of a data set.)
++ forcats (easy work with factors)
++ delabj (A personal package that includes a few tweaks to ggplot, and custom themes)
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+
+library(tidyverse)
+library(ggtext)
+library(patchwork)
+library(janitor)
+library(delabj)
+library(forcats)
+
+cocktails <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv')
+boston_cocktails <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv')
+```
+
+
+The data is pretty messy. I think a lot of this project will be cleaning this up. 
+For example look at the measure column. 
+```{r}
+glimpse(cocktails$measure)
+```
+It's a character column and units are left attached, fractions remain, and some special notes are included. 
+
+
+A similar issue can be found with the ingredients column. Ingredients that should be (about) the same are listed in different ways. Fresh Lemon Juice vs Lemon Juice. These likely are interchangeable for the most part. 
+
+```{r}
+summary(as.factor(cocktails$ingredient))
+```
+
+I mean look at this bar chart Or try to. There are 130 ingredients that only occur 1 time each. This is out of 333 rows
+
+```{r}
+
+cocktails %>%
+  group_by(ingredient) %>%
+  count() %>%
+  filter(n < 2) %>%
+  ggplot(aes(x=n, y=ingredient))
+```
+
+
+## Data Cleaning
+
+I want to start by cleaning the ingredients. I will start by making the ingrendients all lower case. 
+
+```{r}
+cleaned <- cocktails %>%
+  mutate(ingredient = tolower(ingredient))
+
+cleaned %>%
+  group_by(ingredient) %>%
+  count() %>%
+  filter(n < 2)
+
+```
+
+
+That condenced 10 of the of the individual ingredients and dropped down the total unique ingredients to 306. Small victories. 
+
+I think the next step is to remove a few specific words like fresh. 
+
+```{r}
+
+cleaned <- cocktails %>%
+  mutate(ingredient = tolower(ingredient)) %>%
+  mutate(ingredient = gsub("fresh", "",ingredient),
+         ingredient = gsub("anise", "anis", ingredient),
+         ingredient = gsub("whipping", "whipped", ingredient), 
+         ingredient = gsub("whisky", "whiskey", ingredient), 
+         ingredient = gsub("tropicana", "orange juice", ingredient),
+         ingredient = gsub("sugar syrup", "simple syrup", ingredient), 
+         ingredient = gsub("cordial", "", ingredient), 
+         ingredient = gsub("7-up", "lemon-lime soda", ingredient),
+         ingredient = gsub("sprite", "lemon-lime soda", ingredient),
+         ingredient = gsub("baileys irish cream", "bailey's irish cream", ingredient)
+         ) %>%
+  # mutate(ingredient = case_when(
+  #   grepl("pepsi", ingredient) ~ "cola",
+  #   TRUE~ingredient
+  # )) %>%
+  mutate(ingredient = str_trim(ingredient))
+
+
+cleaned %>%
+  group_by(ingredient) %>%
+  count()
+
+```
+
+
+I think I have an idea for cleaning up the measurements. I'll make a new column using grepl and case when. 
+```{r}
+library(rlang)
+
+
+
+cleaned %>%
+  mutate(units =  case_when(
+    grepl("kg",       measure) ~ "kg",
+    grepl("ml",       measure) ~ "ml", 
+    grepl("ml",       measure) ~ "mL", 
+    grepl("cl",       measure) ~ "cl",
+    grepl("cl",       measure) ~ "cL",
+    grepl("dl",       measure) ~ "dl",
+    grepl("L",        measure) ~ "L", 
+    grepl("oz",       measure) ~ "oz", 
+    grepl("tsp",      measure) ~ "tsp",
+    grepl("tbsp",     measure) ~ "tblsp", 
+    grepl("tblsp",    measure) ~ "tblsp",
+    grepl("cup",      measure) ~ "cup",
+    grepl("pint",     measure) ~ "pint",
+    grepl("pt",       measure) ~ "pt",
+    grepl("quart",    measure) ~ "qt", 
+    grepl("qt",       measure) ~ "qt", 
+    grepl("gal",      measure) ~ "gal",
+    grepl("shot",     measure) ~ "shot",
+    grepl("jigger",   measure) ~ "shot", 
+    grepl("top",      measure) ~ "tblsp",
+    grepl("dash",     measure) ~ "dash",
+    grepl("can",      measure) ~ "can",
+    grepl("bottle",   measure) ~ "bottle",
+    grepl("fifth",    measure) ~ "fifth",
+    grepl("wedge",    measure) ~ "wedge",
+    grepl("slice",    measure) ~ "wedge", 
+    grepl("splash",   measure) ~ "dash",
+    grepl("part",     measure) ~ "part",
+    grepl("measure",  measure) ~ "part",
+    grepl("inch",     measure) ~ "in",
+    grepl("drop",     measure) ~ "drop",
+    grepl("juice of", measure) ~ "juice",
+    grepl("glass",    measure) ~ "glass",
+    grepl("spoon",    measure) ~ "tblsp",
+    grepl("twist",    measure) ~ "twist", 
+    grepl("gr",       measure) ~ "gm",
+    grepl("piece",    measure) ~ "piece",
+    grepl("stick",    measure) ~ "piece",
+    grepl("chunk",    measure) ~ "piece",
+    TRUE~"units"
+  )) %>%
+
+  mutate( measure= gsub("½", "0.5", measure)) %>%
+  mutate( 
+    measure = str_replace_all(measure, "([A-z,()]+)", ""),
+    measure = gsub("\n", "", measure),
+    measure = gsub("\r", "", measure),
+    measure = gsub(" ", "", measure),
+    measure = str_replace(measure, " ?1/8", ".125"), 
+    measure = str_replace(measure, " ?1/5", ".2"), 
+    measure = str_replace(measure, " ?2/5", ".4"), 
+    measure = str_replace(measure, " ?1/2", ".5"),
+    measure = str_replace(measure, " ?1/6", ".17"), 
+    measure = str_replace(measure, " ?1/4", ".25"),
+    measure = str_replace(measure, " ?3/4", ".75"),
+    measure = str_replace(measure, " ?1/3", ".33"),
+    measure = str_replace(measure, " ?2/3", ".67"),
+    measure = str_replace(measure, "70/2", "70"), # special case
+    measure = str_replace(measure, " ?-[0-9]+", ""),
+    measure = gsub("-", "", measure)
+    ) %>%
+  mutate_if(
+    is.character, list(~na_if(., "")),
+    is.character, list(~na_if(., ""))
+            ) -> cleaned2 
+
+```
+
+
+
+Hmmm, this may be a bit long for cleaning like this. I want to convert all liquid measures to oz. The rest I'll call units to keep it simple. 
+
+```{r}
+cleaned2 %>%
+  mutate(measure = as.numeric(replace_na(measure, 1))) %>%
+  mutate(
+    in_oz= case_when(
+    str_detect(units, "bottle") ~ measure * 750*0.033814, #750 ml to oz
+    str_detect(units, "can"   ) ~ measure * 330*0.033814,
+    str_detect(units, "cup"   ) ~ measure * 8,
+    str_detect(units, "dash"  ) ~ measure * 0.03125,
+    str_detect(units, "shot"  ) ~ measure * 1.5, 
+    str_detect(units, "fifth" ) ~ measure * 25,
+    str_detect(units, "pint"  ) ~ measure * 16,
+    str_detect(units, "qt"    ) ~ measure * 32,
+    str_detect(units, "gal"   ) ~ measure * 128, 
+    str_detect(units, "tblsp" ) ~ measure * 3/8,
+    str_detect(units, "tsp"   ) ~ measure * 1/8,
+    str_detect(units, "glass" ) ~ measure * 8,
+    str_detect(units, "drop"  ) ~ measure * 0.00169204737,  #rough estimate
+    str_detect(units, "cl"    ) ~ measure * 0.33814,
+    str_detect(units, "ml"    ) ~ measure * 0.033814,
+    str_detect(units, "dl"    ) ~ measure * 3.3814,
+    str_detect(units, "L"     ) ~ measure * 33.814,
+    str_detect(units, "gm"    ) ~ measure * 0.035274,
+    str_detect(units, "kg",   ) ~ measure * 35.274,
+    TRUE ~ measure
+    )
+  ) %>%
+  mutate(
+    units= case_when(
+    str_detect(units, "bottle") ~ "oz", 
+    str_detect(units, "can"   ) ~ "oz", 
+    str_detect(units, "cup"   ) ~ "oz",
+    str_detect(units, "dash"  ) ~ "oz",
+    str_detect(units, "shot"  ) ~ "oz",
+    str_detect(units, "fifth" ) ~ "oz",
+    str_detect(units, "pint"  ) ~ "oz",
+    str_detect(units, "qt"    ) ~ "oz",
+    str_detect(units, "gal"   ) ~ "oz",
+    str_detect(units, "tblsp" ) ~ "oz",
+    str_detect(units, "part"  ) ~ "oz",
+    str_detect(units, "tsp"   ) ~ "oz",
+    str_detect(units, "glass" ) ~ "oz",
+    str_detect(units, "drop"  ) ~ "oz", 
+    str_detect(units, "cl"    ) ~ "oz",
+    str_detect(units, "ml"    ) ~ "oz",
+    str_detect(units, "dl"    ) ~ "oz",
+    str_detect(units, "L"     ) ~ "oz",
+    str_detect(units, "gm"    ) ~ "oz",
+    str_detect(units, "kg",   ) ~ "oz",
+    TRUE ~ "units")
+  )-> converted_to_oz
+  
+
+
+```
+
+Look at how nice this is now!
+
+```{r}
+converted_to_oz %>% group_by(units) %>% count()
+
+```
+
+Now I can look at oz only and see what ingredient comes up the most. 
+
+
+```{r}
+non_alc_inged <- converted_to_oz %>%
+  filter(units == "oz",
+         alcoholic != "Alcoholic") %>%
+  group_by(ingredient) %>%
+  summarise(total_oz = sum(in_oz)) %>%
+  arrange(desc(total_oz)) %>% 
+  mutate(rank = row_number(), 
+         group = "Non Alcoholic") %>% head(10)
+  
+```
+
+Water is more popular than I expected. What if I exclude non-alcholoic drinks?
+
+```{r}
+
+
+alc_inged <- converted_to_oz %>%
+  filter(units == "oz", 
+         alcoholic == "Alcoholic") %>%
+  group_by(ingredient) %>%
+  summarise(total_oz = sum(in_oz)) %>%
+  arrange(desc(total_oz)) %>% 
+  mutate(rank = row_number(), 
+         group = "Alcoholic") %>% head(10)
+  
+```
+
+
+```{r}
+ 
+  ggplot(alc_inged, aes(y=fct_reorder(ingredient, desc(rank)), x = total_oz))+
+  facet_wrap(~group, scales = "free_y")+
+  geom_bar(fill="#5B3758", stat="identity" )+
+  delabj::legend_none()+
+  labs(
+    x="", 
+    y=""
+  )+
+  theme_delabj()+
+
+  ggplot(non_alc_inged,aes(y=fct_reorder(ingredient, desc(rank)), x = total_oz))+
+  facet_wrap(~group, scales = "free_y")+
+  geom_bar(fill = "#2660A4", stat="identity" )+
+  geom_text(data = data.frame(x = 95.8299310041622,
+y = 2.9,
+label = "<- Wine??? ",
+group = "Non Alcoholic"),
+mapping = aes(x = x,
+y = y,
+label = label),
+angle = 0L,
+lineheight = 1L,
+hjust = 0.3,
+vjust = .05,
+colour = "black",
+family = "poppins",
+fontface = "plain",
+inherit.aes = FALSE,
+show.legend = FALSE)+
+
+  delabj::legend_none()+
+  labs(
+    x="", 
+    y=""
+  )+
+  theme_delabj()+
+  theme(plot.margin = unit(c(6,8,6,6), "pt"))+
+  plot_annotation(
+    subtitle = "Top 10 ingredients in <b style = 'color:#5B3758'>Alcoholic</b> and <b style = 'color: #2660A4'>Non Alcoholic</b>  Drinks by Total oz.",
+    title = "What do I want? Suprise Me!",
+    caption = "Data: Kaggle \nViz: @delabjl",
+    theme = theme_delabj()+
+      theme(plot.subtitle = element_markdown(),
+            plot.margin = unit(c(12,12,12,12), "pt")))
+  
+ggsave("Top_10_by_Alcoholic_content.png", height = 5, width = 10, dpi= 320, type="cairo")
+
+```
+
+
+Could also be interesting to see this by glass type
+
+```{r}
+converted_to_oz %>% group_by(glass=tolower(glass)) %>%  count() %>% arrange(desc(n))
+
+glasses <- converted_to_oz %>% 
+  group_by(glass = tolower(glass)) %>% 
+  count() %>% 
+  arrange(desc(n)) %>% 
+  head(6) %>% pull(glass)
+
+
+
+
+converted_to_oz %>%
+  mutate(glass=tolower(glass)) %>%
+  mutate(glass = factor(glass, levels = c(
+    "collins glass",
+     "coffee mug" ,
+    "highball glass",
+    "old-fashioned glass", 
+    "cocktail glass",
+    "shot glass" 
+  )))%>%
+  filter(units == "oz", 
+         glass %in% glasses) %>%
+  group_by(glass, ingredient) %>%
+  summarise(total_oz = mean(in_oz)) %>%
+  ungroup()%>%
+  group_by(glass) %>%
+  top_n(5, total_oz) %>%
+  ungroup() %>%
+  ggplot(aes(y=fct_reorder(ingredient,total_oz), x = total_oz))+
+  facet_wrap(~glass, ncol=3, scales="free_y")+
+  geom_bar(aes(fill=glass ),stat="identity")+
+  scale_fill_delabj()+
+  theme_delabj()+
+  labs(
+    x="",
+    y="",
+    title = "What's in the cup?",
+    subtitle = "Top 5 ingredients for each glass, by mean oz in recipies.",
+    caption = "Data: Kaggle \nViz: @delabjl"
+  )+
+  legend_none()
+
+ggsave("Top_5_ingredients_by_glass.png", height = 5, width = 10, dpi= 320, type="cairo")
+
+
+
+```
