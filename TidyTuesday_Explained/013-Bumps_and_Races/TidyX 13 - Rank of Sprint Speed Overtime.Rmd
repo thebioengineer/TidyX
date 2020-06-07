@@ -1,0 +1,197 @@
+---
+title: "Changes in Sprint Velocity"
+author: "Patrick Ward"
+date: "6/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(reshape2)
+library(rvest)
+
+theme_set(theme_light())
+```
+
+
+```{r}
+
+year <- seq(from = 2000, to = 2020, by = 1)
+
+url <- paste("https://www.pro-football-reference.com/draft/", year, "-combine.htm", sep = "")
+
+combine_scrape <- lapply(url, function(i){
+  
+  # loop over each webpage
+  webpage <- read_html(i)
+  
+  # extract tables
+  table_info <- html_nodes(webpage, 'table')
+  
+  # Get the table you need
+  combine_scrape <- data.frame(html_table(table_info)[[1]], 
+                               Draft_Yr = substr(i, start = 46, stop = 49))
+  
+})
+
+# Put the tables into a data frame
+combine_results <- do.call(rbind, combine_scrape)
+combine_results %>% head()
+combine_results %>% glimpse()
+
+combine_results <- year %>% 
+  
+  map_dfr(function(y){
+    
+  url <- paste("https://www.pro-football-reference.com/draft/", y, "-combine.htm", sep = "")
+  
+  # loop over each webpage
+  webpage <- read_html(url)
+  
+  # extract tables
+  table_info <- html_nodes(webpage, 'table')
+  
+  # Get the table you need
+  data.frame(html_table(table_info)[[1]], 
+             Draft_Yr = y)
+
+  })
+
+
+
+# create position groupings
+combine_results_pos <- combine_results %>% 
+  mutate(Position = ifelse(Pos == "OT" | Pos == "OG" | Pos == "C",               "OL",
+                    ifelse(Pos == "ILB" | Pos == "OLB",                          "LB",
+                    ifelse(Pos == "S" | Pos == "CB" | Pos == "FS" | Pos == "SS", "DB",
+                    ifelse(Pos == "EDGE",                                        "DE",
+                    ifelse(Pos == "DT" | Pos == "NT",                            "DL",
+                    as.character(Pos)
+                    ))))))
+
+combine_results_pos <- combine_results %>% 
+  mutate(
+    Position = case_when(
+      Pos %in% c("OT","OG","C")      ~ "OL",
+      Pos %in% c("ILB","OLB")        ~ "LB",
+      Pos %in% c("S","CB","FS","SS") ~ "DB",
+      Pos %in% c("EDGE")             ~ "DE",
+      Pos %in% c("DT","NT")          ~ "DL",
+      TRUE ~ Pos
+    )
+  )
+
+# Separate out the Drafted column
+combine_results_sep <- combine_results_pos %>% 
+  separate(
+    Drafted..tm.rnd.yr.,
+    into = c("Tm", "Rd", "Pick", "Yr"),
+    sep = "/"
+  ) %>%
+  mutate(Round = substring(Rd, 1, 2),
+         Round = ifelse(is.na(Round), "FA", as.character(Round)))
+
+# get the columns of need
+combine <- combine_results_sep %>%
+  select(Player, Position, Pos, Wt, forty = X40yd, Draft_Yr, Round)
+
+# convert characters to numeric
+combine$forty <- as.numeric(combine$forty)
+combine$Wt <- as.numeric(combine$Wt)
+combine$Draft_Yr <- as.numeric(as.character(combine$Draft_Yr))
+
+combine <- combine %>% 
+  mutate(
+    across(forty,Wt,Draft_Yr, .fns = ~ as.numeric(as.character(.x)))
+  )
+
+# Remove NA's
+combine <- combine %>%
+  filter(!is.na(forty))
+
+## look at the finished data frame
+combine %>%
+  head()
+
+```
+
+
+```{r}
+
+# Calculate rank of average forty speed for each year
+forty_rank <- combine %>%
+  
+  filter(!Position %in% c("K", "LS", "P", "QB")) %>%
+  
+  group_by(Draft_Yr, Position) %>%
+  
+  summarize(avg_forty = mean(forty)) %>%
+  
+  group_by(Draft_Yr) %>%
+  
+  mutate(rank_forty = rank(avg_forty, ties.method = "random")) %>%
+  
+  arrange(Draft_Yr, rank_forty)
+
+# plot
+forty_rank %>%
+  ggplot(aes(
+    x = Draft_Yr,
+    y = rank_forty,
+    color = Position,
+    group = Position
+    )) +
+  geom_line(size = 1.1) +
+  geom_point(
+    shape = 19, 
+    size = 3.5
+    ) +
+  geom_text(
+    data = forty_rank %>% filter(Draft_Yr == 2020),
+    aes(x = Draft_Yr,
+        y = rank_forty,
+        color = Position,
+        label = Position),
+    hjust = -0.5,
+    vjust = 1.5) +
+  scale_y_reverse(
+    lim=c(9,1),
+    breaks = seq(from = 1, to = 9, by = 1)
+    ) +
+  labs(x = "",
+       y = "",
+       title = "Rank of 40yd Sprint Speed Across Positions",
+       subtitle = "NFL Combine 2000 - 2020",
+       caption = "www.pro-football-reference.com") +
+  theme(plot.title = element_text(size = 20,
+                                  color = "white"),
+        plot.subtitle = element_text(size = 17, 
+                                     color = "white"),
+        plot.caption = element_text(face = "bold", 
+                                    size = 12,
+                                    color = "white"),
+        axis.text = element_text(size = 12, 
+                                 face = "bold",
+                                 color = "white"),
+        legend.position = "none",
+        panel.background = element_rect(fill = "black"),
+        plot.background = element_rect(fill = "black", color="black"),
+        panel.grid = element_line(color = "black"),
+        panel.grid.major.y = element_line(color = "grey"),
+        plot.margin = margin(5, 5, 5, 5))
+```
+
+```{r save-plot}
+
+## copy cedrics pdf saving
+
+ggsave(here::here("TidyTuesday_Explained/013-Bumps_and_Races/40_time_by_position_bump_chart.pdf"), 
+       width = 13, height = 6.5, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("TidyTuesday_Explained/013-Bumps_and_Races/40_time_by_position_bump_chart.pdf"),
+                      format = "png", dpi = 350)
+
+
+```
