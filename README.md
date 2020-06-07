@@ -52,3 +52,35 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/priyology/status/1250267330380050432)
   - [Source Code](https://github.com/priyology/TidyTuesday/tree/master/scripts)
 
+- [Episode 7: GDPR Faceting](bit.ly/TidyX_Ep7)
+  - UseR Highlighted: [Priya Shukla](https://twitter.com/priyology)
+  - [Original Tweet](https://twitter.com/priyology/status/1250267330380050432)
+  - [Source Code](https://github.com/priyology/TidyTuesday/tree/master/scripts)
+  
+- [Episode 8: Broadway Line Tracing](bit.ly/TidyX_Ep8)
+  - UseR Highlighted: [Jake Kaupp](https://twitter.com/jakekaupp)
+  - [Original Tweet](https://twitter.com/jakekaupp/status/1255671879496536064)
+  - [Source Code](https://github.com/jkaupp/tidytuesdays/blob/master/2020/week18/R/analysis.R)
+  
+- [Episode 9: Tables and Animal Crossing](bit.ly/TidyX_Ep9)
+  - UseR Highlighted: [Ted Lederas](https://twitter.com/tladeras)
+  - [Original Tweet](https://twitter.com/tladeras/status/1257494321378422784)
+  - [Source Code](https://github.com/laderast/tidy_tuesday/blob/master/animal_crossing.Rmd)
+
+- [Episode 10: Volcanoes and Plotly](bit.ly/TidyX_Ep10)
+  - Ellis and Patrick explore this weeks TidyTuesday Dataset!
+
+- [Episode 11: Times Series and Bayes](bit.ly/TidyX_Ep11)
+  - UseR Highlighted: [Eric Ekholm](https://twitter.com/ekholm_e)
+  - [Original Tweet](https://twitter.com/ekholm_e/status/1263553862323113984)
+  - [Source Code](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2021%20-%20beach%20volleyball/volleyball%20script.R)
+
+- [Episode 12: Cocktails with Thomas Mock](bit.ly/TidyX_Ep12)
+  - UseR Highlighted: [Joshua de la Bruere](https://twitter.com/delaBJL)
+  - [Original Tweet](https://twitter.com/delaBJL/status/1265673362686312448)
+  - [Source Code](https://github.com/delabj/tidyTues/blob/master/2020/Month%2005/2020-05-26/cocktails.Rmd)
+
+- [Episode 13:  Marble Races and Bump Plots](bit.ly/TidyX_Ep13)
+  - UseR Highlighted: [Cédric Scherer](https://twitter.com/CedScherer)
+  - [Original Tweet](https://twitter.com/CedScherer/status/1267931810186625024)
+  - [Source Code](https://github.com/Z3tt/TidyTuesday/blob/master/R/2020_23_MarbleRaces.Rmd)
