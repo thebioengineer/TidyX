@@ -84,3 +84,12 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [Cédric Scherer](https://twitter.com/CedScherer)
   - [Original Tweet](https://twitter.com/CedScherer/status/1267931810186625024)
   - [Source Code](https://github.com/Z3tt/TidyTuesday/blob/master/R/2020_23_MarbleRaces.Rmd)
+  
+- [Episode 14:  African American Achievements](bit.ly/TidyX_Ep14)
+  - UseR Highlighted: [Catriona Cunningham](https://twitter.com/RegenMedCat)
+  - [Original Tweet](https://twitter.com/RegenMedCat/status/1270708620867457026)
+  - [Source Code](https://github.com/RegenMedCat/TidyTuesday/blob/master/2020%20Week%2024:%20African%20American%20Achievements)
+  
+- [Episode 15:  Juneteenth and Census Tables](bit.ly/TidyX_Ep15)
+  - Ellis and Patrick show US Census tables in a report, broken down into divisions and highlight values using {colortable}
+  - [Source Code](https://github.com/thebioengineer/TidyX/blob/master/TidyTuesday_Explained/015-American_Slavery_and_Juneteenth) 
