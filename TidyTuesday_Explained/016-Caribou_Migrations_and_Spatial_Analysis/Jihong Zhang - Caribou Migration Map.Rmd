@@ -1,0 +1,44 @@
+---
+title: "Caribou Migration Map"
+author: "Jihong Zhang"
+date: "6/27/2020"
+output: html_document
+---
+
+# https://twitter.com/jihongzgamma/status/1275810075110780928
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggmap)
+```
+
+
+```{r get data}
+individuals <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-23/individuals.csv')
+locations <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-23/locations.csv')
+
+str(individuals)
+
+```
+
+```{r plot}
+dt <- individuals %>%
+  left_join(locations, by = "animal_id")
+
+theme_set(theme_bw())
+where <- c(left = min(dt$longitude) - 1, right = max(dt$longitude) + 1,
+           top = max(dt$latitude) + 1, bottom = min(dt$latitude) - 1)
+
+Mymap <- get_map(where, source = "google", maptype = "terrain")
+
+ggmap(ggmap = Mymap) +
+  geom_point(aes(x = longitude, y = latitude, col = season), 
+             data = dt,
+             alpha = 0.3)
+
+ggsave(paste0(getwd(), "map_out.png"))
+
+```
+
+

@@ -93,3 +93,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 - [Episode 15:  Juneteenth and Census Tables](bit.ly/TidyX_Ep15)
   - Ellis and Patrick show US Census tables in a report, broken down into divisions and highlight values using {colortable}
   - [Source Code](https://github.com/thebioengineer/TidyX/blob/master/TidyTuesday_Explained/015-American_Slavery_and_Juneteenth) 
+  
+- [Episode 16: Caribou Migrations and NBA Shots on Basket](bit.ly/TidyX_Ep16)
+  - UseR Highlighted: [Jihong Zhang](https://twitter.com/jihongzgamma)
+  - [Original Tweet](https://twitter.com/jihongzgamma/status/1275810075110780928)
+  - [Source Code](https://github.com/thebioengineer/TidyX/blob/master/TidyTuesday_Explained/016-Caribou_Migrations_and_Spatial_Analysis/Jihong Zhang - Caribou Migration Map.Rmd)

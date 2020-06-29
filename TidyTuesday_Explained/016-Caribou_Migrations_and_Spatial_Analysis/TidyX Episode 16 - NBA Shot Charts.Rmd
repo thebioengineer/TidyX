@@ -1,0 +1,327 @@
+---
+title: "TidyX Episode 16 - NBA Shot Chart"
+author: "Patrick Ward"
+date: "6/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+### set chunk specifications ###
+knitr::opts_chunk$set(echo = TRUE, warning = F, message = F, error = F, include = F)
+
+### Packages ###
+
+# data manipulation
+library(tidyverse)
+library(glue)
+
+# web scraping
+library(rvest)
+
+# image/plotting
+library(grid)
+library(jpeg)
+library(RCurl)
+
+## utility
+library(here)
+
+theme_set(theme_minimal())
+
+## Get Half Court Image
+# SOURCE: https://thedatagame.files.wordpress.com/2016/03/nba_court.jpg
+courtImg.URL <- "https://thedatagame.files.wordpress.com/2016/03/nba_court.jpg"
+court <- rasterGrob(readJPEG(getURLContent(courtImg.URL)),
+           width=unit(1,"npc"), height=unit(1,"npc"))
+```
+
+
+
+```{r scrape-data}
+
+nba_2019_html <- read_html("https://www.basketball-reference.com/leagues/NBA_2020_totals.html")
+
+players_2019 <- nba_2019_html %>% 
+  html_nodes("tbody") %>% 
+  html_nodes("a") %>% 
+  lapply(function(a_href){
+    href <- html_attr(a_href,"href")
+    text <- html_text(a_href)
+    data.frame(
+      link = href,
+      text = text,
+      stringsAsFactors = FALSE ## not necessary for any code on R 4.0.0 or newer
+    )
+  }) %>% 
+  bind_rows() %>% 
+  filter(grepl("players/",link)) %>% #keep only players, not team links
+  distinct() %>% 
+  mutate(
+    player_code = tools::file_path_sans_ext(basename(link)), # get player code
+    player_code = file.path(substr(player_code,0,1),player_code)
+  ) %>% 
+  select(
+    player = text,
+    player_code
+  )
+  
+# build up function based on a single player
+
+player_info <- players_2019 %>% 
+  filter(player == "LeBron James")
+
+url <- glue("https://www.basketball-reference.com/players/{player_info$player_code}/shooting/2019")
+
+player_shooting_html <- read_html(url)
+
+# get shot widget info
+table_info <- player_shooting_html %>%
+  html_nodes("[id = 'all_shot-chart']") %>%
+  html_nodes(xpath = 'comment()') %>%
+  html_text() %>%
+  read_html() %>%
+  html_node('table')
+
+# get missed and made shots
+shots <- table_info %>%
+  html_nodes(".tooltip") %>% 
+  lapply(function(shot){
+    style <- html_attr(shot, "style")
+    descr <- html_attr(shot, "tip")
+    result <- setdiff(strsplit(html_attr(shot, "class"),"\\s")[[1]],"tooltip")
+    data.frame(
+      result = result,
+      styling = style,
+      desciption = descr,
+      stringsAsFactors = FALSE
+    )
+  }) %>% 
+  bind_rows 
+
+shots_details <- shots %>% 
+  mutate(
+    shot_loc = gsub("top:(-*\\d+)px;left:(-*\\d+)px;","\\1,\\2",styling)
+  ) %>% 
+  separate(shot_loc, into = c("y","x"), sep = ",") %>% 
+  mutate(
+    across(.cols = c(x, y), as.numeric)
+  ) %>% 
+  as_tibble()
+  
+
+```
+
+
+```{r plot}
+ ## Option 1: Points
+shots_details %>%
+  ggplot(aes(x = x, y = y, color = result)) +
+  annotation_custom(court, xmin = 0, xmax = 500, ymin = 0, ymax = 450) +
+  geom_point(size = 4,
+             alpha = 0.8) +
+  scale_color_manual(values = c("green", "orange")) +
+  xlim(0, 500) +
+  ylim(0, 450) +
+  theme(
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    panel.grid = element_blank()
+  )
+
+## Option 2: Hexbin
+library(hexbin)
+
+shots_details %>%
+  ggplot(aes(x = x, y = y, fill = result)) +
+  annotation_custom(court, xmin = 0, xmax = 500, ymin = 0, ymax = 450) +
+  stat_binhex(alpha = 0.6) +
+  scale_fill_manual(values = c("green", "orange")) +
+  xlim(0, 500) +
+  ylim(0, 450)+
+  theme_minimal() + 
+  theme(
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    panel.grid = element_blank()
+  )
+
+## Option 3: heat map
+
+library(viridis)
+
+# Most frequent shot attempts
+shots_details %>%
+  mutate(xy = paste(x, y, sep = "")) %>%
+  group_by(xy) %>%
+  mutate(attempts = n(),
+         made = sum(result == "make"),
+         pct = made / attempts) %>%
+  ggplot(aes(x = x, y = y, z = attempts)) +
+  annotation_custom(court, xmin = 0, xmax = 500, ymin = 0, ymax = 450) +
+  stat_summary_2d(fun = sum,
+                  alpha = 0.5) +
+  scale_fill_viridis() 
+
+## Percent of Succesull Shots
+shots_details %>%
+  mutate(xy = paste(x, y, sep = "")) %>%
+  group_by(xy) %>%
+  mutate(attempts = n(),
+         made = sum(result == "make"),
+         pct = made / attempts) %>%
+  ggplot(aes(x = x, y = y, z = pct)) +
+  annotation_custom(court, xmin = 0, xmax = 500, ymin = 0, ymax = 450) +
+  stat_summary_2d(fun = mean,
+                  alpha = 0.5) +
+  scale_fill_gradientn(colours = terrain.colors(10)) + 
+  theme(
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    panel.grid = element_blank()
+  )
+
+
+```
+
+
+## Shot Distance
+
+```{r}
+## Extract shot distance from description
+shots_details <- shots_details %>%
+  mutate(dist = str_extract(desciption, "..\\sft"),
+         dist = as.numeric(trimws(str_extract(dist, "[0-9]+"))))
+
+## histogram of shot distance for the player
+shots_details %>%
+  ggplot(aes(x = dist)) +
+  geom_histogram(alpha = 0.6) +
+  geom_vline(aes(xintercept = 22),linetype = "dashed")
+
+```
+
+
+## Parallel Computing
+
+```{r parallel-scrape-all-the-data, eval = FALSE}
+
+# parallel compute
+library(snowfall)
+
+sfInit(parallel = TRUE, cpus = 2) # I have 8, using half of them so I dont hang up my computer
+
+sfLibrary(tidyverse)
+sfLibrary(rvest)
+sfLibrary(glue)
+
+scrape_shots <- function(player_info){
+  
+    print(player_info$player)
+    
+    url <- glue("https://www.basketball-reference.com/players/{player_info$player_code}/shooting/2019")
+    
+    player_shooting_html <- read_html(url)
+  
+    # get shot widget info
+    shot_chart <- player_shooting_html %>%
+      html_nodes("[id = 'all_shot-chart']")
+    
+    if(length(shot_chart) == 0){
+      # return empty table if there were not shots!
+      return(
+        tibble(
+          result = character(0),
+          styling = character(0),
+          desciption = character(0),
+          y = numeric(0),
+          x = numeric(0), 
+          player = character(0)
+        )
+      )
+    }
+    
+    table_info <- shot_chart %>%
+      html_nodes(xpath = 'comment()') %>%
+      html_text() %>%
+      read_html() %>%
+      html_node('table')
+    
+    # get missed and made shots
+    shots <- table_info %>%
+      html_nodes(".tooltip") %>% 
+      lapply(function(shot){
+        style <- html_attr(shot, "style")
+        descr <- html_attr(shot, "tip")
+        result <- setdiff(strsplit(html_attr(shot, "class"),"\\s")[[1]],"tooltip")
+        data.frame(
+          result = result,
+          styling = style,
+          desciption = descr,
+          stringsAsFactors = FALSE
+        )
+      }) %>% 
+      bind_rows 
+    
+    shots_details <- shots %>% 
+      mutate(
+        shot_loc = gsub("top:(-*\\d+)px;left:(-*\\d+)px;","\\1,\\2",styling)
+      ) %>% 
+      separate(shot_loc, into = c("y","x"), sep = ",") %>% 
+      mutate(
+        across(.cols = c(x, y), as.numeric)
+      ) %>% 
+      as_tibble() 
+    
+    shots_details$player <- player_info$player
+    
+    shots_details
+}
+
+sfExport('scrape_shots')
+
+all_player_shots <-  players_2019 %>%  
+  split(.$player) %>%
+  
+  ClusterApplySR(function(player_info){
+    
+    res <- try(scrape_shots(player_info), silent = TRUE)
+    
+    if(inherits(res, "try-error")){
+      # return empty table if there were not shots!
+      return(
+        tibble(
+          result = character(0),
+          styling = character(0),
+          desciption = character(0),
+          y = numeric(0),
+          x = numeric(0), 
+          player = character(0)
+        )
+      )
+    }else{
+      return(res)
+    }
+  })
+
+## end parallel compute
+sfStop()
+
+all_player_shots_combined <- all_player_shots %>% 
+  bind_rows()
+
+save_rds(all_player_shots_combined,"player_shots_2019.rds")
+
+
+```
+
+```{r allthedata}
+
+all_player_shots_combined <- readRDS(here::here("TidyTuesday_Explained/016-Caribou_Migrations_and_Spatial_Analysis/player_shots_2019.rds"))
+
+```
