@@ -1,0 +1,209 @@
+---
+title: "TidyX 17 - Kmeans and PCA"
+author: "Patrick Ward"
+date: "7/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, include = F, warning = F, message = F)
+
+## Packages & Functions  --------------------------------------------------
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(tidytuesdayR)
+    library(ggrepel)
+    library(cluster)
+    library(factoextra)
+  })
+})
+
+# set plot theme
+theme_set(theme_light())
+```
+
+```{r functions}
+# z-score function for scaling variables
+z_score <- function(x){
+  z = (x - mean(x, na.rm = T)) / sd(x, na.rm = T)
+  return(z)
+  }
+```
+
+```{r load-data}
+## Load XMEN data ------------------------------------------------------
+xmen <- tt_load("2020-06-30")
+xmen
+```
+
+```{r investigate}
+characters <- xmen$characters 
+characters <- characters %>%
+  separate(character, c("character", "alias"), sep = " = ")
+
+visualization <- xmen$character_visualization
+visualization <- visualization %>%
+  separate(character, c("character", "alias"), sep = " = ")
+
+
+## Look at data ------------------------------------------------------
+glimpse(characters)
+characters %>% head() %>% View()
+
+glimpse(visualization)
+visualization %>% head() %>% View()
+
+characters %>%
+  count(issue, sort = T)
+
+characters %>%
+  count(character, sort = T)
+
+visualization %>%
+  count(issue, sort = T)
+
+visualization %>%
+  count(character, sort = T)
+
+```
+
+
+```{r data aggregation}
+### Create a 'total' column of different variables for each character over this time
+
+visualization2 <- visualization %>%
+  group_by(character) %>%
+  summarize(across(.cols = speech:depicted, list(Total = sum)))
+
+
+characters2 <- characters %>%
+  group_by(character) %>%
+  summarize(across(.cols = rendered_unconcious:clothing_torn, list(Total = sum)))
+
+## Join data frames by character
+df <- characters2 %>%
+  inner_join(visualization2)
+
+```
+
+
+# EDA
+
+```{r EDA}
+
+df %>%
+  ggplot(aes(x = speech_Total, y = rendered_unconcious_Total)) +
+  geom_point(aes(color = character),
+             size = 3) +
+  geom_text_repel(aes(label = character)) +
+  theme(legend.position = "none")
+
+df %>%
+  ggplot(aes(x = speech_Total, y = clothing_torn_Total)) +
+  geom_point(aes(color = character),
+             size = 3) +
+  geom_text_repel(aes(label = character)) +
+  theme(legend.position = "none")
+
+
+df %>%
+  ggplot(aes(x = speech_Total, y = thought_Total)) +
+  geom_point(aes(color = character),
+             size = 3) +
+  geom_text_repel(aes(label = character)) +
+  theme(legend.position = "none")
+
+df %>%
+  ggplot(aes(x = speech_Total, y = declared_dead_Total)) +
+  geom_point(aes(color = character),
+             size = 3) +
+  geom_text_repel(aes(label = character)) +
+  theme(legend.position = "none")
+
+### Example of a base R pairs plot
+# Can get messy with a lot of variables
+plot(df[2:11], 
+     col = as.factor(df$character))
+```
+
+
+# Kmeans Clustering
+
+```{r kmeans}
+# create data frame of scaled variables prior to clustering
+
+df_clus <- df %>%
+  summarize(across(rendered_unconcious_Total:depicted_Total,
+                list(z = z_score)))
+
+## How many clusters?
+wss <- 0
+N_clusters <- 8
+for(i in seq(from = 1, to = N_clusters, by = 1)){
+  
+  # create kmeans for each cluster choice 
+  fit <- kmeans(df_clus, centers = i)
+  
+  # store results of the sum of the within sum of squares
+  wss[i] <- sum(fit$withinss)
+}
+
+plot(x = 1:8,
+     y = wss,
+     type = "b")
+
+
+## k-means cluster
+set.seed(55)
+xmenCluster <- kmeans(df_clus, centers = 3, nstart = 20)
+xmenCluster
+
+# Put clusters assignments back into the original data
+df$Cluster <- xmenCluster$cluster
+
+# Which cluster was each character in?
+df %>%
+  select(character, Cluster) %>% 
+  mutate(
+    Cluster = color_vctr(Cluster, text_color = c("red","green","blue")[Cluster])
+  ) %>% 
+  arrange(Cluster) %>% 
+  data.frame
+
+# Two methods of plotting clusters available in R
+fviz_cluster(xmenCluster, geom = "point", df_clus)
+clusplot(df_clus, xmenCluster$cluster)
+
+## YUK!! Both of these plots lack info that we'd like to see
+## The clusplot() is plotting a PCA. Let's build our own PCA and make a nicer plot!
+```
+
+
+# PCA
+
+```{r PCA}
+# PCA on the scaled data
+xmenPCA <- princomp(df_clus)
+summary(xmenPCA)
+names(xmenPCA)
+xmenPCA$loading
+
+# biplot of the PCA
+biplot(xmenPCA)
+biplot(xmenPCA,
+       choices = 2:3)
+
+# Add component scores into the original data frame
+df <- cbind(df, xmenPCA$scores)
+
+# Plot the first two principal components
+df %>%
+  ggplot(aes(x = Comp.1, y = Comp.2)) +
+  geom_point(aes(color = as.factor(Cluster)),
+             size = 3) +
+  geom_text_repel(aes(label = character))
+
+
+```
+
