@@ -98,3 +98,16 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [Jihong Zhang](https://twitter.com/jihongzgamma)
   - [Original Tweet](https://twitter.com/jihongzgamma/status/1275810075110780928)
   - [Source Code](https://github.com/thebioengineer/TidyX/blob/master/TidyTuesday_Explained/016-Caribou_Migrations_and_Spatial_Analysis/Jihong Zhang - Caribou Migration Map.Rmd)
+  
+- [Episode 17: Uncanny X-men and Feature Engineering](bit.ly/TidyX_Ep17)
+  - UseR Highlighted: [Rebecca Stevick](https://twitter.com/@rjstevick)
+  - [Original Tweet](https://twitter.com/rjstevick/status/1278058941684092929)
+  - [Source Code](https://github.com/rjstevick/TidyTuesday/blob/master/20200630_ClaremontRun/tidytuesday_20200630.R)  
+  
+- [Episode 18: Coffee and Random Forest](bit.ly/TidyX_Ep18)
+  - UseR Highlighted: [Nyssa Silbiger](https://twitter.com/NSilbiger)
+  - [Original Tweet](https://twitter.com/NSilbiger/status/1280662329537908736)
+  - [Source Code](https://github.com/njsilbiger/TidyTuesday_CSUN/tree/master/Coffee_070720) 
+  
+  
+  
