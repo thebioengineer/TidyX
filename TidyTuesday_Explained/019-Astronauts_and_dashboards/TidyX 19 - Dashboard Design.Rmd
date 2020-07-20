@@ -1,0 +1,301 @@
+---
+title: "TidyX 19"
+author: "Patrick Ward"
+date: "7/14/2020"
+output: html_output
+editor_options: 
+  chunk_output_type: console
+---
+
+## Load Packages & Data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = TRUE, warning = FALSE)
+
+## packages & functions
+
+suppressPackageStartupMessages({suppressWarnings({
+  library(tidyverse)
+  library(tidytuesdayR)
+  library(plotly)
+  library(formattable)
+  library(sparkline)
+})})
+
+
+theme_set(theme_light())
+
+pct_total <- function(x){
+  p = x / sum(x)
+  return(p)
+}
+
+```
+
+```{r load-data}
+## load data
+
+tt_data <- tidytuesdayR::tt_load('2020-07-14')
+
+space <- tt_data$astronaut
+
+```
+
+
+## EDA
+
+**Look at the data**
+
+```{r peek at the data}
+
+glimpse(space)
+colnames(space)
+dim(space)
+
+## Any missing data?
+space %>%
+  summarize(across(everything(), ~sum(is.na(.x)))) %>%
+  t()
+
+```
+
+
+**Simple Visuals**
+
+**Note: I make an assumption here that `nationality` of the astronaut represents the country that they traveled to space for. This may or may not be the case.*
+
+
+How many unique countries are there?
+
+```{r}
+
+space %>%
+  distinct(., nationality) %>%
+  nrow() %>% 
+  paste("unique countries", sep = " ")
+
+```
+
+
+Which countries have gone to space most often?
+
+```{r}
+space %>%
+  count(nationality, sort = T) %>%
+  head() %>%
+  ggplot(aes(x = n, y = reorder(nationality, n))) +
+  geom_col() +
+  geom_label(aes(label = n))
+```
+
+
+What years have space missions taken place?
+
+```{r}
+space %>%
+  count(year_of_mission, sort = T) %>%
+  ggplot(aes(x = year_of_mission, y = n)) +
+  geom_col(fill = "blue",
+           alpha = 0.6,
+           color = "black")
+```
+
+
+What has been the space mission trajectory across decades for the top 6 countries to have space missions?
+
+##### Build a plotly figure for this
+
+```{r}
+## still plot
+space %>%
+  filter(nationality %in% c("U.S.",
+                            "U.S.S.R/Russia",
+                            "Japan",
+                            "France",
+                            "Canada",
+                            "Germany")) %>%
+  mutate(Decade = floor(year_of_mission / 10) * 10) %>%
+  group_by(nationality, 
+           Decade) %>%
+  summarize(Number_of_Missions = max(mission_number)) %>%
+  ggplot(aes(x = Decade, 
+             y = Number_of_Missions,
+             color = nationality)) +
+  geom_line(size = 1.1)
+
+################################################################
+### plotly -----------------------------------------------------
+## Create a highlighter for the countries
+highlight_country <- space %>%
+  filter(nationality %in% c("U.S.",
+                            "U.S.S.R/Russia",
+                            "Japan",
+                            "France",
+                            "Canada",
+                            "Germany")) %>%
+  mutate(Decade = floor(year_of_mission / 10) * 10) %>%
+  group_by(nationality, 
+           Decade) %>%
+  summarize(Number_of_Missions = max(mission_number)) %>%
+  highlight_key(., ~nationality)
+
+# initiate the plotly object
+fig <- plot_ly(
+  highlight_country,
+  color = I("black")) %>%
+  group_by(nationality)
+
+# create the time series plot
+time_series <- fig %>%
+  group_by(nationality) %>%
+  add_lines(x = ~Decade,
+            y = ~Number_of_Missions)
+
+# Create interactive plot with text box to select country of interest
+highlight(
+  time_series,
+  on = "plotly_click",
+  selectize = TRUE,
+  dynamic = TRUE,
+  persistent = TRUE)
+
+```
+
+
+How many total missions have the different astronauts performed?
+
+```{r}
+
+space %>%
+  count(total_number_of_missions, sort = T) %>%
+  ggplot(aes(x = n, y = reorder(total_number_of_missions, n))) +
+  geom_col()
+
+```
+
+
+Average number of missions per country?
+
+```{r}
+
+space %>%
+  distinct( name, .keep_all = T) %>%
+  group_by(nationality) %>%
+  summarize(Avg_Num_Missions = mean(total_number_of_missions)) %>%
+  arrange(desc(Avg_Num_Missions))
+
+```
+
+
+How many male and female astronauts have there been?
+
+```{r}
+space %>%
+  count(sex) %>%
+  ggplot(aes(x = sex, y = n)) +
+  geom_col()
+```
+
+
+## Building a Dashboard
+
+**Variables to include**
+
+* Nationality (country)
+* Number of missions per decade
+* Number of different astronauts who have had a mission
+* Percentage of female astronauts who have had missions
+
+Create data frames
+
+```{r}
+
+## Astronauts per decade data frame
+decades <- space %>%
+  mutate(Decade = floor(year_of_mission / 10) * 10) %>%
+  group_by(nationality, 
+           Decade) %>%
+  summarize(Number_of_Astronauts = length(unique(name))) %>%
+  arrange(Decade) %>%
+  pivot_wider(data = .,
+              names_from = Decade,
+              values_from = Number_of_Astronauts,
+              values_fill = 0)
+
+## Count of the number of unique astronauts per country
+astronauts <- space %>%
+  group_by(nationality) %>%
+  distinct(., name) %>%
+  summarize(N_Astronauts = n())
+
+## Percent Female Astronauts
+female_astronauts <- space %>%
+  group_by(nationality, sex) %>%
+  distinct(., name) %>%
+  group_by(nationality) %>%
+  count(sex) %>%
+  mutate(Pct_Female = n / sum(n)) %>%
+  filter(sex == "female") %>%
+  select(nationality, Pct_Female)
+
+## Join tables
+df_final <- decades %>%
+  left_join(astronauts) %>%
+  left_join(female_astronauts) %>%
+  mutate(Pct_Female = ifelse(is.na(Pct_Female), 0, Pct_Female))
+
+df_final %>% head()
+```
+
+
+Build Dashboard
+
+```{r}
+
+## create sparkline line 
+df_final$`Trend Line` <- 
+  apply(df_final[, 2:7], 
+        MARGIN = 1, 
+        FUN = function(x){
+          as.character(
+            htmltools::as.tags(
+              sparkline(as.numeric(x), type = "line")
+              ))
+          })
+
+
+## Create plot as an html widget
+output_dashboard <- df_final %>%
+  rename(
+    Nationality = nationality,
+    `Total Astronauts` = N_Astronauts,
+    `% Female` = Pct_Female
+  ) %>% 
+  arrange(desc(`Total Astronauts`)) %>%
+  formattable(
+    align = c("l", rep("c", NCOL(df_final) - 4), rep("r", 2)), # Left align the 
+    list(
+      `Total Astronauts` = color_bar("#CCFF33", fun = pct_total),
+      `% Female` = percent)
+    ) %>% 
+  as.htmlwidget()
+
+# add sparkline dependencies
+output_dashboard$dependencies <- c(
+  output_dashboard$dependencies, 
+  htmlwidgets::getDependency("sparkline", "sparkline"))
+
+# run dashboard
+output_dashboard
+
+# save dashboard
+htmlwidgets::saveWidget(
+  widget = output_dashboard,
+  title = "Seven Decades of Space",
+  file = here::here(
+    "TidyTuesday_Explained/019-Astronauts_and_dashboards/Seven Decades of Space.html"
+    ),
+  selfcontained = TRUE
+)
+```
+
