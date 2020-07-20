@@ -127,5 +127,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/NSilbiger/status/1280662329537908736)
   - [Source Code](https://github.com/njsilbiger/TidyTuesday_CSUN/tree/master/Coffee_070720) 
   
-  
+- [Episode 19: Astronauts and Dashboards](bit.ly/TidyX_Ep19)
+
+  - UseR Highlighted: [Lauren Pandori](https://twitter.com/PandoriEco)
+  - [Original Tweet](https://twitter.com/PandoriEco/status/1283210583056150533)
+  - [Source Code](https://github.com/llmpandori/TidyTuesday/blob/master/Astronauts_TidyTuesday_07142020.R) 
   
