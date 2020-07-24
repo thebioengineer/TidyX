@@ -1,0 +1,245 @@
+---
+title: "Untitled"
+author: "Patrick Ward"
+date: "7/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidytuesdayR)
+library(tidyverse)
+library(randomForest)
+library(pROC)
+library(caret)
+
+theme_set(theme_light())
+```
+
+```{r load-data}
+coffee <- tt_load("2020-07-07")
+coffee
+coffee_ratings <- coffee$coffee_ratings
+
+```
+
+
+```{r initial-look}
+
+dim(coffee_ratings)
+glimpse(coffee_ratings)
+names(coffee_ratings)
+
+```
+
+get some variables for a model
+
+```{r}
+
+model_df <- coffee_ratings %>%
+  select(total_cup_points,
+         species,
+         country_of_origin,
+         processing_method,
+         aroma:moisture)
+
+model_df %>% head()
+
+## check for NAs
+model_df %>%
+  summarize(across(everything(), ~ sum(is.na(.)))) %>%
+  gather() 
+
+# Get rid of NAs
+model_df_no_na <- model_df %>%
+  select(-processing_method) %>%
+  filter(!is.na(country_of_origin))
+
+```
+
+### EDA
+
+Cup Points
+
+```{r}
+
+model_df_no_na %>%
+  ggplot(aes(x = total_cup_points)) +
+  geom_histogram()
+
+quantile(model_df_no_na$total_cup_points)
+
+## some 0's?
+
+model_df_no_na %>% filter(total_cup_points == 0) %>% nrow()
+
+# remove that single row and create cup point bins
+
+model_df_clean <- model_df_no_na %>% 
+  filter(total_cup_points != 0) %>%
+  mutate(Cup_Point_Bin = cut_number(total_cup_points, n = 4)) %>% 
+  select(-total_cup_points)
+
+model_df_clean %>%
+  count(Cup_Point_Bin) %>%
+  ggplot(aes(x = Cup_Point_Bin, y = n)) +
+  geom_col() +
+  geom_label(aes(label = n))
+
+```
+
+
+```{r}
+
+model_df_clean %>%
+  select(aroma:moisture) %>%
+  gather() %>%
+  ggplot(aes(x = value)) +
+  geom_histogram() +
+  facet_wrap(~key, scales = "free_x")
+
+```
+
+
+## Random Forest
+
+train/test split
+
+```{r}
+## Convert character variables to factors
+model_df_factor <- model_df_clean %>%
+  mutate(species = as.factor(species),
+         country_of_origin = as.factor(country_of_origin))
+
+set.seed(7945)
+N <- nrow(model_df_factor)
+train_id <- sample(x = 1:N, 
+                   size = round(N * 0.70, 1),
+                   replace = F)
+
+train <- model_df_factor[train_id, ]
+test <- model_df_factor[-train_id, ]
+
+```
+
+
+Build Model on Train Set
+
+```{r}
+
+num.trees <- 1000
+
+# this formula says the Y var is Cup_Points_Bin, and the . says to 
+# use all other variables as X vars
+# `mtry` is the number of features to randomly be selected at each split of the tree
+# start with the sqrt of the number of predictors
+
+fit_coffee <- randomForest(
+  Cup_Point_Bin ~ .,  
+	data = train,
+	ntree = num.trees,
+	mtry = 4 
+  )
+
+
+
+# print model output
+fit_coffee
+
+# Variable importance
+importance(fit_coffee)
+
+# plot variable importance
+varImpPlot(fit_coffee)
+
+# nicer variable importance plot
+data.frame(importance(fit_coffee)) %>%
+  arrange(desc(MeanDecreaseGini)) %>%
+  mutate(Variable = rownames(.)) %>%
+  ggplot(aes(x = MeanDecreaseGini, y = reorder(Variable, MeanDecreaseGini))) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = 0,
+                     xmax = MeanDecreaseGini),
+                 height = 0) +
+  labs(x = "Mean Decrease Gini",
+       y = "",
+       title = "Random Forest Variable Importance Plot",
+       caption = "#TidyTuesday") +
+  theme(axis.text = element_text(size = 13,
+                                 face = "bold"),
+        axis.title = element_text(size = 15,
+                                  face = "bold"),
+        plot.caption = element_text(face = "bold"),
+        plot.title = element_text(size = 20),
+        plot.background = element_rect(fill = "light grey"),
+        panel.background = element_rect(fill = "light grey"))
+
+## Confusion matrix
+table(observed = train$Cup_Point_Bin, 
+      predicted = fit_coffee$predicted)
+
+```
+
+Predict on test data
+
+```{r}
+## predict response
+test$Predicted_Class <- predict(fit_coffee,
+                                newdata = test,
+                                type = "response")
+
+## test set confusion matrix
+pred_table <- table(Observed = test$Cup_Point_Bin, 
+                    Predicted = test$Predicted_Class)
+
+pred_table
+
+## Calculate test set accuracy
+paste("Model Accuracy", 
+      paste(round(sum(diag(pred_table)) / sum(pred_table), 3) * 100, "%", sep = "")
+      , sep = " = ")
+
+```
+
+Model Validation Metrics
+
+```{r}
+# get predicted class probabilities
+pred_prob <- predict(
+  fit_coffee,
+  newdata = test,
+  type = "prob")
+
+# add the probabilities to the test set
+test <- cbind(test, pred_prob)
+test %>% head()
+
+## Look at some of the errors
+test_errors <- test %>%
+  filter(Cup_Point_Bin != Predicted_Class)
+
+test_errors %>%
+  head()
+
+## Confusion Matrix, Sensitivity, Specificity
+confusionMatrix(test$Predicted_Class, test$Cup_Point_Bin)
+
+## Calculate ROC Curve
+roc <- multiclass.roc(response = test$Cup_Point_Bin,
+               predictor = as.numeric(predict(fit_coffee,
+                                   newdata = test,
+                                   type = "response")))
+
+
+## Plot ROC
+rs <- roc[["rocs"]]
+plot.roc(rs[[1]])
+
+## Get AUC
+auc <- auc(roc)
+auc
+
+
+```
+
