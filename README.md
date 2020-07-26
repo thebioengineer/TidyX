@@ -133,3 +133,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/PandoriEco/status/1283210583056150533)
   - [Source Code](https://github.com/llmpandori/TidyTuesday/blob/master/Astronauts_TidyTuesday_07142020.R) 
   
+- [Episode 20: Cocktails with David Robinson](bit.ly/TidyX_Ep20)
+
+  - UseR Highlighted: [David Robinson](https://twitter.com/drob)
+  - [Original Tweet](https://twitter.com/drob/status/1265636373928738817)
+  - [Source Code](https://github.com/dgrtwo/data-screencasts/blob/master/cocktails.Rmd) 
