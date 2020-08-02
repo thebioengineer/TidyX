@@ -138,3 +138,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [David Robinson](https://twitter.com/drob)
   - [Original Tweet](https://twitter.com/drob/status/1265636373928738817)
   - [Source Code](https://github.com/dgrtwo/data-screencasts/blob/master/cocktails.Rmd) 
+    
+- [Episode 21: The Birds](bit.ly/TidyX_Ep21)
+
+  - UseR Highlighted: [Roman Link](https://twitter.com/RomanMLink)
+  - [Original Tweet](https://twitter.com/RomanMLink/status/1288175289814704128)
+  - [Source Code](https://gist.github.com/r-link/07a284b0b1261a62cf9da6302e0adcd0) 

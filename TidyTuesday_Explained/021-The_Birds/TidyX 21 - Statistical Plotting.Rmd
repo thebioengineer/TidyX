@@ -1,0 +1,193 @@
+---
+title: "TidyX 21 - Statistical Plotting"
+author: "Patrick Ward"
+date: "7/28/2020"
+output: html_document
+---
+
+
+### Load packages & Data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(plotly)
+library(skimr)
+library(tidytuesdayR)
+
+theme_set(theme_light())
+```
+
+```{r load}
+tuesdata <- tt_load('2020-07-28')
+tuesdata
+
+```
+
+```{r inspect}
+
+p <- tuesdata$penguins
+p %>% head()
+
+```
+
+
+### EDA
+
+**How many NAs per column?**
+
+```{r}
+
+skimr::skim(p)
+
+```
+
+**How many different species?**
+
+```{r}
+
+p %>%
+  count(species, sort = T)
+
+```
+
+**Pairs Plots**
+
+By gender
+
+```{r}
+
+p %>%
+  select(
+    bill_length_mm,
+    bill_depth_mm,
+    flipper_length_mm,
+    body_mass_g,
+    sex
+  ) %>%
+  na.omit() %>%
+  GGally::ggpairs(
+    columns = c(
+      "bill_length_mm", 
+      "bill_depth_mm",
+      "flipper_length_mm",
+      "body_mass_g"
+      ),
+    mapping = aes(
+      colour = sex,
+      fill = sex,
+      alpha = 0.8
+      )
+  )
+
+```
+
+
+By species
+
+```{r}
+p %>%
+  select(
+    bill_length_mm,
+    bill_depth_mm,
+    flipper_length_mm,
+    body_mass_g,
+    sex,
+    species) %>%
+  na.omit() %>%
+  GGally::ggpairs(
+    columns = c("bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g", "sex"),
+    mapping = aes(colour = species,
+                  fill = species,
+                  alpha = 0.8)
+    )
+```
+
+
+**Plotting variables**
+
+```{r}
+
+dat <- highlight_key(p)
+
+base_plot <- plot_ly(dat,
+                     color = I("black"),
+                     showlegend = F)
+
+subplot(
+  
+  add_markers(base_plot, x = ~bill_length_mm, y = ~bill_depth_mm),
+  
+  add_boxplot(base_plot, x = ~sex, y = ~bill_depth_mm) %>%
+    add_markers(x = ~sex, y = ~bill_depth_mm, alpha = 0.1),
+  
+  add_trace(base_plot, x = ~species, y = ~bill_depth_mm, type = "violin") %>%
+    add_markers(x = ~species, y = ~bill_depth_mm, alpha = 0.1),
+  
+  shareY = TRUE
+  ) %>%
+  subplot(
+    add_histogram(base_plot, x = ~species), nrows = 2) %>%
+  layout(barmode = "overlay") %>%
+  highlight("plotly_selected", dynamic = T)
+
+```
+
+
+### Statistical Plotting
+
+**Plotting Regression**
+
+```{r}
+
+dat <- highlight_key( p %>% na.omit() )
+
+plt <- dat %>%
+  ggplot(
+    aes(x = bill_length_mm,
+        y = bill_depth_mm,
+        color = species)
+  ) +
+  geom_point(size = 3,
+             alpha = 0.4) +
+  geom_smooth(se = F,
+              method = "lm") +
+  facet_wrap( ~ sex ) +
+  theme(strip.background = element_rect(fill = "black"),
+        strip.text = element_text(color = "white",
+                                  face = "bold"),
+        legend.position = "none")
+
+
+ggplotly(plt) %>%
+  highlight("plotly_hover")
+
+```
+
+
+```{r}
+
+fit <- lm(
+  bill_depth_mm ~ flipper_length_mm + species + sex,
+  data = p, 
+  na.action = na.omit
+  )
+
+arm::display(
+  fit,
+  digits = 4
+  )
+
+broom::tidy(fit) %>%
+  filter(term != "(Intercept)") %>%
+  plot_ly(x = ~ estimate,
+          y = ~ term) %>%
+  add_markers(
+    error_x = ~list(value = std.error),
+    color = I("black"),
+    hoverinfo = "x"
+  )
+
+```
+
