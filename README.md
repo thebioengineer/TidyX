@@ -144,3 +144,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [Roman Link](https://twitter.com/RomanMLink)
   - [Original Tweet](https://twitter.com/RomanMLink/status/1288175289814704128)
   - [Source Code](https://gist.github.com/r-link/07a284b0b1261a62cf9da6302e0adcd0) 
+      
+- [Episode 22: European Energy and Ball Hogs](bit.ly/TidyX_Ep22)
+
+  - UseR Highlighted: [Kelly Cotton](https://twitter.com/kllycttn)
+  - [Original Tweet](https://twitter.com/kllycttn/status/1290836964112039936?s=10)
+  - [Source Code](https://github.com/kellycotton/TidyTuesdays/blob/master/energy.R) 
