@@ -1,0 +1,116 @@
+---
+title: "TidyX 22 - Dumbbell Plots"
+author: "Patrick Ward"
+date: "8/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+## Set up
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(rvest)
+    library(ggalt)
+  })
+})
+
+theme_set(theme_classic())
+
+
+## get data ##
+# get URL
+url <- read_html("https://www.basketball-reference.com/leagues/NBA_2019_totals.html")
+
+# Extract the table of interest form the per webpage
+
+nba <- url %>% 
+  html_table(fill = T) %>% 
+  purrr::pluck(1) %>%
+  filter(Rk != "Rk")
+
+nba %>% head()
+nba %>% glimpse()
+
+## pre-process ##
+# Change columns to numeric
+numeric_cols <- c(1, 4, 6:30)
+
+nba_clean <- nba %>% 
+  mutate(
+    across(c(1, 4, 6:30),
+           .fns = ~as.numeric(as.character(.x)),
+           )
+  )
+nba_clean %>% glimpse()
+
+## get columns of interest ##
+nba_main <- nba_clean %>%
+  select(Player,
+         Pos,
+         G,
+         FGA,
+         AST) %>%
+  mutate(Shot_per_G = FGA / G,
+         Ast_per_G = AST / G) %>%
+  filter(G >= 40) %>% 
+  group_by(Player) %>% 
+  summarise(
+    Positions = paste(unique(Pos), collapse = "/"),
+    Pos = Pos[which.max(G)],
+    across(
+      where(is.numeric),
+      ~sum(.x)
+    )
+  )
+
+
+nba_main %>% head()
+
+```
+
+
+Dumbell Plot
+
+```{r}
+
+nba_main %>%
+  arrange(desc(G)) %>%
+  top_n(20) %>%
+  mutate(
+    Player = paste0(Player, " (",Positions,")")
+  ) %>% 
+  ggplot(
+    aes(
+      x = Ast_per_G,
+      xend = Shot_per_G,
+      y = reorder(Player, Shot_per_G)
+      )
+    ) +
+  geom_dumbbell(
+    color = "black",
+    size = 1.2,
+    size_x = 5,
+    size_xend = 5,
+    colour_x =  "blue",
+    colour_xend = "red"
+    ) +
+  labs(
+    title = "2019 Shots per Game vs Assists per Game",
+    subtitle = "Blue = Assists/G, Red = Shots/G",
+    x = "Ast/G vs Shots/G",
+    y = "") +
+  theme(
+    axis.text = element_text(size = 12,face = "bold",color = "black"),
+    plot.title = element_text(size = 20,color = "black"),
+    plot.subtitle = element_text(size = 17,color = "black"),
+    panel.background = element_rect(fill = "light grey"),
+    plot.background = element_rect(fill = "light grey"),
+    panel.grid.major.x = element_line(color = "white")
+    
+    )
+```
+
+
+
