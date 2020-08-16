@@ -1,0 +1,264 @@
+---
+title: "TidyX 23 - For Loops"
+author: "Patrick Ward"
+date: "8/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(skimr)
+library(janitor)
+
+theme_set(theme_light())
+
+```
+
+
+### Pythagorean Wins Formula for Baseball
+
+Load data from baseball from 1980 - 2006
+
+
+```{r}
+
+baseball_wins <- read_csv(
+  here("TidyTuesday_Explained/023-Mailbag_and_Expected_Wins/Pythagorean Wins.csv")
+  ) %>% 
+  clean_names()
+
+baseball_wins %>% skim()
+
+```
+
+
+Calculate the scoring ratio and win percent for each team
+
+```{r}
+
+baseball_ratio <- baseball_wins %>%
+  mutate(
+    scoring_ratio = runs_scored / runs_allowed,
+    win_pct = wins / (wins + losses)
+    )
+
+```
+
+
+Calculate Pythagorean Wins Percent for each team
+
+$PythWinPct = Scoring Ratio^i / (1 + Scoring Ratio^i)$
+
+The exponent `i` will initially be `3` but we will optimize this with our `for` loop.
+
+```{r}
+
+i <- 3
+
+baseball_ratio_pythag <- baseball_ratio %>%
+  mutate(
+    win_pct_calc = scoring_ratio^i / (1 + scoring_ratio^i)
+    )
+
+```
+
+
+Calculate the absolute error
+
+```{r}
+baseball_error <- baseball_ratio_pythag %>%
+  mutate(
+    error = win_pct - win_pct_calc
+    )
+
+
+## Visual 1
+baseball_error %>%
+  ggplot(aes(x = error)) +
+  geom_histogram(alpha = 0.6) +
+  geom_vline(xintercept = 0,
+             size = 1.2,
+             color = "red",
+             linetype = "dashed") +
+  ggtitle("Error between Actual Win% and Pythagorean Win%")
+
+## Visual 2
+baseball_error %>%
+  ggplot() +
+  geom_histogram(aes(x = win_pct),
+                 fill = "light blue",
+                 alpha = 0.6) +
+  geom_histogram(aes(x = win_pct_calc),
+                 fill = "light green",
+                 alpha = 0.6) +
+  annotate("text", 
+           x = 0.3,
+           y = 70,
+           label = "Actual Win%",
+           color = "light blue",
+           size = 6) +
+    annotate("text", 
+           x = 0.3,
+           y = 65,
+           label = "Pythagorean Win%",
+           color = "light green",
+           size = 6) +
+  ggtitle("Actual Win% and Pythagorean Win%")
+
+```
+
+Calculate the mean absolute error
+
+```{r}
+
+MAE <- mean(abs(baseball_error$error))
+MAE
+
+```
+
+
+Our Pythagorean Win% estimation is about 3.4% off. Can we find a more optimal exponent than `3`?
+
+
+### Using a for loop to optimize the Pythagorean Win Formual Exponent
+
+First create a range of possible exponents to try
+
+```{r}
+
+i_options <- seq(from = 0.5, to = 4, by = 0.1)
+
+```
+
+
+Create an empty data frame for depositing the results of the mean absolute error for each exponent in the sequence
+
+```{r}
+
+mae_results <- data.frame("Exp" = i_options, "Results" = NA)
+
+```
+
+Use a `for` loop to test all of the exponents in the equation
+
+# wholly in base R
+
+```{r}
+d2 <- baseball_ratio[, 3:6]
+head(d2)
+```
+
+
+Use a `for` loop to test all of the exponents in the equation
+
+```{r}
+
+for(i in 1:length(i_options)){
+
+	win.pct <- d2$wins / (d2$wins + d2$losses)	
+	
+	pred.win.pct <- (d2$runs_scored/d2$runs_allowed)^i_options[i] / (1 + (d2$runs_scored/d2$runs_allowed)^i_options[i])
+	
+	mae_results[i,2] <- mean(abs(win.pct - pred.win.pct))
+	
+}
+```
+
+# function and Mixed tidyverse/Base R 
+
+```{r}
+
+## abstract the calculation
+
+pythagorean_wins <- function(scored, allowed, i){
+  
+  p_win_pct <- (scored/allowed) ^ i / (1 + (scored/allowed) ^ i )
+  return(p_win_pct)
+  
+}
+
+
+```
+
+```{r}
+
+
+for(i in 1:length(i_options)){
+
+	baseball_ratio_options <- baseball_ratio %>% 
+	  mutate(
+	    pred_win_pct = pythagorean_wins(
+	      scored = runs_scored,
+	      allowed = runs_allowed,
+	      i = i_options[[i]]
+	      )
+	  ) %>% 
+	  select(
+	    win_pct, pred_win_pct
+	  )
+	
+	mae_results[i,2] <- mean(abs(baseball_ratio_options[[1]]- baseball_ratio_options[[2]]))
+	
+}
+```
+
+
+Look at the MAE results for each exponent
+
+```{r}
+
+mae_results %>% 
+  head()
+
+mae_results %>%
+  ggplot(aes(x = Exp, y = Results)) +
+  geom_line() +
+  labs(x = "Exponent",
+       y = "Mean Absolute Error",
+       title = "MAE for Different Exponents in the Pythagorean Wins Formula")
+
+```
+
+
+Obtain the exponent that will minimize the different between the actual and predicted win%
+
+```{r}
+min(mae_results$Results) # Lowest MAE is 0.0196
+
+## Get the exponent
+mae_results %>% 
+  filter(Results == min(Results))
+
+```
+
+
+## Tidyverse Approach
+
+```{r}
+
+mae_tibble <- seq(from = 0.5, to = 4, by = 0.1) %>%
+  
+  map_dfr(function(i) {
+    
+    baseball_ratio_options <- baseball_ratio %>%
+      mutate(pred_win_pct = pythagorean_wins(
+        scored = runs_scored,
+        allowed = runs_allowed,
+        i = i
+      )) %>%
+      select(win_pct, pred_win_pct)
+    
+    tibble(
+      Exp = i,
+      Results = mean(abs(baseball_ratio_options[[1]] - baseball_ratio_options[[2]]))
+    )
+  })
+
+mae_tibble %>% 
+  filter(Results == min(Results))
+
+
+```
+
+

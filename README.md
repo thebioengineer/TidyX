@@ -58,95 +58,101 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/priyology/status/1250267330380050432)
   - [Source Code](https://github.com/priyology/TidyTuesday/tree/master/scripts)
 
-- [Episode 7: GDPR Faceting](bit.ly/TidyX_Ep7)
+- [Episode 7: GDPR Faceting](https://bit.ly/TidyX_Ep7)
 
   - UseR Highlighted: [Danielle Barnas](https://twitter.com/Dmbarnas)
   - [Original Tweet](https://twitter.com/Dmbarnas/status/1252761598323646464)
   - [Source Code](https://github.com/dbarnas/Tidy_Tuesday/blob/master/Scripts/Week17.R)
   
-- [Episode 8: Broadway Line Tracing](bit.ly/TidyX_Ep8)
+- [Episode 8: Broadway Line Tracing](https://bit.ly/TidyX_Ep8)
 
   - UseR Highlighted: [Jake Kaupp](https://twitter.com/jakekaupp)
   - [Original Tweet](https://twitter.com/jakekaupp/status/1255671879496536064)
   - [Source Code](https://github.com/jkaupp/tidytuesdays/blob/master/2020/week18/R/analysis.R)
   
-- [Episode 9: Tables and Animal Crossing](bit.ly/TidyX_Ep9)
+- [Episode 9: Tables and Animal Crossing](https://bit.ly/TidyX_Ep9)
 
   - UseR Highlighted: [Ted Lederas](https://twitter.com/tladeras)
   - [Original Tweet](https://twitter.com/tladeras/status/1257494321378422784)
   - [Source Code](https://github.com/laderast/tidy_tuesday/blob/master/animal_crossing.Rmd)
 
-- [Episode 10: Volcanoes and Plotly](bit.ly/TidyX_Ep10)
+- [Episode 10: Volcanoes and Plotly](https://bit.ly/TidyX_Ep10)
 
   - Ellis and Patrick explore this weeks TidyTuesday Dataset!
 
-- [Episode 11: Times Series and Bayes](bit.ly/TidyX_Ep11)
+- [Episode 11: Times Series and Bayes](https://bit.ly/TidyX_Ep11)
 
   - UseR Highlighted: [Eric Ekholm](https://twitter.com/ekholm_e)
   - [Original Tweet](https://twitter.com/ekholm_e/status/1263553862323113984)
   - [Source Code](https://github.com/ekholme/TidyTuesday/blob/master/2020%20-%2021%20-%20beach%20volleyball/volleyball%20script.R)
 
-- [Episode 12: Cocktails with Thomas Mock](bit.ly/TidyX_Ep12)
+- [Episode 12: Cocktails with Thomas Mock](https://bit.ly/TidyX_Ep12)
 
   - UseR Highlighted: [Joshua de la Bruere](https://twitter.com/delaBJL)
   - [Original Tweet](https://twitter.com/delaBJL/status/1265673362686312448)
   - [Source Code](https://github.com/delabj/tidyTues/blob/master/2020/Month%2005/2020-05-26/cocktails.Rmd)
 
-- [Episode 13:  Marble Races and Bump Plots](bit.ly/TidyX_Ep13)
+- [Episode 13:  Marble Races and Bump Plots](https://bit.ly/TidyX_Ep13)
 
   - UseR Highlighted: [Cédric Scherer](https://twitter.com/CedScherer)
   - [Original Tweet](https://twitter.com/CedScherer/status/1267931810186625024)
   - [Source Code](https://github.com/Z3tt/TidyTuesday/blob/master/R/2020_23_MarbleRaces.Rmd)
   
-- [Episode 14:  African American Achievements](bit.ly/TidyX_Ep14)
+- [Episode 14:  African American Achievements](https://bit.ly/TidyX_Ep14)
 
   - UseR Highlighted: [Catriona Cunningham](https://twitter.com/RegenMedCat)
   - [Original Tweet](https://twitter.com/RegenMedCat/status/1270708620867457026)
   - [Source Code](https://github.com/RegenMedCat/TidyTuesday/blob/master/2020%20Week%2024:%20African%20American%20Achievements)
   
-- [Episode 15:  Juneteenth and Census Tables](bit.ly/TidyX_Ep15)
+- [Episode 15:  Juneteenth and Census Tables](https://bit.ly/TidyX_Ep15)
 
   - Ellis and Patrick show US Census tables in a report, broken down into divisions and highlight values using {colortable}
   - [Source Code](https://github.com/thebioengineer/TidyX/blob/master/TidyTuesday_Explained/015-American_Slavery_and_Juneteenth) 
   
-- [Episode 16: Caribou Migrations and NBA Shots on Basket](bit.ly/TidyX_Ep16)
+- [Episode 16: Caribou Migrations and NBA Shots on Basket](https://bit.ly/TidyX_Ep16)
 
   - UseR Highlighted: [Jihong Zhang](https://twitter.com/jihongzgamma)
   - [Original Tweet](https://twitter.com/jihongzgamma/status/1275810075110780928)
   - [Source Code](https://github.com/thebioengineer/TidyX/blob/master/TidyTuesday_Explained/016-Caribou_Migrations_and_Spatial_Analysis/Jihong Zhang - Caribou Migration Map.Rmd)
   
-- [Episode 17: Uncanny X-men and Feature Engineering](bit.ly/TidyX_Ep17)
+- [Episode 17: Uncanny X-men and Feature Engineering](https://bit.ly/TidyX_Ep17)
 
   - UseR Highlighted: [Rebecca Stevick](https://twitter.com/@rjstevick)
   - [Original Tweet](https://twitter.com/rjstevick/status/1278058941684092929)
   - [Source Code](https://github.com/rjstevick/TidyTuesday/blob/master/20200630_ClaremontRun/tidytuesday_20200630.R)  
   
-- [Episode 18: Coffee and Random Forest](bit.ly/TidyX_Ep18)
+- [Episode 18: Coffee and Random Forest](https://bit.ly/TidyX_Ep18)
 
   - UseR Highlighted: [Nyssa Silbiger](https://twitter.com/NSilbiger)
   - [Original Tweet](https://twitter.com/NSilbiger/status/1280662329537908736)
   - [Source Code](https://github.com/njsilbiger/TidyTuesday_CSUN/tree/master/Coffee_070720) 
   
-- [Episode 19: Astronauts and Dashboards](bit.ly/TidyX_Ep19)
+- [Episode 19: Astronauts and Dashboards](https://bit.ly/TidyX_Ep19)
 
   - UseR Highlighted: [Lauren Pandori](https://twitter.com/PandoriEco)
   - [Original Tweet](https://twitter.com/PandoriEco/status/1283210583056150533)
   - [Source Code](https://github.com/llmpandori/TidyTuesday/blob/master/Astronauts_TidyTuesday_07142020.R) 
   
-- [Episode 20: Cocktails with David Robinson](bit.ly/TidyX_Ep20)
+- [Episode 20: Cocktails with David Robinson](https://bit.ly/TidyX_Ep20)
 
   - UseR Highlighted: [David Robinson](https://twitter.com/drob)
   - [Original Tweet](https://twitter.com/drob/status/1265636373928738817)
   - [Source Code](https://github.com/dgrtwo/data-screencasts/blob/master/cocktails.Rmd) 
     
-- [Episode 21: The Birds](bit.ly/TidyX_Ep21)
+- [Episode 21: The Birds](https://bit.ly/TidyX_Ep21)
 
   - UseR Highlighted: [Roman Link](https://twitter.com/RomanMLink)
   - [Original Tweet](https://twitter.com/RomanMLink/status/1288175289814704128)
   - [Source Code](https://gist.github.com/r-link/07a284b0b1261a62cf9da6302e0adcd0) 
       
-- [Episode 22: European Energy and Ball Hogs](bit.ly/TidyX_Ep22)
+- [Episode 22: European Energy and Ball Hogs](https://bit.ly/TidyX_Ep22)
 
   - UseR Highlighted: [Kelly Cotton](https://twitter.com/kllycttn)
   - [Original Tweet](https://twitter.com/kllycttn/status/1290836964112039936?s=10)
   - [Source Code](https://github.com/kellycotton/TidyTuesdays/blob/master/energy.R) 
+  
+      
+- [Episode 23: Mailbag and Expected Wins](https://bit.ly/TidyX_Ep23)
+
+  - Ellis and Patrick go into our mailbag and focus on a request we recently had on loops and functions.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/023-Mailbag_and_Expected_Wins) 
