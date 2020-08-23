@@ -156,3 +156,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - Ellis and Patrick go into our mailbag and focus on a request we recently had on loops and functions.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/023-Mailbag_and_Expected_Wins) 
+  
+- [Episode 24: Waffle plots and Shiny](https://bit.ly/TidyX_Ep24)
+
+  - UseR Highlighted: [Jared Braggins](https://twitter.com/JaredBraggins)
+  - [Original Tweet](https://twitter.com/JaredBraggins/status/1296007801701986304)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/024-Waffle_plots_and_Shiny) 

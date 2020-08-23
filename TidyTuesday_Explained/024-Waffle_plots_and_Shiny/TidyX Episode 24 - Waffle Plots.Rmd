@@ -1,0 +1,149 @@
+---
+title: "TidyX 24 - Waffle Plots"
+author: "Patrick Ward"
+date: "8/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggpubr)
+library(janitor)
+library(rvest)
+library(ggwaffle) # devtools::install_github("liamgilbey/ggwaffle")
+library(here)
+
+theme_set(theme_classic())
+
+```
+
+
+
+Get receptions data from 2019 season
+
+```{r}
+
+url <- read_html("https://www.pro-football-reference.com/years/2019/receiving.htm")
+
+rec <- url %>%
+  html_table(fill = T) %>%
+  purrr::pluck(1) %>%
+  filter(Rk != "Rk") %>%
+  clean_names()
+  
+
+rec %>% head()
+rec %>% glimpse()
+
+## pre-process ##
+# Change columns to numeric
+
+rec_clean <- rec %>% 
+  mutate(
+    across(c(1, 4, 6:19),
+           .fns = ~readr::parse_number(.x),
+           )
+  )
+
+rec_clean %>% glimpse()
+
+```
+
+
+## Calculate the % of target shares for each player on their team
+
+```{r}
+
+rec_targets <- rec_clean %>%
+  filter(!(tm %in% c("2TM", "3TM"))) %>% #Remove players that were on multiple teams
+  group_by(tm) %>%
+  mutate(team_tgts = sum(tgt)) %>%
+  group_by(player, tm) %>%
+  mutate(tgt_shares = tgt / team_tgts) %>% 
+  ungroup()
+
+```
+
+
+What is the distribution of target shares?
+
+```{r}
+
+tgt_quant <- ggtexttable(data.frame(
+  round(quantile(rec_targets$tgt_shares), 3) %>% t()),
+            rows = NULL)
+
+rec_targets %>%
+  ggplot(aes(x = tgt_shares)) +
+  geom_density(fill = "light blue", alpha = 0.4,
+               size = 1.2) +
+  geom_vline(aes(xintercept = median(tgt_shares)),
+                 color = "red",
+                 size = 1.3,
+                 linetype = "dotted") +
+  annotation_custom(ggplotGrob(tgt_quant),
+                    xmin = 0.21,
+                    xmax = 0.27,
+                    ymin = 0.4) +
+  labs(x = "Target Shares",
+       y = "Density",
+       title = "Distribution of Target Shares Across NFL",
+       subtitle = "2019 Season",
+       caption = "https://www.pro-football-reference.com/years/2019/receiving.htm")
+
+
+```
+
+
+
+## Select a team
+
+```{r}
+
+## Get team
+team_rec <- rec_targets %>%
+  ungroup() %>% 
+  filter(tm == "SFO") %>%
+  select(player, tgt ) %>%
+  uncount( weights = tgt) %>% 
+  mutate(
+    player = fct_lump(player, 4)
+  )
+
+```
+
+
+## Prepare the waffle
+
+```{r}
+
+waffle_df <- team_rec %>% 
+  mutate(
+    player = as.numeric(player)
+  ) %>% 
+  waffle_iron(
+    rows = 25,
+    aes_d(group = player)
+  ) %>% 
+  mutate(
+    group = factor(levels(team_rec$player)[group], levels = levels(team_rec$player))
+  )
+
+ggplot(waffle_df, aes(x = x, y = y, fill = group)) +
+  geom_waffle() +
+  theme_waffle()
+
+
+```
+
+
+```{r}
+
+saveRDS(
+  rec_targets,
+  here("TidyTuesday_Explained/024-Waffle_plots_and_Shiny/rec_targets.RDS")
+)
+
+```
+
