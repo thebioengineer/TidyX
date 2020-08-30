@@ -162,3 +162,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [Jared Braggins](https://twitter.com/JaredBraggins)
   - [Original Tweet](https://twitter.com/JaredBraggins/status/1296007801701986304)
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/024-Waffle_plots_and_Shiny) 
+  
+- [Episode 25: Intro To Shiny](https://bit.ly/TidyX_Ep25)
+  
+  - This is a start of a series of episodes covering more in-depth uses for {Shiny}, an R package for creating web applications by Joe Cheng. In this episode we cover basics of Shiny, and explain the concept of reactive programming.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/025-Intro_to_Shiny) 
