@@ -167,3 +167,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - This is a start of a series of episodes covering more in-depth uses for {Shiny}, an R package for creating web applications by Joe Cheng. In this episode we cover basics of Shiny, and explain the concept of reactive programming.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/025-Intro_to_Shiny) 
+  
+- [Episode 26: Labels and ShinyCARMELO - Part 1](https://bit.ly/TidyX_Ep26)
+
+  - UseR Highlighted: [Mr. Ochiwar](https://twitter.com/MrOchiwar)
+  - [Original Tweet](https://twitter.com/MrOchiwar/status/1300934794772189185)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/026-Labels_and_ShinyCARMELO_Part_1) 
