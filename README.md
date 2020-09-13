@@ -173,3 +173,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [Mr. Ochiwar](https://twitter.com/MrOchiwar)
   - [Original Tweet](https://twitter.com/MrOchiwar/status/1300934794772189185)
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/026-Labels_and_ShinyCARMELO_Part_1) 
+  
+- [Episode 26: LIX and ShinyCARMELO - Part 2](https://bit.ly/TidyX_Ep27)
+
+  - UseR Highlighted: [Leon Jessen](https://twitter.com/jessenleon)
+  - [Original Tweet](https://twitter.com/jessenleon/status/1304126641719869440)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/027-LIX_and_ShinyCARMELO_Part_2) 
