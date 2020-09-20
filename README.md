@@ -174,8 +174,13 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/MrOchiwar/status/1300934794772189185)
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/026-Labels_and_ShinyCARMELO_Part_1) 
   
-- [Episode 26: LIX and ShinyCARMELO - Part 2](https://bit.ly/TidyX_Ep27)
+- [Episode 27: LIX and ShinyCARMELO - Part 2](https://bit.ly/TidyX_Ep27)
 
   - UseR Highlighted: [Leon Jessen](https://twitter.com/jessenleon)
   - [Original Tweet](https://twitter.com/jessenleon/status/1304126641719869440)
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/027-LIX_and_ShinyCARMELO_Part_2) 
+  
+- [Episode 28: Nearest Neighbors and ReactiveValues](https://bit.ly/TidyX_Ep28)
+  
+  - This week Ellis and Patrick explore how to perform career analysis and projections using the KNN algorithm.Using those concepts, we jump into part three of our shiny demo series where we have shiny execute a KNN for our input players. We show how to create an action button to execute our code, and reactiveValues to store the results to then plot!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/028-Nearest_Neighbor_and_ReactiveValues) 
