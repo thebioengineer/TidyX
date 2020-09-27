@@ -1,0 +1,305 @@
+---
+title: "Himalayan Climbing Expeditions"
+author: "Patrick Ward"
+date: "9/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidytuesdayR)
+library(skimr)
+library(plotly)
+library(arm)
+library(lme4)
+library(merTools)
+
+theme_set(theme_light())
+
+tuesdata <- tidytuesdayR::tt_load('2020-09-22')
+
+peaks <- tuesdata$peaks
+exped <- tuesdata$expeditions
+climbers <- tuesdata$members
+
+```
+
+
+### Climbers Data
+
+```{r}
+
+skim(climbers)
+
+climbers %>%
+  head()
+
+```
+
+
+### EDA
+
+What type of role do people in each expedition have?
+
+```{r}
+
+climbers %>%
+  count(expedition_role, sort = T) %>%
+  top_n(5) %>%
+  ggplot(aes(x = n, y = reorder(expedition_role, n))) +
+  geom_col()
+
+```
+
+
+What sort of success has there been in climbing mountains?
+
+```{r}
+
+climbers %>%
+  distinct(expedition_id, .keep_all = T) %>%
+  count(peak_name, sort = T)
+
+climbers %>%
+  group_by(peak_name) %>%
+  filter(n() >= 100) %>%
+  count(peak_name, success) %>%
+  group_by(peak_name) %>%
+  mutate(Pct_Success = n / sum(n)) %>%
+  filter(success == T) %>%
+  arrange(desc(Pct_Success))
+
+```
+
+
+What is the count of deaths on the most common climbs?
+
+```{r}
+
+main_peaks <- climbers %>%
+  distinct(expedition_id, .keep_all = T) %>%
+  filter(n() >= 200) %>%
+  count(peak_name, sort = T) %>%
+  top_n(10) %>%
+  pull(peak_name)
+
+main_peak_exped <- climbers %>%
+  filter(peak_name %in% main_peaks) %>%
+  group_by(expedition_id) %>%
+  mutate(Died = sum(died))
+
+main_peak_exped %>%
+  ggplot(aes(x = Died)) +
+  geom_histogram()
+
+exped_plt <- main_peak_exped %>%
+  mutate(Decade = year -  year %% 10) %>%
+  distinct(expedition_id, .keep_all = T) %>%
+  group_by(Decade, peak_name) %>%
+  summarize(
+    Expeditions = n(),
+    Deaths = sum(Died)
+    ) %>%
+  ggplot(aes(x = Decade, 
+             y = Expeditions, 
+             label = Deaths, 
+             fill = peak_name,
+             color = peak_name)) +
+  geom_line(size = 1.1) +
+  geom_point(size = 2.3,
+             shape = 21,
+             color = "black")
+
+ggplotly(exped_plt)
+
+
+```
+
+
+Does the age of the climber influence the possibility of death on a climb?
+
+```{r}
+
+climber_deaths <- climbers %>%
+  mutate(Role = fct_lump(expedition_role, 3),
+         age_bin = cut_number(age, n = 4)) %>%
+  filter(peak_name %in% main_peaks,
+         !is.na(age))
+
+table(climber_deaths$hired, climber_deaths$Role)
+
+climber_deaths %>%
+  ggplot(aes(x = age, fill = died)) +
+  geom_density(alpha = 0.4)
+
+climber_deaths %>%
+  count(age_bin, died) %>%
+  group_by(age_bin) %>%
+  mutate(Pct = n / sum(n))
+
+```
+
+
+How does season influence death rate?
+
+```{r}
+climber_deaths %>%
+  count(season, died) %>%
+  group_by(season) %>%
+  mutate(Pct = n / sum(n))
+```
+
+
+What is the death rate on some of the more population climbs?
+
+
+```{r}
+
+table(climber_deaths$peak_name, climber_deaths$died)
+
+round(prop.table(table(climber_deaths$peak_name, climber_deaths$died), margin = 1) * 100, 2)
+
+```
+
+
+### Logistic Regression Mixed Model
+
+Fit a logistic regression mixed model to the most common peaks with fixed effects for season, sex, oxygen used and climber role and allow the intercept to vary randomly for the peak.
+
+
+```{r}
+
+f_lmer <- glmer(
+  died ~ season + sex + oxygen_used + Role + (1|peak_name),
+  data = climber_deaths,
+  family = "binomial"
+  )
+
+```
+
+Model output
+
+```{r}
+
+display(f_lmer)
+
+fixef(f_lmer)
+ranef(f_lmer)
+coef(f_lmer)
+
+```
+
+Coefficients are on a log scale. Transform coefficients back.
+
+```{r}
+
+exp(fixef(f_lmer))
+
+```
+
+Plot random effects
+
+
+```{r}
+
+lattice::dotplot(ranef(f_lmer, condVar = T))
+
+```
+
+## Make a prediction on the probability of death
+
+Coefficients are interpreted on a relative scale. To understand outcomes on an absolute scale we can take the inverse logit of the entire equation.
+
+New person:
+
+* Climbing in Winter
+* Sex = Female
+* Oxygen Use = F
+* Role = Leader
+* Peak = Everest
+
+```{r}
+
+new_df <- data.frame(
+        season = "Winter",
+        sex = "F",
+        oxygen_used = FALSE,
+        Role = "Leader",
+        peak_name = "Everest")
+
+```
+
+
+```{r}
+
+inverse_logit <- function(x){
+  prob <- 1 / (1 + exp(-x))
+  prob
+}
+
+## get results for new person above
+fixed <- fixef(f_lmer)[1] + fixef(f_lmer)[4] + fixef(f_lmer)[5]*0 + fixef(f_lmer)[6]*0 + fixef(f_lmer)[8]
+
+# Use the inverse logit function to make a prediction on the fixed effects only
+inverse_logit(fixed)
+
+## Everest Effects
+mtn <- ranef(f_lmer)$peak_name["Everest",]
+
+## Adjust the fixed effects to account for Mt Everest
+inverse_logit(fixed + mtn)
+
+```
+
+
+The same can be done a bit easier with the `predict()` function
+
+```{r}
+## Predict the outcome
+predict(f_lmer, newdata = new_df,
+  type = "link",
+  re.form = NA,
+        allow.new.levels = T,
+        na.action = na.pass)
+
+## run the result through the inverse logit function
+inverse_logit(-4.246132 + 0.1623374)
+
+```
+
+
+Can use `predict()` to directly compute probabilities by setting the argument `type = "response"`
+
+```{r}
+predict(f_lmer, newdata = new_df,
+  type = "response",
+  re.form = ~(1|peak_name),
+  allow.new.levels = T,
+  na.action = na.pass)
+
+```
+
+
+What about prediction intervals?
+
+```{r}
+
+## prediction intervals
+predictInterval(
+  f_lmer, 
+  level = 0.9, newdata = data.frame(
+        season = "Winter",
+        sex = "M",
+        oxygen_used = FALSE,
+        Role = "Climber",
+        peak_name = "Everest"), 
+    n.sims = 999, 
+    type = "probability")
+
+
+```
+
+
