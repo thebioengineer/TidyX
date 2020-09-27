@@ -184,3 +184,11 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - This week Ellis and Patrick explore how to perform career analysis and projections using the KNN algorithm.Using those concepts, we jump into part three of our shiny demo series where we have shiny execute a KNN for our input players. We show how to create an action button to execute our code, and reactiveValues to store the results to then plot!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/028-Nearest_Neighbor_and_ReactiveValues) 
+  
+- [Episode 29: Palettes and Random Effects](https://bit.ly/TidyX_Ep29)
+
+  - UseR Highlighted: [Kaylea Haynes](https://twitter.com/KayleaHaynes)
+  - [Original Tweet](https://twitter.com/KayleaHaynes/status/1308799804357709825)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/029-Palettes_and_Random_Effects) 
+  
+  
