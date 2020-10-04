@@ -1,0 +1,257 @@
+---
+title: "Untitled"
+author: "Patrick Ward"
+date: "10/1/2020"
+output: html_document
+---
+
+#### Load packages & data
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+### Load Packages -------------------------------------------------
+library(tidyverse)
+library(tidytext)
+library(rtweet)
+library(here)
+
+theme_set(theme_light())
+
+```
+
+
+```{r scrape}
+
+## create path for rds file
+debate_tweets_rds <- here("TidyTuesday_Explained/030-Sentiment/debate_tweets_BIG.rds")
+
+## If RDS does not exist, scrape tweets using {rtweet}
+
+if(!file.exists(debate_tweets_rds)){
+  
+  ### Scrape Twitter for #Debate20202 -----------------------------
+  # Get 10,000 tweets, exclude retweets, and only tweets in English
+  
+  debate_tweets <- search_tweets("#Debate2020",
+                                 n = 50000,
+                                 include_rts = F,
+                                 lang = "en",
+                                 retryonratelimit = TRUE)
+  
+  ### Save the scraped data to a file that can be loaded later (for replicable analysis)
+  saveRDS(debate_tweets, debate_tweets_rds)
+  
+}else{
+
+  ### Load in data -------------------------------------------------
+  debate_tweets <- readRDS(debate_tweets_rds)
+}
+
+names(debate_tweets)
+
+debate_tweets %>% 
+  head() %>% 
+  View()
+
+```
+
+
+#### EDA
+
+Which users tweeted about the debate the most?
+
+```{r}
+
+debate_tweets %>%
+  count(screen_name, sort = T) %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = reorder(screen_name, n))) +
+  geom_col()
+
+```
+
+What country did are people tweeting from?
+
+```{r}
+
+debate_tweets %>%
+  count(country, sort = T) %>%
+  filter(!is.na(country)) %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = reorder(country, n))) +
+  geom_col() +
+  scale_x_log10()
+
+```
+
+Which states in the US?
+
+```{r}
+
+debate_tweets %>%
+  filter(location != "",
+         country == "United States") %>%
+  count(location, sort = T) %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = reorder(location, n))) +
+  geom_col()
+
+```
+
+
+Common hashtags
+
+**NOTE:** Hashtags are stored as a list in the column since users can have multiple hashtags per tweet.
+
+```{r}
+
+data.frame(hashtags = unlist(debate_tweets$hashtags))%>%
+  count(hashtags, sort = T) %>%
+  filter(hashtags != "Debate2020") %>% 
+  top_n(25) %>%
+  ggplot(aes(x = n, y = reorder(hashtags, n))) +
+  geom_col()
+
+```
+
+
+#### Prepare Data for Sentiment Analysis
+
+create a smaller data frame of only a few key columns
+
+```{r}
+
+debate_small <- debate_tweets %>%
+  select(screen_name, country, location, text)
+
+debate_small %>%
+  head()
+
+```
+
+
+Get sentiment scores
+
+**NOTE:** `afinn` is a sentiment lexicon that will score words between values of -5 to 5 based on whether they are negative or positive words. `bing` is a lexicon that categorizes words into either positive or negative categories
+
+https://www.tidytextmining.com/
+
+```{r}
+
+tokens <- debate_small %>% 
+  mutate(
+    tweet_id = row_number()
+  ) %>% 
+  unnest_tokens(word, text)
+
+token_sentiment <- tokens %>%
+  inner_join(get_sentiments("afinn")) %>%
+  inner_join(get_sentiments("bing"))
+
+```
+
+Histogram of scores
+
+```{r}
+
+token_sentiment %>%
+  ggplot(aes(x = value)) +
+  geom_histogram() + 
+  scale_x_continuous(breaks = -5:5) +
+  theme(
+    panel.grid.minor.x = element_blank()
+  )
+
+```
+
+The most positive words used
+
+```{r}
+
+token_sentiment %>%
+  count(word, sentiment, sort = T) %>%
+  filter(sentiment == "positive") %>%
+  top_n(10) %>%
+  ggplot(aes(x = n, y = reorder(word, n))) +
+  geom_col()
+
+```
+
+The most negative words used
+
+```{r}
+
+token_sentiment %>%
+  count(word, sentiment, sort = T) %>%
+  filter(sentiment == "negative") %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = reorder(word, n))) +
+  geom_col()
+
+```
+
+
+Average score by the top 4 country
+
+```{r}
+
+top_countries <- debate_tweets %>%
+  count(country, sort = T) %>%
+  filter(!is.na(country)) %>% 
+  top_n(3) %>%
+  pull(country)
+
+token_sentiment %>%
+  mutate(
+    country = case_when(
+      country %in% top_countries ~ country,
+      TRUE ~ "Other")
+  ) %>%
+  group_by(country,tweet_id) %>%
+  summarize(
+    Avg_Sentiment_tweet = mean(value)
+    ) %>%
+  group_by(country) %>%
+  summarize(
+    mean_sentiment_country = mean(Avg_Sentiment_tweet),
+    median_sentiment_country = median(Avg_Sentiment_tweet)
+    ) %>% 
+  pivot_longer(
+    cols = c(mean_sentiment_country, median_sentiment_country),
+    names_to = "stat",
+    values_to = "value"
+  ) %>% 
+  ggplot( aes(x = value,y = country)) +
+  geom_col(fill = "pale green",
+           color = "black",
+           alpha = 0.4) +
+  geom_vline(aes(xintercept = 0),
+             color = "red",
+             size = 1.2) +
+  facet_grid(~stat) +
+  theme_classic() +
+  theme(panel.grid.major.x = element_line(color = "white"),
+        plot.background = element_rect(fill = "black"),
+        panel.background = element_rect(fill = "black"),
+        axis.text = element_text(color = "white", 
+                                 face = "bold",
+                                 size = 12),
+        axis.title = element_text(color = "white", 
+                                 face = "bold",
+                                 size = 15),
+        plot.title = element_text(size = 20, 
+                                  color = "white"),
+        plot.subtitle = element_text(size = 17, 
+                                     color = "white")) +
+  xlim(-1, 1) +
+  labs(x = "Average Sentiment",
+       y = "",
+       title = "Average #Debate2020 Sentiment",
+       subtitle = "Top 3 Countries, and Other")
+
+```
+
+
+
