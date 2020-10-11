@@ -1,0 +1,237 @@
+---
+title: "TidyX Episode 31 - Reactable"
+author: "Patrick Ward & Ellis Hughes"
+date: "October 9, 2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Packages & Data
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidytuesdayR)
+library(reactable)
+library(ggridges)
+library(sparkline)
+library(pagedtable) #thebioengineer/pagedtable
+
+theme_set(theme_light())
+
+```
+
+```{r data}
+
+tt <- tt_load("2020-10-06")
+
+tt
+
+ncaa <- tt$tournament
+
+```
+
+
+## EDA
+
+View the data
+
+```{r}
+
+ncaa %>% 
+  head() %>% 
+  View()
+
+```
+
+
+How many conferences are in the data set?
+
+```{r}
+
+ncaa %>%
+  count(conference, sort = T)
+
+```
+
+* Makes sense that the bigger conferences are represented in the tournament
+
+* There are a lot of conferences and the top 6 are frequently referred to as the "Power 5" conferences.
+
+Lump all conferences outside of the Power 5 (6 top conferences)
+
+```{r}
+
+ncaa_lumped <- ncaa %>%
+  mutate(conf_lump = case_when(
+    conference %in% c("Pacific-10","Pac-12") ~ "Pacific-10",
+    conference %in% c(
+      "Southeastern",
+      "Atlantic Coast",
+      "Big Ten",
+      "Big East",
+      "Big 12"
+    ) ~ conference,
+    TRUE ~ "Other"
+  ))
+
+```
+
+Which of the Power-5 conferences have had the most tournament appearances?
+
+```{r}
+
+ncaa_lumped %>%
+  filter(conf_lump != "Other") %>%
+  count(conf_lump, sort = T) %>%
+  mutate(Pct = n / sum(n)) %>%
+  ggplot(aes(x = Pct, y = reorder(conf_lump, Pct))) +
+  geom_col(fill = "light blue",
+           alpha = 0.7,
+           color = "black") +
+  scale_x_continuous(labels = scales::percent) +
+  labs(x = "% of Appearances",
+       y = "",
+       title = "Percent of NCAA Women's Tournament Appearances Among Power-5 Schools")
+
+```
+
+
+Distribution of Regular Season Win/Loss Percentage Among Conferences
+
+```{r}
+
+ncaa_lumped %>%
+  ggplot(aes(x = reg_percent/100, y = conf_lump, fill = conf_lump)) +
+  geom_density_ridges(alpha = 0.7,
+                      quantile_lines = T,
+                      quantiles = 2) +
+  scale_x_continuous(labels = scales::percent) +
+  xlim(0,1)
+
+```
+
+
+Table
+
+```{r table_prep}
+
+ncaa_prepped <- ncaa_lumped %>%
+  select(school, year, seed, reg_percent, tourney_w, tourney_l, tourney_finish) %>%
+  group_by(school) %>% 
+  summarize(
+    
+    school_summary = list(reg_percent),
+    
+    t_wins = sum(tourney_finish == "Champ"),
+    
+    tournament_wins = paste0(rep("&#x2606",sum(tourney_finish == "Champ")), collapse = ""),
+    
+    years = list(ungroup(.[.$school==unique(school),]))
+    
+  ) %>% 
+  ungroup() %>% 
+  arrange(desc(t_wins)) 
+
+```
+
+```{r table-making}
+
+ncaa_prepped %>%
+  
+  select(school, tournament_wins, school_summary, years) %>% 
+  
+  reactable(
+    
+    columns = list(
+      
+      school = colDef(
+        name = "School",
+        filterable = TRUE,
+        width = 100),
+      
+      tournament_wins = colDef(
+        name = "Champs",
+        html = TRUE,
+        width = 80),
+      
+      school_summary = colDef(
+        name = "Win % History",
+        
+        cell = function(value, index) {
+          sparkline(
+            ncaa_prepped$school_summary[[index]],
+            width = "100px",
+            height = "80px")
+        },
+        width = 120
+      ),
+      
+      years = colDef(
+        name = "Summary",
+        
+        cell = function(value, index) {
+          
+          pagedtable(
+            ncaa_prepped$years[[index]] %>%
+              select(-school),
+            use_rownames = FALSE,
+            height = "200px",
+            pagerows = 5
+          )
+          
+        }
+      )
+      
+    ),
+    
+    bordered = TRUE,
+    
+    defaultPageSize = 5
+  )
+```
+
+Win Probabilities
+
+```{r}
+
+ncaa_table <- ncaa %>%
+  count(seed, tourney_finish) %>%
+  mutate(
+    tourney_finish = factor(
+      tourney_finish,
+      levels = c(
+        "1st","2nd","RSF","RF","NSF","N2nd","Champ"
+      )
+    ),
+  ) %>% 
+  group_by(seed) %>%
+  mutate(
+    Pct = n / sum(n)
+  )
+
+ncaa_table %>%
+  select(tourney_finish, Pct) %>%
+  filter(tourney_finish != "OR",
+         !is.na(seed)) %>%
+  pivot_wider(names_from = "tourney_finish",
+              values_from = "Pct") %>%
+  select(seed, !!levels(ncaa_table$tourney_finish)) %>% 
+  reactable(columns = list(
+    '1st' = colDef(format = colFormat(percent = T, digits = 1), na = "-"),
+    '2nd' = colDef(format = colFormat(percent = T, digits = 1), na = "-"),
+    Champ = colDef(format = colFormat(percent = T, digits = 1), na = "-"),
+    'N2nd' = colDef(format = colFormat(percent = T, digits = 1), na = "-"),
+    NSF = colDef(format = colFormat(percent = T, digits = 1), na = "-"),
+    RF = colDef(format = colFormat(percent = T, digits = 1), na = "-"),
+    RSF = colDef(format = colFormat(percent = T, digits = 1), na = "-")
+    ),
+  defaultPageSize = 16)
+
+
+```
+
+
