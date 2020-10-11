@@ -194,4 +194,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 - [Episode 30: Tweet Sentiment](https://bit.ly/TidyX_Ep30)
   
   - Patrick and Ellis were inspired this week by all the sentiment analysis performed for #TidyTuesday this week so we decided to look at tweets to show and comment on additional things to be aware of when doing sentiment analysis. Using {rtweet}, we pull over 50,000 tweets that used the #Debate2020, and discuss how context is incredibly important to analysis. 
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/030-Sentiment)  
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/030-Sentiment) 
+  
+- [Episode 31: Reactable](https://bit.ly/TidyX_Ep31)
+  
+  - This weeks #TidyTuesday dataset was on NCAA Womens Basketball Tournament appearances. Patrick and Ellis in the past have shown how tables can be used for data visualization, and wanted to learn more about another one. {reactable} is a really cool looking package, so we spend some time showing how to use the package, apply column definitions, and even apply html widgets within the table!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/031-Reactable)  
