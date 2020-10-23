@@ -200,3 +200,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - This weeks #TidyTuesday dataset was on NCAA Womens Basketball Tournament appearances. Patrick and Ellis in the past have shown how tables can be used for data visualization, and wanted to learn more about another one. {reactable} is a really cool looking package, so we spend some time showing how to use the package, apply column definitions, and even apply html widgets within the table!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/031-Reactable)  
+  
+- [Episode 32: Shiny with Eric Nantz](https://bit.ly/TidyX_Ep32)
+  
+  - This weeks #TidyTuesday dataset was a super fun one. Ellis and Patrick are joined by Eric Nantz, who created a shiny app to explore and animate the data. We talk through several new shiny concepts, like using {golem}, cross-talk, and other shiny packages like {bs4dash}!
+  
+  - UseR Highlighted: [Eric Nantz](https://twitter.com/theRcast)
+  - [Source Code](https://github.com/rpodcast/shinysaurus) 

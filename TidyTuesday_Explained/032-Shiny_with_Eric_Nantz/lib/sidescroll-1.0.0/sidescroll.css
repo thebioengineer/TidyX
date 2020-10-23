@@ -1,0 +1,176 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    top:0;bottom:0; /* vertical center */
+    left:0;right:0; /* horizontal center */
+    display: table;
+    vertical-align: top;
+}
+
+.slide_container{
+  position: relative;
+  padding: 50px 30px;
+  height: 90%;
+  font-size: 25px;
+}
+
+.fit_content {
+  max-width:1600px;
+}
+
+.slide_container img {
+  max-height: 80%;
+}
+
+.slick-slider{
+  height: 100%;
+}
+
+.slide_master{
+  background: white;
+  height: 900px;
+  width: 1600px;
+  display: block;
+  justify-content: center;
+  top:0;bottom:0; /* vertical center */
+  left:0;right:0; /* horizontal center */
+  margin: 0;
+  box-shadow: 0 0 30px #888;
+
+}
+
+.slide_master_wrapper{
+  height: 100%;
+  width: 100%;
+  /*display: table;*/
+  /*justify-content: center;*/
+  /*transform-origin: top;*/
+}
+
+.slick-list, .slick-track, .generic {
+  height:100%;
+}
+
+.generic {
+}
+
+
+.title_slide, .full_width{
+  width: 1600px;
+}
+
+.full_width{
+  padding-left: 30px;
+  width: 1600px;
+}
+
+.slide_title_container{
+  margin-top: 100px;
+  width: 98%;
+	text-align: center;
+	display: inline-block;
+	position: absolute;
+	background-color: #112345;
+	color: #fff;
+	word-wrap: break-word;
+}
+
+
+.slide_title {
+  padding-left:30px;
+  padding-right:30px;
+  max-width: 1500px;
+  z-index: 1000;
+  background-color: #112345;
+	color: #fff;
+	word-wrap: break-word;
+}
+
+
+
+.title_box {
+  position: absolute;
+  top: 0;
+  width: max-content;
+}
+
+.single_panel_title_box {
+  position: relative;
+}
+
+h1, h2, h3, h4, h5, h6, h7 {
+  margin-bottom: 10px;
+}
+
+.single_panel_title_box h1{
+    margin-top: -15px;
+    max-width: 1200px;
+}
+
+.multi_panel_title_box {
+  width: max-content;
+  z-index: 2000;
+}
+
+
+
+.title_text  {
+  margin: 2%;
+}
+
+.subtitle_text {
+	margin: 0.5%;
+	margin-left: 2%;
+}
+
+.multi_panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel{
+    margin-top: 50px;
+    height: 85%;
+}
+
+.single_panel .panel{
+    margin-top: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.panel p{
+  margin-top: 0;
+}
+
+pre code {
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+pre {
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.ui-loader {
+  display: none !important;
+}
+
