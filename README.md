@@ -207,3 +207,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - UseR Highlighted: [Eric Nantz](https://twitter.com/theRcast)
   - [Source Code](https://github.com/rpodcast/shinysaurus) 
+  
+- [Episode 33: Beer and State Maps](https://bit.ly/TidyX_Ep29)
+
+  - UseR Highlighted: [Richard Bamattre](https://twitter.com/rbamattre)
+  - [Original Tweet](https://twitter.com/rbamattre/status/1318657836600250376)
+  - [Tweet Source Code](https://github.com/bamattre/tidytuesday/blob/master/tidytuesday_2020-10-20.R) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/033-Beer_and_State_Maps) 
