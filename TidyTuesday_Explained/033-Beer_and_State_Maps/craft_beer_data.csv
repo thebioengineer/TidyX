@@ -1,0 +1,307 @@
+state,state_abbr,measure,reference,value,rank,units
+Alabama,AL,craft breweries,total,51,37,total
+Alabama,AL,craft breweries,per-capita,1.4,49,total
+Alabama,AL,economic impact,total,858,28,million dollars
+Alabama,AL,economic impact,per-capita,237.94,45,million dollars
+Alabama,AL,production,total,84013,40,barrels
+Alabama,AL,production,per-capita,0.7,47,gallons
+Alaska,AK,craft breweries,total,45,38,total
+Alaska,AK,craft breweries,per-capita,8.8,7,total
+Alaska,AK,economic impact,total,332,44,million dollars
+Alaska,AK,economic impact,per-capita,629.81,5,million dollars
+Alaska,AK,production,total,202797,27,barrels
+Alaska,AK,production,per-capita,12.3,3,gallons
+Arizona,AZ,craft breweries,total,127,20,total
+Arizona,AZ,craft breweries,per-capita,2.4,34,total
+Arizona,AZ,economic impact,total,1234,22,million dollars
+Arizona,AZ,economic impact,per-capita,235.60999999999999,46,million dollars
+Arizona,AZ,production,total,194345,29,barrels
+Arizona,AZ,production,per-capita,1.1,42,gallons
+Arkansas,AR,craft breweries,total,42,40,total
+Arkansas,AR,craft breweries,per-capita,1.9,45,total
+Arkansas,AR,economic impact,total,525,35,million dollars
+Arkansas,AR,economic impact,per-capita,239.76999999999998,43,million dollars
+Arkansas,AR,production,total,46272,45,barrels
+Arkansas,AR,production,per-capita,0.7,49,gallons
+California,CA,craft breweries,total,907,1,total
+California,CA,craft breweries,per-capita,3.1,28,total
+California,CA,economic impact,total,9661,1,million dollars
+California,CA,economic impact,per-capita,332.88,26,million dollars
+California,CA,production,total,3664080,1,barrels
+California,CA,production,per-capita,3.9,14,gallons
+Colorado,CO,craft breweries,total,425,2,total
+Colorado,CO,craft breweries,per-capita,10,4,total
+Colorado,CO,economic impact,total,3353,8,million dollars
+Colorado,CO,economic impact,per-capita,796.3399999999999,1,million dollars
+Colorado,CO,production,total,1529613,3,barrels
+Colorado,CO,production,per-capita,11.2,5,gallons
+Connecticut,CT,craft breweries,total,104,26,total
+Connecticut,CT,craft breweries,per-capita,3.9,24,total
+Connecticut,CT,economic impact,total,849,29,million dollars
+Connecticut,CT,economic impact,per-capita,316.56,28,million dollars
+Connecticut,CT,production,total,236444,25,barrels
+Connecticut,CT,production,per-capita,2.7,21,gallons
+Delaware,DE,craft breweries,total,27,47,total
+Delaware,DE,craft breweries,per-capita,3.7,25,total
+Delaware,DE,economic impact,total,430,40,million dollars
+Delaware,DE,economic impact,per-capita,592.65,7,million dollars
+Delaware,DE,production,total,317328,21,barrels
+Delaware,DE,production,per-capita,13.4,2,gallons
+District of Columbia,DC,craft breweries,total,12,51,total
+District of Columbia,DC,craft breweries,per-capita,2.2,37,total
+District of Columbia,DC,economic impact,total,227,50,million dollars
+District of Columbia,DC,economic impact,per-capita,418.44,16,million dollars
+District of Columbia,DC,production,total,35857,47,barrels
+District of Columbia,DC,production,per-capita,2,31,gallons
+Florida,FL,craft breweries,total,329,9,total
+Florida,FL,craft breweries,per-capita,2,41,total
+Florida,FL,economic impact,total,3818,5,million dollars
+Florida,FL,economic impact,per-capita,233.6,47,million dollars
+Florida,FL,production,total,1401142,4,barrels
+Florida,FL,production,per-capita,2.6,22,gallons
+Georgia,GA,craft breweries,total,111,23,total
+Georgia,GA,craft breweries,per-capita,1.5,48,total
+Georgia,GA,economic impact,total,2035,15,million dollars
+Georgia,GA,economic impact,per-capita,268.61,38,million dollars
+Georgia,GA,production,total,514414,15,barrels
+Georgia,GA,production,per-capita,2.1,30,gallons
+Hawaii,HI,craft breweries,total,24,48,total
+Hawaii,HI,craft breweries,per-capita,2.3,35,total
+Hawaii,HI,economic impact,total,313,45,million dollars
+Hawaii,HI,economic impact,per-capita,292.2,31,million dollars
+Hawaii,HI,production,total,85256,39,barrels
+Hawaii,HI,production,per-capita,2.6,23,gallons
+Idaho,ID,craft breweries,total,73,31,total
+Idaho,ID,craft breweries,per-capita,5.8,11,total
+Idaho,ID,economic impact,total,438,39,million dollars
+Idaho,ID,economic impact,per-capita,353.84000000000003,24,million dollars
+Idaho,ID,production,total,91819,37,barrels
+Idaho,ID,production,per-capita,2.3,27,gallons
+Illinois,IL,craft breweries,total,284,13,total
+Illinois,IL,craft breweries,per-capita,3,30,total
+Illinois,IL,economic impact,total,3376,7,million dollars
+Illinois,IL,economic impact,per-capita,359.45,23,million dollars
+Illinois,IL,production,total,421809,16,barrels
+Illinois,IL,production,per-capita,1.4,36,gallons
+Indiana,IN,craft breweries,total,192,16,total
+Indiana,IN,craft breweries,per-capita,3.9,23,total
+Indiana,IN,economic impact,total,1742,19,million dollars
+Indiana,IN,economic impact,per-capita,359.78999999999996,22,million dollars
+Indiana,IN,production,total,266443,23,barrels
+Indiana,IN,production,per-capita,1.7,35,gallons
+Iowa,IA,craft breweries,total,105,25,total
+Iowa,IA,craft breweries,per-capita,4.6,17,total
+Iowa,IA,economic impact,total,1085,23,million dollars
+Iowa,IA,economic impact,per-capita,474.77,13,million dollars
+Iowa,IA,production,total,141942,33,barrels
+Iowa,IA,production,per-capita,1.9,32,gallons
+Kansas,KS,craft breweries,total,59,34,total
+Kansas,KS,craft breweries,per-capita,2.9,32,total
+Kansas,KS,economic impact,total,583,34,million dollars
+Kansas,KS,economic impact,per-capita,280.09,34,million dollars
+Kansas,KS,production,total,45846,46,barrels
+Kansas,KS,production,per-capita,0.7,48,gallons
+Kentucky,KY,craft breweries,total,69,32,total
+Kentucky,KY,craft breweries,per-capita,2.1,39,total
+Kentucky,KY,economic impact,total,872,27,million dollars
+Kentucky,KY,economic impact,per-capita,265.44,39,million dollars
+Kentucky,KY,production,total,130940,34,barrels
+Kentucky,KY,production,per-capita,1.2,38,gallons
+Louisiana,LA,craft breweries,total,40,43,total
+Louisiana,LA,craft breweries,per-capita,1.2,50,total
+Louisiana,LA,economic impact,total,969,24,million dollars
+Louisiana,LA,economic impact,per-capita,285.9,32,million dollars
+Louisiana,LA,production,total,237721,24,barrels
+Louisiana,LA,production,per-capita,2.2,28,gallons
+Maine,ME,craft breweries,total,133,19,total
+Maine,ME,craft breweries,per-capita,12.7,2,total
+Maine,ME,economic impact,total,668,31,million dollars
+Maine,ME,economic impact,per-capita,642.09,4,million dollars
+Maine,ME,production,total,361705,18,barrels
+Maine,ME,production,per-capita,10.7,6,gallons
+Maryland,MD,craft breweries,total,112,22,total
+Maryland,MD,craft breweries,per-capita,2.5,33,total
+Maryland,MD,economic impact,total,956,25,million dollars
+Maryland,MD,economic impact,per-capita,213.75,49,million dollars
+Maryland,MD,production,total,301966,22,barrels
+Maryland,MD,production,per-capita,2.1,29,gallons
+Massachusetts,MA,craft breweries,total,175,17,total
+Massachusetts,MA,craft breweries,per-capita,3.3,27,total
+Massachusetts,MA,economic impact,total,2124,14,million dollars
+Massachusetts,MA,economic impact,per-capita,406.62,17,million dollars
+Massachusetts,MA,production,total,638231,13,barrels
+Massachusetts,MA,production,per-capita,3.8,15,gallons
+Michigan,MI,craft breweries,total,400,6,total
+Michigan,MI,craft breweries,per-capita,5.4,12,total
+Michigan,MI,economic impact,total,2598,10,million dollars
+Michigan,MI,economic impact,per-capita,349.71,25,million dollars
+Michigan,MI,production,total,903153,10,barrels
+Michigan,MI,production,per-capita,3.8,16,gallons
+Minnesota,MN,craft breweries,total,196,15,total
+Minnesota,MN,craft breweries,per-capita,4.7,14,total
+Minnesota,MN,economic impact,total,2241,12,million dollars
+Minnesota,MN,economic impact,per-capita,547.05,10,million dollars
+Minnesota,MN,production,total,644655,12,barrels
+Minnesota,MN,production,per-capita,4.8,11,gallons
+Mississippi,MS,craft breweries,total,14,50,total
+Mississippi,MS,craft breweries,per-capita,0.7,51,total
+Mississippi,MS,economic impact,total,344,43,million dollars
+Mississippi,MS,economic impact,per-capita,159.65,51,million dollars
+Mississippi,MS,production,total,25257,48,barrels
+Mississippi,MS,production,per-capita,0.4,51,gallons
+Missouri,MO,craft breweries,total,140,18,total
+Missouri,MO,craft breweries,per-capita,3.1,29,total
+Missouri,MO,economic impact,total,1286,21,million dollars
+Missouri,MO,economic impact,per-capita,284.95,33,million dollars
+Missouri,MO,production,total,363383,17,barrels
+Missouri,MO,production,per-capita,2.5,26,gallons
+Montana,MT,craft breweries,total,92,28,total
+Montana,MT,craft breweries,per-capita,11.5,3,total
+Montana,MT,economic impact,total,498,37,million dollars
+Montana,MT,economic impact,per-capita,627.69,6,million dollars
+Montana,MT,production,total,218547,26,barrels
+Montana,MT,production,per-capita,8.5,8,gallons
+Nebraska,NE,craft breweries,total,55,35,total
+Nebraska,NE,craft breweries,per-capita,4,22,total
+Nebraska,NE,economic impact,total,600,32,million dollars
+Nebraska,NE,economic impact,per-capita,437.92999999999995,15,million dollars
+Nebraska,NE,production,total,54892,44,barrels
+Nebraska,NE,production,per-capita,1.2,37,gallons
+Nevada,NV,craft breweries,total,45,38,total
+Nevada,NV,craft breweries,per-capita,2,43,total
+Nevada,NV,economic impact,total,594,33,million dollars
+Nevada,NV,economic impact,per-capita,264.51,40,million dollars
+Nevada,NV,production,total,87469,38,barrels
+Nevada,NV,production,per-capita,1.2,41,gallons
+New Hampshire,NH,craft breweries,total,91,29,total
+New Hampshire,NH,craft breweries,per-capita,8.7,8,total
+New Hampshire,NH,economic impact,total,506,36,million dollars
+New Hampshire,NH,economic impact,per-capita,485.63,12,million dollars
+New Hampshire,NH,production,total,117314,35,barrels
+New Hampshire,NH,production,per-capita,3.5,17,gallons
+New Jersey,NJ,craft breweries,total,127,20,total
+New Jersey,NJ,craft breweries,per-capita,1.9,46,total
+New Jersey,NJ,economic impact,total,1810,18,million dollars
+New Jersey,NJ,economic impact,per-capita,272.78,36,million dollars
+New Jersey,NJ,production,total,171097,31,barrels
+New Jersey,NJ,production,per-capita,0.8,46,gallons
+New Mexico,NM,craft breweries,total,94,27,total
+New Mexico,NM,craft breweries,per-capita,6.2,10,total
+New Mexico,NM,economic impact,total,391,41,million dollars
+New Mexico,NM,economic impact,per-capita,255.62,41,million dollars
+New Mexico,NM,production,total,144530,32,barrels
+New Mexico,NM,production,per-capita,2.9,19,gallons
+New York,NY,craft breweries,total,423,3,total
+New York,NY,craft breweries,per-capita,2.9,31,total
+New York,NY,economic impact,total,4863,4,million dollars
+New York,NY,economic impact,per-capita,330.28,27,million dollars
+New York,NY,production,total,1347435,5,barrels
+New York,NY,production,per-capita,2.8,20,gallons
+North Carolina,NC,craft breweries,total,333,8,total
+North Carolina,NC,craft breweries,per-capita,4.3,18,total
+North Carolina,NC,economic impact,total,2805,9,million dollars
+North Carolina,NC,economic impact,per-capita,366.38,20,million dollars
+North Carolina,NC,production,total,1296320,7,barrels
+North Carolina,NC,production,per-capita,5.2,10,gallons
+North Dakota,ND,craft breweries,total,22,49,total
+North Dakota,ND,craft breweries,per-capita,4,21,total
+North Dakota,ND,economic impact,total,267,47,million dollars
+North Dakota,ND,economic impact,per-capita,487.05,11,million dollars
+North Dakota,ND,production,total,21225,50,barrels
+North Dakota,ND,production,per-capita,1.2,39,gallons
+Ohio,OH,craft breweries,total,311,10,total
+Ohio,OH,craft breweries,per-capita,3.6,26,total
+Ohio,OH,economic impact,total,3401,6,million dollars
+Ohio,OH,economic impact,per-capita,393.86,18,million dollars
+Ohio,OH,production,total,1334762,6,barrels
+Ohio,OH,production,per-capita,4.8,12,gallons
+Oklahoma,OK,craft breweries,total,55,35,total
+Oklahoma,OK,craft breweries,per-capita,1.9,44,total
+Oklahoma,OK,economic impact,total,699,30,million dollars
+Oklahoma,OK,economic impact,per-capita,247.26999999999998,42,million dollars
+Oklahoma,OK,production,total,79747,41,barrels
+Oklahoma,OK,production,per-capita,0.9,45,gallons
+Oregon,OR,craft breweries,total,311,10,total
+Oregon,OR,craft breweries,per-capita,9.7,6,total
+Oregon,OR,economic impact,total,2201,13,million dollars
+Oregon,OR,economic impact,per-capita,694.72,3,million dollars
+Oregon,OR,production,total,1012854,9,barrels
+Oregon,OR,production,per-capita,9.8,7,gallons
+Pennsylvania,PA,craft breweries,total,401,5,total
+Pennsylvania,PA,craft breweries,per-capita,4.1,19,total
+Pennsylvania,PA,economic impact,total,5556,2,million dollars
+Pennsylvania,PA,economic impact,per-capita,576.05,8,million dollars
+Pennsylvania,PA,production,total,3606444,2,barrels
+Pennsylvania,PA,production,per-capita,11.6,4,gallons
+Rhode Island,RI,craft breweries,total,33,44,total
+Rhode Island,RI,craft breweries,per-capita,4.1,20,total
+Rhode Island,RI,economic impact,total,247,48,million dollars
+Rhode Island,RI,economic impact,per-capita,307.8,29,million dollars
+Rhode Island,RI,production,total,65140,42,barrels
+Rhode Island,RI,production,per-capita,2.5,25,gallons
+South Carolina,SC,craft breweries,total,88,30,total
+South Carolina,SC,craft breweries,per-capita,2.3,36,total
+South Carolina,SC,economic impact,total,905,26,million dollars
+South Carolina,SC,economic impact,per-capita,239.76999999999998,43,million dollars
+South Carolina,SC,production,total,109987,36,barrels
+South Carolina,SC,production,per-capita,0.9,44,gallons
+South Dakota,SD,craft breweries,total,33,44,total
+South Dakota,SD,craft breweries,per-capita,5.2,13,total
+South Dakota,SD,economic impact,total,245,49,million dollars
+South Dakota,SD,economic impact,per-capita,388.98999999999995,19,million dollars
+South Dakota,SD,production,total,20843,51,barrels
+South Dakota,SD,production,per-capita,1,43,gallons
+Tennessee,TN,craft breweries,total,108,24,total
+Tennessee,TN,craft breweries,per-capita,2.1,38,total
+Tennessee,TN,economic impact,total,1384,20,million dollars
+Tennessee,TN,economic impact,per-capita,276.11,35,million dollars
+Tennessee,TN,production,total,194669,28,barrels
+Tennessee,TN,production,per-capita,1.2,40,gallons
+Texas,TX,craft breweries,total,341,7,total
+Texas,TX,craft breweries,per-capita,1.7,47,total
+Texas,TX,economic impact,total,5424,3,million dollars
+Texas,TX,economic impact,per-capita,269.65000000000003,37,million dollars
+Texas,TX,production,total,1180393,8,barrels
+Texas,TX,production,per-capita,1.8,33,gallons
+Utah,UT,craft breweries,total,42,40,total
+Utah,UT,craft breweries,per-capita,2,42,total
+Utah,UT,economic impact,total,477,38,million dollars
+Utah,UT,economic impact,per-capita,228.62,48,million dollars
+Utah,UT,production,total,174323,30,barrels
+Utah,UT,production,per-capita,2.5,24,gallons
+Vermont,VT,craft breweries,total,68,33,total
+Vermont,VT,craft breweries,per-capita,14.2,1,total
+Vermont,VT,economic impact,total,366,42,million dollars
+Vermont,VT,economic impact,per-capita,765.71,2,million dollars
+Vermont,VT,production,total,345590,19,barrels
+Vermont,VT,production,per-capita,22.3,1,gallons
+Virginia,VA,craft breweries,total,290,12,total
+Virginia,VA,craft breweries,per-capita,4.6,16,total
+Virginia,VA,economic impact,total,1866,17,million dollars
+Virginia,VA,economic impact,per-capita,295.9,30,million dollars
+Virginia,VA,production,total,344972,20,barrels
+Virginia,VA,production,per-capita,1.7,34,gallons
+Washington,WA,craft breweries,total,423,3,total
+Washington,WA,craft breweries,per-capita,7.5,9,total
+Washington,WA,economic impact,total,2032,16,million dollars
+Washington,WA,economic impact,per-capita,362.47999999999996,21,million dollars
+Washington,WA,production,total,583956,14,barrels
+Washington,WA,production,per-capita,3.2,18,gallons
+West Virginia,WV,craft breweries,total,28,46,total
+West Virginia,WV,craft breweries,per-capita,2,40,total
+West Virginia,WV,economic impact,total,289,46,million dollars
+West Virginia,WV,economic impact,per-capita,210.33,50,million dollars
+West Virginia,WV,production,total,22964,49,barrels
+West Virginia,WV,production,per-capita,0.5,50,gallons
+Wisconsin,WI,craft breweries,total,205,14,total
+Wisconsin,WI,craft breweries,per-capita,4.7,15,total
+Wisconsin,WI,economic impact,total,2379,11,million dollars
+Wisconsin,WI,economic impact,per-capita,552.99,9,million dollars
+Wisconsin,WI,production,total,883648,11,barrels
+Wisconsin,WI,production,per-capita,6.3,9,gallons
+Wyoming,WY,craft breweries,total,41,42,total
+Wyoming,WY,craft breweries,per-capita,9.8,5,total
+Wyoming,WY,economic impact,total,195,51,million dollars
+Wyoming,WY,economic impact,per-capita,462.54,14,million dollars
+Wyoming,WY,production,total,56403,43,barrels
+Wyoming,WY,production,per-capita,4.2,13,gallons
