@@ -208,7 +208,7 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - UseR Highlighted: [Eric Nantz](https://twitter.com/theRcast)
   - [Source Code](https://github.com/rpodcast/shinysaurus) 
   
-- [Episode 33: Beer and State Maps](https://bit.ly/TidyX_Ep29)
+- [Episode 33: Beer and State Maps](https://bit.ly/TidyX_Ep33)
 
   - UseR Highlighted: [Richard Bamattre](https://twitter.com/rbamattre)
   - [Original Tweet](https://twitter.com/rbamattre/status/1318657836600250376)
