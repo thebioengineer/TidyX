@@ -103,7 +103,11 @@ beer_prod_total <- beer %>%
     high = "#CF7200", # pale ale
     low = "#4B0002" # Brown Ale
   ) +
-  labs(title = "Overall Beer Production - Total")
+  labs(title = "Overall Beer Production - Total") + 
+  theme(
+    legend.background = element_rect(fill = NA, color = NA),
+    legend.key = element_rect(fill = NA, color = NA)
+  )
 
 beer_prod_per_capita <- beer %>%
   filter(
@@ -121,7 +125,11 @@ beer_prod_per_capita <- beer %>%
     high = "#CF7200", # pale ale
     low = "#4B0002" # Brown Ale
   ) +
-  labs(title = "Overall Beer Production - Per-Capita")
+  labs(title = "Overall Beer Production - Per-Capita") + 
+  theme(
+    legend.background = element_rect(fill = NA, color = NA),
+    legend.key = element_rect(fill = NA, color = NA)
+  )
 
 beer_impact_total <- beer %>%
   filter(
@@ -139,7 +147,11 @@ beer_impact_total <- beer %>%
     high = "#CF7200", # pale ale
     low = "#4B0002" # Brown Ale
   ) +
-  labs(title = "Overall Beer Economic Impact - Total")
+  labs(title = "Overall Beer Economic Impact - Total") +
+  theme(
+    legend.background = element_rect(fill = NA, color = NA),
+    legend.key = element_rect(fill = NA, color = NA)
+  )
 
 beer_impact_per_capita <- beer %>%
   filter(
@@ -157,7 +169,11 @@ beer_impact_per_capita <- beer %>%
     high = "#CF7200", # pale ale
     low = "#4B0002" # Brown Ale
   ) +
-  labs(title = "Overall Beer Economic Impact - Per-Capita")
+  labs(title = "Overall Beer Economic Impact - Per-Capita") + 
+  theme(
+    legend.background = element_rect(fill = NA, color = NA),
+    legend.key = element_rect(fill = NA, color = NA)
+  )
 
 breweries_total <- beer %>%
   filter(
@@ -175,7 +191,11 @@ breweries_total <- beer %>%
     high = "#CF7200", # pale ale
     low = "#4B0002" # Brown Ale
   ) +
-  labs(title = "Craft Breweries - Total")
+  labs(title = "Craft Breweries - Total") + 
+  theme(
+    legend.background = element_rect(fill = NA, color = NA),
+    legend.key = element_rect(fill = NA, color = NA)
+  )
 
 breweries_per_capita <- beer %>%
   filter(
@@ -193,21 +213,26 @@ breweries_per_capita <- beer %>%
     high = "#CF7200", # pale ale
     low = "#4B0002" # Brown Ale
   ) +
-  labs(title = "Craft Breweries - Per-Capita")
+  labs(title = "Craft Breweries - Per-Capita") +
+  theme(
+    legend.background = element_rect(fill = NA, color = NA),
+    legend.key = element_rect(fill = NA, color = NA)
+  )
 
 ((beer_prod_total / beer_prod_per_capita) |
   (beer_impact_total / beer_impact_per_capita) |
   (breweries_total / breweries_per_capita)) + 
   plot_annotation(
     title = "Craft Beer and Breweries in America",
-    theme = theme(
+    theme =  theme(
       plot.title = element_text(size = 20),
-      plot.background = element_rect(color = "grey", fill = "grey")
-      
-      )
+      plot.background = element_rect(color = "grey", fill = "grey"),
+      legend.background = element_rect(fill = NA, color = NA),
+      legend.key = element_rect(fill = NA, color = NA),
+    )
   )
   
-  
+ggsave(here::here("TidyTuesday_Explained/033-Beer_and_State_Maps/Beer_stats_state_maps.png"),width = 20,height = 16,dpi = 300)
 
 
 
