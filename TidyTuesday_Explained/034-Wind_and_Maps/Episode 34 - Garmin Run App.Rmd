@@ -1,0 +1,129 @@
+---
+title: "Creating a Garmin Run Map"
+author: "Patrick Ward"
+date: "10/30/2020"
+output: html_document
+---
+
+#### Load data & packages
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## Load libraries --------------------------------------------
+library(tidyverse)
+library(here)
+library(shiny)
+library(ggmap)
+library(ggpubr)
+library(patchwork)
+theme_set(theme_light())
+
+## load data ------------------------------------------------
+dat <-
+  trackeR::readTCX(
+    here("TidyTuesday_Explained/034-Wind_and_Maps/activity_5748723048.tcx")
+  ) %>%
+  mutate(
+    Date = as.Date(substring(time, 1, 10), "%Y-%m-%d")
+  ) %>%
+  select(-cadence_cycling, -power, -temperature)
+
+dat %>% 
+  head()
+
+```
+
+
+#### Meta Data
+
+**Some conversions are necessary**
+* Distance is in meters (1 meter = 0.000621371 miles)
+* Altitude is in meters (1 meter = 3.28084 ft)
+* Speed is in meters per second (1 m/s = 2.23694 mph)
+
+```{r}
+
+
+run_session <- dat %>%
+  summarize(
+    'Distance (Miles)' = round(sum(distance - lag(distance), na.rm = T) * 0.000621371, 1),
+    'Duration (Hours)' = as.numeric(difftime(time[n()], time[1],units = "hours")),
+		'Max Spd (MPH)' = round(max(speed, na.rm = T) * 2.23694, 1),
+	  'Avg Spd (MPH)' = round(mean(speed, na.rm = T) * 2.23694, 1),
+		'Max Mile Pace (Min/Mile)' = 60/`Max Spd (MPH)`,
+		'Average Mile Pace (Min/Mile)' = 60/`Avg Spd (MPH)`,
+		'Max HR' = round(max(heart_rate, na.rm = T), 0),
+		'Avg HR' = round(mean(heart_rate, na.rm = T), 1)) %>% 
+  pivot_longer(cols = everything(),
+               names_to = "Variable",
+               values_to = "Value")
+
+run_session
+```
+
+
+
+#### Plots
+
+```{r}
+
+lat <- c(min(dat$latitude, na.rm = T), max(dat$latitude, na.rm = T))
+lon <- c(min(dat$longitude, na.rm = T), max(dat$longitude, na.rm = T))
+bbox <- make_bbox(lon, lat)
+run_map <- get_map(bbox, maptype = "watercolor", source = "stamen")
+
+map_plot <- ggmap(run_map) +
+  geom_point( data = dat, aes(
+      x = longitude,
+      y = latitude,
+      color = speed)) +
+  scale_color_gradient(
+    low = "yellow",
+    high = "red",
+    name = "m/s") +
+  theme(axis.text = element_blank()) +
+  ggtitle("Half Marathon")
+
+hr_plot <- dat %>%
+  ggplot(aes(x = time, y = heart_rate)) +
+  geom_line() +
+  geom_area(fill = "pale green", alpha = 0.7) +
+  geom_hline(aes(yintercept = mean(heart_rate)), linetype = "dashed", color = "red") +
+  labs(x = "time",
+       y = "HR",
+       title = "Heart Rate")  +
+  ylim(0, 220)
+
+
+spd_plot <- dat %>%
+  ggplot(aes(x = time, y = speed * 2.23694)) +
+  geom_area(fill = "light blue", alpha = 0.7) +
+  geom_line() +
+  geom_hline(aes(yintercept = mean(speed)*2.23694), linetype = "dashed", color = "red") +
+  labs(x = "time",
+       y = "Speed",
+       title = "Speed (mph)") +
+  ylim(0, 7.5)
+
+tbl <- run_session %>% 
+  slice(
+    1,2,5:8
+  ) %>% 
+  mutate(
+    Value = round(Value, digits = 1)
+  ) %>% 
+  ggtexttable(rows = NULL, theme = ttheme("lBlackWhite"))
+
+
+```
+
+
+#### Report
+
+```{r}
+
+map_plot | (tbl / plot_spacer() / hr_plot / spd_plot)
+
+```
+

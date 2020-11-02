@@ -214,3 +214,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/rbamattre/status/1318657836600250376)
   - [Tweet Source Code](https://github.com/bamattre/tidytuesday/blob/master/tidytuesday_2020-10-20.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/033-Beer_and_State_Maps) 
+
+- [Episode 34: Wind and Maps](https://bit.ly/TidyX_Ep34)
+
+  - UseR Highlighted: [Florence V. Dubois](https://twitter.com/florencevdubois)
+  - [Original Tweet](https://twitter.com/florencevdubois/status/1321627309850431488)
+  - [Tweet Source Code](https://github.com/florencevdubois/MyTidyTuesdays/blob/master/2020.10.27.R) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/034-Wind_and_Maps) 
