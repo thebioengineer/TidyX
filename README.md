@@ -221,3 +221,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/florencevdubois/status/1321627309850431488)
   - [Tweet Source Code](https://github.com/florencevdubois/MyTidyTuesdays/blob/master/2020.10.27.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/034-Wind_and_Maps) 
+  
+- [Episode 35: Rectangles](https://bit.ly/TidyX_Ep35)
+
+  - UseR Highlighted: [Henry Wakefield](https://twitter.com/henrywrover2)
+  - [Original Tweet]https://twitter.com/henrywrover2/status/1323626098924621825)
+  - [Tweet Source Code](https://github.com/henrywrover/tidytuesday/blob/master/R/ikea.R) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles) 
