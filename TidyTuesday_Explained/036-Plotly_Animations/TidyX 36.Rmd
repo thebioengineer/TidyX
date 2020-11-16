@@ -1,0 +1,90 @@
+---
+title: "Mobile and Land - phone use over time"
+author: "Patrick Ward"
+date: "11/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidytuesdayR)
+library(plotly)
+
+theme_set(theme_light())
+
+tuesdata <- tt_load('2020-11-10')
+
+mobile <- tuesdata$mobile
+land <- tuesdata$landline
+
+mobile %>% head()
+land %>% head()
+
+mobile_yr <- mobile %>%
+  mutate(
+    total_subscriptions = mobile_subs * total_pop / 100 ,
+    type = "mobile"
+  )
+
+land_yr <- land %>%
+  mutate(
+    total_subscriptions = landline_subs * total_pop / 100 ,
+    type = "landline"
+  )
+
+df <- bind_rows(mobile_yr, land_yr)
+df %>% head()
+
+```
+
+
+```{r}
+
+df %>%
+  ggplot(aes(
+    x = year,
+    y = total_subscriptions,
+    color = type
+  )) +
+  stat_summary(fun = "mean", geom = "line") +
+  scale_color_manual(values = c("green", "blue")) +
+  facet_wrap(~continent, scale = "free_y") +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+
+
+```{r}
+
+plt <- df %>%
+  filter(continent == "Americas") %>%
+  ggplot(aes(
+    x = gdp_per_cap,
+    y = total_subscriptions,
+    color = entity
+    )) +
+  geom_point(aes(
+    size = total_pop,
+    frame = year,
+    ids = entity
+    )) +
+  facet_wrap( ~type) +
+  labs(x = "GDP per Capita",
+       y = "Phone Subscriptions",
+       title = "Phone Subscriptions relative to growth in GDP",
+       subtitle = "Location: The Americas") +
+  theme(axis.text = element_text(size = 12, face = "bold"),
+        axis.title = element_text(size = 14, face = "bold"),
+        plot.title = element_text(size = 18, vjust = 0.5),
+        plot.subtitle = element_text(size = 16, vjust = 0.5),
+        strip.background = element_rect(fill = "black"),
+        strip.text = element_text(size = 13, face = "bold", color ="white"),
+        legend.position = "none")
+
+ggplotly(plt)
+
+```
+
