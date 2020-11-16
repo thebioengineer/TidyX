@@ -228,3 +228,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet]https://twitter.com/henrywrover2/status/1323626098924621825)
   - [Tweet Source Code](https://github.com/henrywrover/tidytuesday/blob/master/R/ikea.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles) 
+  
+- [Episode 36: Animated Plotly](https://bit.ly/TidyX_Ep36)
+  
+  - This weeks #TidyTuesday dataset was on Mobile and Landline subscriptions across the world. This week we saw lots of animation type plots, and wanted to add our own. Using {plotly}, we make an interactive plot that animates across time to show how GDP is related to the raw subscription numbers. We also do some exploration with line plots. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/036-Plotly_Animations)  
