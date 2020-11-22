@@ -135,8 +135,8 @@ sports_radar_pbp <- function(game_url){
     away_players
   )
   
-  # final data clean up, addition of quarer time
-  bigdat %>% 
+  # final data clean up, addition of quarter time
+  final_dat <- bigdat %>% 
     mutate(
       home_team = pbp$summary$home$alias,
       away_team = pbp$summary$away$alias,
@@ -150,6 +150,8 @@ sports_radar_pbp <- function(game_url){
       increment = ifelse(is.na(increment), 0, increment),
       qtr = 1 + cumsum(increment)
     )
+  
+  return(final_dat)
 }
 
 
