@@ -225,11 +225,19 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 - [Episode 35: Rectangles](https://bit.ly/TidyX_Ep35)
 
   - UseR Highlighted: [Henry Wakefield](https://twitter.com/henrywrover2)
-  - [Original Tweet]https://twitter.com/henrywrover2/status/1323626098924621825)
+  - [Original Tweet](https://twitter.com/henrywrover2/status/1323626098924621825)
   - [Tweet Source Code](https://github.com/henrywrover/tidytuesday/blob/master/R/ikea.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles) 
   
 - [Episode 36: Animated Plotly](https://bit.ly/TidyX_Ep36)
   
   - This weeks #TidyTuesday dataset was on Mobile and Landline subscriptions across the world. This week we saw lots of animation type plots, and wanted to add our own. Using {plotly}, we make an interactive plot that animates across time to show how GDP is related to the raw subscription numbers. We also do some exploration with line plots. 
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/036-Plotly_Animations)  
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/036-Plotly_Animations)
+  
+- [Episode 37: Code Review](https://bit.ly/TidyX_Ep37)
+  
+  - Looking back at ones code can show you just how far you have come. Sparked by a conversation between Ben Baldwin (@benbaldwin), Patrick and Ellis, this weeks episode is on code review and refactoring. Ben went into his past and has furnished a set of code for us to try to refactor. In the spirit of things, neither of us looked closely at the code ahead of time, and recorded our initial reactions and process of refactoring Bens code into a function that could be applied to multiple datasets!
+  - UseR Highlighted: [Ben Baldwin](https://twitter.com/benbaldwin)
+  - [Original Tweet](https://twitter.com/benbbaldwin/status/1327407031024824322)
+  - [Tweet Source Code](https://github.com/guga31bb/sport_radar/blob/master/R/bad_code.R) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/037-Code_Review)
