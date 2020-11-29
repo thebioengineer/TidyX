@@ -241,3 +241,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/benbbaldwin/status/1327407031024824322)
   - [Tweet Source Code](https://github.com/guga31bb/sport_radar/blob/master/R/bad_code.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/037-Code_Review)
+  
+- [Episode 35: Polar Plots](https://bit.ly/TidyX_Ep38)
+
+  - UseR Highlighted: [Tobias Stalder](https://twitter.com/toeb18)
+  - [Original Tweet](https://twitter.com/toeb18/status/1331591612405780481)
+  - [Tweet Source Code](https://github.com/toebR/Tidy-Tuesday/tree/master/hiking) 
