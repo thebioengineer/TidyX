@@ -242,8 +242,13 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Tweet Source Code](https://github.com/guga31bb/sport_radar/blob/master/R/bad_code.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/037-Code_Review)
   
-- [Episode 35: Polar Plots](https://bit.ly/TidyX_Ep38)
+- [Episode 38: Polar Plots](https://bit.ly/TidyX_Ep38)
 
   - UseR Highlighted: [Tobias Stalder](https://twitter.com/toeb18)
   - [Original Tweet](https://twitter.com/toeb18/status/1331591612405780481)
   - [Tweet Source Code](https://github.com/toebR/Tidy-Tuesday/tree/master/hiking) 
+
+- [Episode 39: Imputing Missingness](https://bit.ly/TidyX_Ep39)
+  
+  - This weeks we reach into our mailbag to answer a request from Eric Fletcher(@iamericfletcher) on imputing NA's. In this video we scrape 2013 draft data, and impute using various techniques missing times for the three cone event. We also attempt to discuss Missing Completely at Random (MCAR), Missing at Random (MAR), and Missing Not at Random (MNAR) - but we decide at the end to leave it to the professionals.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/039-Imputing_Missingness)
