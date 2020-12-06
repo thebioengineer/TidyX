@@ -1,0 +1,237 @@
+---
+title: "Imputing NAs"
+author: "Patrick Ward"
+date: "12/4/2020"
+output: html_document
+---
+
+Previous blog article written about simple approaches to dealing with NA, NaN, and Inf, in a data frame: http://optimumsportsperformance.com/blog/r-tips-tricks-dealing-with-missing-values/
+
+
+## Load Packages and Data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## Packages
+library(tidyverse)
+library(janitor)
+library(patchwork)
+library(rvest)
+
+theme_set(theme_light())
+
+## data
+
+url <- read_html("https://www.pro-football-reference.com/draft/2013-combine.htm")
+
+combine <- url %>%
+  html_table(fill = T) %>%
+  purrr::pluck(1) %>%
+  filter(Player != "Player") %>%
+  clean_names() %>%
+  mutate(
+    across(c(6:12), .fns = ~readr::parse_number(.x)),
+    hgt_ft = as.numeric(gsub("-.*", "", ht))*12,
+    hgt_in = as.numeric(gsub("*.-", "", ht)),
+    ht = hgt_ft + hgt_in,
+    pos_group = case_when(pos %in% c("OT", "OG", "C") ~ "OL",
+                          pos %in% c("ILB", "OLB") ~ "LB",
+                          pos %in% c("S", "CB") ~ "DB",
+                          pos == "EDGE" ~ "DE",
+                          pos == "DT" ~ "DL",
+                          TRUE ~ as.character(pos))
+  ) %>%
+  select(-hgt_ft, -hgt_in) %>%
+  separate(drafted_tm_rnd_yr, into = c("Tm", "Rd", "Pick", "Yr"), sep = "/") %>%
+  mutate(Round = substring(Rd, 1, 2),
+         Round = ifelse(is.na(Round), "FA", as.character(Round)),
+         Year = ifelse(is.na(Yr), 2013, Yr)) %>%
+  select(-Rd, -Pick, -Yr) %>%
+  filter(!pos %in% c("K", "LS", "P"))
+
+combine %>% head()
+combine %>% glimpse()
+
+```
+
+
+## How many NAs in each columns?
+
+```{r}
+combine %>%
+  summarize(across(everything(), ~sum(is.na(.x))))
+
+```
+
+
+Are the missing performance values specific to different position groups?
+
+```{r}
+combine %>%
+  group_by(pos_group) %>%
+  summarize(
+    across(everything(), ~sum(is.na(.x))),
+     n = n()
+    ) %>% 
+  relocate(n, .after = pos_group) %>% 
+  mutate(
+    across(player:Year, ~ .x/n)
+  )
+
+```
+
+
+## Mean and Median Imputation
+
+* Impute values for the 3cone test
+
+```{r}
+
+combine_imp <- combine %>%
+  mutate(
+    needs_imputation = ifelse(is.na(x3cone), 1, 0),
+    mean_imp = ifelse(is.na(x3cone), mean(x3cone, na.rm = T), x3cone),
+    median_imp = ifelse(is.na(x3cone), median(x3cone, na.rm = T), x3cone)
+  )
+
+```
+
+
+* What if we do it within position group instead?
+
+```{r}
+
+combine_imp <- combine_imp %>%
+  group_by(pos_group) %>%
+  mutate(
+    mean_imp_pos = ifelse(is.na(x3cone), mean(x3cone, na.rm = T), x3cone),
+    median_imp_pos = ifelse(is.na(x3cone), median(x3cone, na.rm = T), x3cone)
+  ) %>% 
+  ungroup()
+
+```
+
+
+```{r}
+
+combine_imp %>% head()
+
+```
+
+
+## Impute using linear regression
+
+* build a regression model to predict 3cone from wt and x40yd
+
+```{r}
+## 3cone ~ Wt
+combine_imp %>%
+  ggplot(aes(x = wt, y = x3cone, color = pos_group)) +
+  geom_point(size = 4,
+             alpha = 0.8) +
+  labs(title = "3cone ~ Wt",
+     x = "Wt",
+     y = "3cone")
+
+## 3cone ~ 40yd Sprint
+combine_imp %>%
+  ggplot(aes(x = x40yd, y = x3cone, color = pos_group)) +
+  geom_point(size = 4,
+             alpha = 0.8) +
+  labs(title = "3cone ~ 40yd Sprint",
+     x = "40yd Sprint",
+     y = "3cone")
+
+# model
+fit_three_cone <- lm( x3cone ~ wt + x40yd , data = combine_imp)
+summary(fit_three_cone)
+
+# add predictions into the data
+combine_imp <- combine_imp %>%
+  mutate(lm_three_cone = ifelse(is.na(x3cone), 
+                                predict(fit_three_cone, newdata = .),
+                                x3cone))
+
+combine_imp %>% head(20)
+
+# histogram of imputed values
+hist(combine_imp$lm_three_cone, col = "light grey", main = "Imputed 3cone (Linear Model)", xlab = "3cone Impuated")
+
+# Densities by position groups
+combine_imp %>%
+  mutate(side = case_when(pos_group %in% c("DB", "DE", "DL", "LB") ~ "Defense",
+                          TRUE ~ "Offense")) %>%
+  ggplot(aes(x = lm_three_cone, fill = pos_group)) +
+  geom_density(alpha = 0.4) +
+  scale_color_binned() +
+  facet_wrap(~side)
+
+```
+
+## MICE package
+
+```{r mice}
+
+library(mice)
+
+md.pattern(combine)
+
+combine_mice <- combine %>% 
+  mice(m = 5, seed = 12345) %>% 
+  {
+    
+    three_cone_imp <- .$imp$x3cone %>% 
+      pull(5)
+    
+    dat <- .$data %>% 
+      mutate(
+        needs_imputation = ifelse(is.na(x3cone), 1, 0)
+        )
+    
+    dat[is.na(dat$x3cone), "x3cone"] <- three_cone_imp
+    
+    dat
+  }
+                     
+```
+
+* looking at the relationship between different kinds of imputation
+
+```{r}
+
+
+combine_imp %>%
+  dplyr::mutate(mice_three_cone = combine_mice$x3cone) %>%
+  select(lm_three_cone,
+         mean_imp_pos,
+         median_imp_pos,
+         mice_three_cone,
+         x3cone,
+         needs_imputation) %>%
+  pivot_longer(
+    cols = c(lm_three_cone, mean_imp_pos, median_imp_pos, mice_three_cone, x3cone),
+    names_to = "imputation",
+    values_to = "time"
+  ) %>%
+  filter(
+    imputation %in% c("lm_three_cone", "mean_imp_pos","median_imp_pos", "mice_three_cone") &
+      needs_imputation == 1 |
+      imputation %in% c("x3cone") & needs_imputation == 0
+  ) %>%
+  mutate(
+    imputation = factor(
+      imputation,
+      levels = c("mean_imp_pos","median_imp_pos", "lm_three_cone", "mice_three_cone", "x3cone")
+    )
+  ) %>% 
+  ggplot(aes(x = time,
+             fill = imputation)) +
+  geom_density() +
+  facet_grid( ~ imputation) +
+  labs(x = "3 cone",
+       title = "Imputed & Non-Imputed 3-Cone")
+
+```
+
+
