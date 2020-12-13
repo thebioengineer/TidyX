@@ -252,3 +252,11 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - This weeks we reach into our mailbag to answer a request from Eric Fletcher(@iamericfletcher) on imputing NA's. In this video we scrape 2013 draft data, and impute using various techniques missing times for the three cone event. We also attempt to discuss Missing Completely at Random (MCAR), Missing at Random (MAR), and Missing Not at Random (MNAR) - but we decide at the end to leave it to the professionals.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/039-Imputing_Missingness)
+
+
+- [Episode 40: Rectangles](https://bit.ly/TidyX_Ep40)
+
+  - UseR Highlighted: [Jackie Torres](https://twitter.com/JackiePsych)
+  - [Original Tweet](https://twitter.com/JackiePsych/status/1336892422995886080)
+  - [Tweet Source Code](https://github.com/wjtorres/tidytuesday/tree/master/2020_12_08) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/040-Plotly_and_APIs) 

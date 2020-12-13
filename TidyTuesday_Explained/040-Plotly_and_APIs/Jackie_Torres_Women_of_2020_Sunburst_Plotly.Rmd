@@ -1,0 +1,114 @@
+---
+title: "TidyTemplate"
+author: "wjtorres"
+date: 2020-12-08
+output: html_output
+---
+
+# TidyTuesday
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidytuesdayR)
+library(plotly) # for interactive sunburst chart
+library(htmlwidgets) # to save widget
+```
+
+# Load the weekly Data
+
+```{r Load}
+
+tt <- tt_load("2020-12-08")
+
+```
+
+
+# Pull Data
+
+```{r }
+
+women <- tt$women
+
+```
+
+# Wrangle
+
+```{r}
+
+# prep dataframe1
+
+labels <- c("All", "Creativity", "Identity", "Knowledge", "Leadership")
+values <- c(1, 21, 17, 32, 29)
+parents <- c("", "", "", "", "")
+ids <- c("All", "Creativity", "Identity", "Knowledge", "Leadership")
+img <- c("", "", "", "", "")
+country <- c("various", "various", "various", "various", "various")
+role <- c("various", "various", "various", "various", "various")
+description <- c("n = 1", "n = 21", "n = 17", "n = 32", "n = 29")
+colors <- c("#e8f72f", "#9d02d7", "#34dd26", "#0000ff", "#ffb14e")
+
+df1 <- data.frame(labels, values, parents, ids, img, country, role, description, colors)
+
+# prep dataframe2
+
+df2 <- women %>%
+  rename(labels = name,
+         parents = category) %>%
+  mutate(values = rep(1),
+         ids = paste(parents, " - ", labels)) %>%
+  mutate(colors = case_when(
+    parents == "All" ~ "#e8f72f",
+    parents == "Creativity" ~ "#9d02d7",
+    parents == "Identity" ~ "#34dd26",
+    parents == "Knowledge" ~ "#0000ff",
+    parents == "Leadership" ~ "#ffb14e"
+  )) %>%
+  select(labels, values, parents, ids, img, country, role, description, colors)
+
+# bind dataframes
+
+women2 <- rbind(df1, df2)
+
+# break up long descriptive label for sunburst chart hover text
+
+women2$description2 <- stringr::str_wrap(women2$description, width = 100)
+
+```
+
+# Visualize
+
+```{r}
+
+fig <- plot_ly(
+  women2, 
+  ids = ~ids, 
+  labels = ~labels, 
+  parents = ~parents, 
+  type = 'sunburst',
+  insidetextorientation='radial',
+  hovertemplate = glue::glue(
+      "<b>{women2$labels}</b><br>",
+      "<b>Country: {women2$country}</b><br>",
+      "<b>Role: {women2$role}</b><br>",
+      "{women2$description2}",
+      "<extra></extra>"),
+  marker = list(colors = ~colors)
+  ) %>%
+  layout(title = list(text = "<b>The BBC's 100 women of 2020</b>")) %>%
+  layout(paper_bgcolor='rgba(60,174,163,1)')
+
+fig
+```
+
+# Save!
+
+```{r}
+# save the widget
+
+# saveWidget(fig, file="my_plotly.html")
+
+```
