@@ -91,7 +91,8 @@ pitch_classifier <- function(x, classifier = c("group","desc")){
   "CU",                         "curveball",    "breaking",
   "KC",                     "knuckle-curve",    "breaking",
   "KN",                       "knuckleball",   "",
-  "EP",                            "eephus",   "")
+  "EP",                            "eephus",   ""
+  )
 
   
   class_vec <- setNames(
@@ -137,7 +138,7 @@ plot_ly() %>%
            fillcolor = "#eeeeee",
            line = list(color = "#d4d4d4"),
            x0 = -.8, x1 = .8, xref = "x",
-           y0 = 1.4, y0 = 3.5, yref = "y",
+           y0 = 1.4, y1 = 3.5, yref = "y",
            opacity = 0.7
     ))    
   ) %>% 
