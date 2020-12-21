@@ -260,3 +260,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/JackiePsych/status/1336892422995886080)
   - [Tweet Source Code](https://github.com/wjtorres/tidytuesday/tree/master/2020_12_08) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/040-Plotly_and_APIs) 
+  
+- [Episode 41: Worm Charts with Alice Sweeting](https://bit.ly/TidyX_Ep41)
+  
+  - Alice Sweeting(@alicesweeting) joins us as a guest explainer this week! We are very excited to have her on as she explains with us how she worked through creating a worm chart of a super netball game! She talks with us on common techniques she uses to process data, mixing base R with tidyverse. Then we spend some time discussing Alice's background, current role, and advice for folks looking to get started in sports analytics or R programming in general.
+  
+  - UseR Highlighted: [Eric Nantz](https://twitter.com/alicesweeting)
+  - [Source Code](https://github.com/SportStatisticsRSweet/TidyExplainedScreencast) 
