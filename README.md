@@ -267,3 +267,11 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - UseR Highlighted: [Eric Nantz](https://twitter.com/alicesweeting)
   - [Source Code](https://github.com/SportStatisticsRSweet/TidyExplainedScreencast) 
+  
+- [Episode 42: Highlighting Lines](https://bit.ly/TidyX_Ep42)
+
+  - UseR Highlighted: [Peter](https://twitter.com/DataVizGuy_1648)
+  - [Original Tweet](https://twitter.com/DataVizGuy_1648/status/1341437551085797376)
+  - [Tweet Source Code](https://github.com/DataVizGuy-1648/Tidy-Tuesday/blob/main/20201222_bigmac.R) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/042-Highlighting_Lines) 
+  
