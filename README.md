@@ -275,3 +275,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Tweet Source Code](https://github.com/DataVizGuy-1648/Tidy-Tuesday/blob/main/20201222_bigmac.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/042-Highlighting_Lines) 
   
+- [Episode 43: Funnel Plots, Plotly, and Hockey](https://bit.ly/TidyX_Ep43)
+  
+  - With no #TidyTuesday dataset this week, we decide to continue to work through our learning of plotly. This time, using a tool known as a funnel plot. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/043-Funnel_Plots)
+  
