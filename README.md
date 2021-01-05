@@ -254,7 +254,7 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/039-Imputing_Missingness)
 
 
-- [Episode 40: Rectangles](https://bit.ly/TidyX_Ep40)
+- [Episode 40: Inspiring Women and Plotly](https://bit.ly/TidyX_Ep40)
 
   - UseR Highlighted: [Jackie Torres](https://twitter.com/JackiePsych)
   - [Original Tweet](https://twitter.com/JackiePsych/status/1336892422995886080)
