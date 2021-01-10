@@ -280,3 +280,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - With no #TidyTuesday dataset this week, we decide to continue to work through our learning of plotly. This time, using a tool known as a funnel plot. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/043-Funnel_Plots)
   
+- [Episode 44: Transit Costs, steps, and Plotly Maps](https://bit.ly/TidyX_Ep44)
+
+  - UseR Highlighted: [Martin Devaux](https://twitter.com/MartinDevaux)
+  - [Original Tweet](https://twitter.com/MartinDevaux/status/1346820062766776320)
+  - [Blog Post](https://martindevaux.com/2021/01/tidytuesday-transit-costs-project/) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/044-Steps_and_Plotly_Maps) 
+  
