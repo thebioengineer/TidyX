@@ -254,7 +254,7 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/039-Imputing_Missingness)
 
 
-- [Episode 40: Rectangles](https://bit.ly/TidyX_Ep40)
+- [Episode 40: Inspiring Women and Plotly](https://bit.ly/TidyX_Ep40)
 
   - UseR Highlighted: [Jackie Torres](https://twitter.com/JackiePsych)
   - [Original Tweet](https://twitter.com/JackiePsych/status/1336892422995886080)
@@ -265,7 +265,7 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - Alice Sweeting(@alicesweeting) joins us as a guest explainer this week! We are very excited to have her on as she explains with us how she worked through creating a worm chart of a super netball game! She talks with us on common techniques she uses to process data, mixing base R with tidyverse. Then we spend some time discussing Alice's background, current role, and advice for folks looking to get started in sports analytics or R programming in general.
   
-  - UseR Highlighted: [Eric Nantz](https://twitter.com/alicesweeting)
+  - UseR Highlighted: [Alice Sweeting](https://twitter.com/alicesweeting)
   - [Source Code](https://github.com/SportStatisticsRSweet/TidyExplainedScreencast) 
   
 - [Episode 42: Highlighting Lines](https://bit.ly/TidyX_Ep42)
@@ -280,6 +280,7 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - With no #TidyTuesday dataset this week, we decide to continue to work through our learning of plotly. This time, using a tool known as a funnel plot. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/043-Funnel_Plots)
   
+<<<<<<< HEAD
 - [Episode 44: Transit Costs, steps, and Plotly Maps](https://bit.ly/TidyX_Ep44)
 
   - UseR Highlighted: [Martin Devaux](https://twitter.com/MartinDevaux)
@@ -287,3 +288,5 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Blog Post](https://martindevaux.com/2021/01/tidytuesday-transit-costs-project/) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/044-Steps_and_Plotly_Maps) 
   
+=======
+>>>>>>> 7d1da8baa91fd3ed3a29e19f43cfb9a2b587c380
