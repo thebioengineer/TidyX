@@ -280,7 +280,6 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - With no #TidyTuesday dataset this week, we decide to continue to work through our learning of plotly. This time, using a tool known as a funnel plot. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/043-Funnel_Plots)
   
-<<<<<<< HEAD
 - [Episode 44: Transit Costs, steps, and Plotly Maps](https://bit.ly/TidyX_Ep44)
 
   - UseR Highlighted: [Martin Devaux](https://twitter.com/MartinDevaux)
@@ -288,5 +287,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Blog Post](https://martindevaux.com/2021/01/tidytuesday-transit-costs-project/) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/044-Steps_and_Plotly_Maps) 
   
-=======
->>>>>>> 7d1da8baa91fd3ed3a29e19f43cfb9a2b587c380
+- [Episode 45: NHL Pythagorean Wins and Regression](https://bit.ly/TidyX_Ep45)
+  
+  - This week we reflect back on the past year and combine techniques from multiple episodes. We scrape multiuple tables from the the hockey reference website, use regular expressions to clean and organize the data, and use for loops to determine the optimal pythagorean win exponent.  We visualize the data using several different techniques, like scatter and lollipop charts. We show some fun tools with regularizing values for linear regressions and how how to predict and visualize the results.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/045-NHL_Pythagorean_Wins)
+  
