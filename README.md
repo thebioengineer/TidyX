@@ -292,3 +292,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - This week we reflect back on the past year and combine techniques from multiple episodes. We scrape multiuple tables from the the hockey reference website, use regular expressions to clean and organize the data, and use for loops to determine the optimal pythagorean win exponent.  We visualize the data using several different techniques, like scatter and lollipop charts. We show some fun tools with regularizing values for linear regressions and how how to predict and visualize the results.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/045-NHL_Pythagorean_Wins)
   
+- [Episode 46: Circle Plots, NHL Salaries, and Logistic Regression](https://bit.ly/TidyX_Ep46)
+
+  - UseR Highlighted: [Natalie O'Shea](https://twitter.com/_natalie_oshea)
+  - [Original Tweet](https://twitter.com/_natalie_oshea/status/1351897562501025796)
+  - [Tweet Source Code](https://github.com/natalieoshea/tidytuesday/blob/master/2021/week04.R) 
+  - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/046-Circle_Plots_and_NHL_Salaries) 
