@@ -298,3 +298,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - [Original Tweet](https://twitter.com/_natalie_oshea/status/1351897562501025796)
   - [Tweet Source Code](https://github.com/natalieoshea/tidytuesday/blob/master/2021/week04.R) 
   - [TidyX Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/046-Circle_Plots_and_NHL_Salaries) 
+
+- [Episode 47: NHL Win Probabilities and GT Tables](https://bit.ly/TidyX_Ep47)
+  
+  - This week we play with a new technique for optimizing, the `optim` function! We scrape the 2019-2020 NHL season to generate power rankings for every NHL team and home-ice-edge. We can use this to then predict team winning probability! We then combine that with season summary data to generate a pretty GT table!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/047-NHL_Win_Probabilities)
+  
