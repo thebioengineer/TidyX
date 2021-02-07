@@ -304,3 +304,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - This week we play with a new technique for optimizing, the `optim` function! We scrape the 2019-2020 NHL season to generate power rankings for every NHL team and home-ice-edge. We can use this to then predict team winning probability! We then combine that with season summary data to generate a pretty GT table!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/047-NHL_Win_Probabilities)
   
+
+- [Episode 48: NBA Point Simulations](https://bit.ly/TidyX_Ep48)
+  
+  - In this episode we show how to scrape the current NBA seasons scores to then generate a simple game simulator. Using {purrr} with some base R functions we generate outputs and show how to simulate thousands of games to generate outcome predictions.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/048-NBA_Game_Simulations)
+  
