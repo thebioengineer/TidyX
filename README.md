@@ -313,6 +313,6 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
 - [Episode 49: MLB Batting Simulations](https://bit.ly/TidyX_Ep49)
   
-  - We continue looking at simuations this week, but this time for individual players. Using {Lahman}, we pull the 2019 MLB player batting stats, and visualize the stats using hisograms and density plots. Next, to generate confidence intervals around their batting averages we use rbinom() combined with techniques from the {tidyverse} to make simulation easy. Finally we wisualize the data using {gt} combined with {sparklines}.
+  - We continue looking at simulations this week, but this time for individual players. Using {Lahman}, we pull the 2019 MLB player batting stats, and visualize the stats using histograms and density plots. Next, to generate confidence intervals around their batting averages we use rbinom() combined with techniques from the {tidyverse} to make simulation easy. Finally we visualize the data using {gt} combined with {sparklines}.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/049-MLB_Batting_Simulations)
   
