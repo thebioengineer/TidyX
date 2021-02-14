@@ -310,3 +310,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - In this episode we show how to scrape the current NBA seasons scores to then generate a simple game simulator. Using {purrr} with some base R functions we generate outputs and show how to simulate thousands of games to generate outcome predictions.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/048-NBA_Game_Simulations)
   
+  
+- [Episode 49: MLB Batting Simulations](https://bit.ly/TidyX_Ep49)
+  
+  - We continue looking at simuations this week, but this time for individual players. Using {Lahman}, we pull the 2019 MLB player batting stats, and visualize the stats using hisograms and density plots. Next, to generate confidence intervals around their batting averages we use rbinom() combined with techniques from the {tidyverse} to make simulation easy. Finally we wisualize the data using {gt} combined with {sparklines}.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/049-MLB_Batting_Simulations)
+  
