@@ -354,6 +354,7 @@ plot_2019
 ## Note, this was inspired by Thomas Mock
 ## https://gist.github.com/jthomasmock/67892387f23708b94819ef12ee76dc70
 
+
 ### convert to image
 
 gt_temp <- tempfile(fileext = ".png")
