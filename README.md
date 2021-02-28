@@ -316,3 +316,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - We continue looking at simulations this week, but this time for individual players. Using {Lahman}, we pull the 2019 MLB player batting stats, and visualize the stats using histograms and density plots. Next, to generate confidence intervals around their batting averages we use rbinom() combined with techniques from the {tidyverse} to make simulation easy. Finally we visualize the data using {gt} combined with {sparklines}.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/049-MLB_Batting_Simulations)
   
+- [Episode 50: MLB Batting Simulations](https://bit.ly/TidyX_Ep50)
+  
+  - Another MLB Batting episode. This time we use the James Stein Estimator (paper below) to apply a shrinkage estimate to player batting averages to get a "true" estimate, removing luck. Using {Lahman}, we pull the 2018 MLB player batting stats, and explain how to implement the estimator. Next, we compare estimates against the 2019 season. Finally we visualize the data using {gt}, using header spans, and cell styling. For the grand finale we combine this gt table with batting averages with plots using patchwork!.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/050-James_Stein_Estimators)
+  
