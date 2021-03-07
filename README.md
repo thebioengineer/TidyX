@@ -321,3 +321,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - Another MLB Batting episode. This time we use the James Stein Estimator (paper below) to apply a shrinkage estimate to player batting averages to get a "true" estimate, removing luck. Using {Lahman}, we pull the 2018 MLB player batting stats, and explain how to implement the estimator. Next, we compare estimates against the 2019 season. Finally we visualize the data using {gt}, using header spans, and cell styling. For the grand finale we combine this gt table with batting averages with plots using patchwork!.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/050-James_Stein_Estimators)
   
+- [Episode 50: MLB Batting Simulations](https://bit.ly/TidyX_Ep50)
+  
+  - Sharing the results of a modeling effort is an important skill of any data scientist. However, just sharing the weights of each predictory is often not good enough to get buy in from stakeholders who are understandably skeptical of your results. Using the power of shiny, you can show your stakeholders exactly how your model interprets and then predicts the results. In this episode, we use the {palmerpenguins} package with {randomforest} to generate a model to predict the species of a new penguin. With shiny, we then deploy our model to allow the users to record new penguins attributes to see whether the model things they are an Adelie, Chinstrap, or Gentoo! The output is a boxplot indicating the models probablity for each species given the inputs.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/051-Deploying_Shiny_Models)
+  
