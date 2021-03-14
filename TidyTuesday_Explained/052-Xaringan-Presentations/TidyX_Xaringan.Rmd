@@ -1,0 +1,145 @@
+---
+title: "Episode 52 - Presenting Penguins"
+author: "Ellis Hughes and Patrick Ward"
+date: "`r Sys.Date()`"
+output: xaringan::moon_reader
+---
+
+background-image: url(https://raw.githubusercontent.com/thebioengineer/TidyX/master/logo/TidyX_Profile.jpg)
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(tidyverse)
+library(here)
+library(gt)
+library(palmerpenguins)
+library(randomForest)
+```
+
+---
+
+# Context
+
+- You are a penguinologist at Palmer Station 2, Antarctica LTER
+- Collecting data on the penguins in the Palmer Archipelago
+- One day your boss walks into your office and proclaims
+
+---
+
+# Hypothesis 
+ 
+![](too_many_gentoo.jpg)
+
+---
+
+# Reference Data
+
+- [{palmerpenguins}](https://github.com/allisonhorst/palmerpenguins) maintained by Dr. Allison Horst, Dr. Alison Hill, 
+Data from Dr. Kristen Gorman
+
+```{r}
+penguins %>% 
+  count(species) %>% 
+  mutate(
+    pct = n / sum(n)
+  ) %>% 
+  gt()
+```
+
+---
+
+# Your data!
+
+```{r}
+
+suppressMessages({
+penguins2 <- readr::read_csv(
+  here("TidyTuesday_Explained/052-Xaringan-Presentations/palmer_penguins_3.csv"))
+})
+
+penguins2 %>% 
+  count(species) %>% 
+  mutate(
+    pct = n / sum(n)
+  ) %>% 
+  gt()
+
+```
+
+---
+
+# Comparison
+
+```{r, echo = FALSE}
+
+penguins %>%
+  count(species) %>%
+  mutate(pct = n / sum(n)) %>%
+  
+  left_join(
+    
+    penguins2 %>%
+      count(species) %>%
+      mutate(pct = n / sum(n)),
+    
+    by = "species",
+    
+    suffix = c("_Palmer", "_Palmer 2")
+    
+  ) %>%
+  
+  select(species, starts_with("n"), starts_with("pct")) %>%
+  
+  gt(rowname_col = "species") %>%
+  tab_spanner_delim(delim = "_") %>%
+  fmt_percent(starts_with("pct"),
+              decimals = 0)
+
+
+```
+
+--
+
+Looks like Big Boss is correct!
+
+---
+
+# Classify using Random Forest!
+
+```{r}
+
+rf_fit <- readRDS(here("TidyTuesday_Explained/052-Xaringan-Presentations/rf_penguin_classification.rds"))
+
+penguins2$species_preds <- predict(rf_fit, newdata = penguins2)
+
+```
+
+- `rf_fit` is a pretrained model
+- Known to have high degree of predictive power
+- we can use this rather than having the team predict the penguins species based on looks alone!
+
+---
+
+# Evaluation
+
+Data up to date as of `r Sys.Date()`
+
+```{r echo = FALSE}
+
+penguins2 %>%
+  
+  count(species,
+        species_preds) %>%
+  
+  pivot_wider(names_from = species_preds,
+              values_from = n) %>%
+  
+  gt() %>%
+  cols_label(species = "Original") %>%
+  tab_spanner(label = "Prediction",
+              columns = c("Adelie", "Chinstrap", "Gentoo"))
+  
+```
+
+
+
