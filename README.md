@@ -325,4 +325,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - Sharing the results of a modeling effort is an important skill of any data scientist. However, just sharing the weights of each predictory is often not good enough to get buy in from stakeholders who are understandably skeptical of your results. Using the power of shiny, you can show your stakeholders exactly how your model interprets and then predicts the results. In this episode, we use the {palmerpenguins} package with {randomforest} to generate a model to predict the species of a new penguin. With shiny, we then deploy our model to allow the users to record new penguins attributes to see whether the model things they are an Adelie, Chinstrap, or Gentoo! The output is a boxplot indicating the models probablity for each species given the inputs.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/051-Deploying_Shiny_Models)
+
+- [Episode 52: Too Many Gentoo with Xaringan](https://bit.ly/TidyX_Ep52)
+  
+  - There are too many Gentoo, your PI proclaims. This weeks episode Patrick and Ellis talk how to use the {xaringan} package to produce reproducible html presentations using Rmarkdown syntax. We discuss how we looked at "raw" tech data and used summary statistics to compare against the gold standard {palmerpenguins} package from Dr. Allison Horst, Dr. Alison Hill, Data from Dr. Kristen Gorman. We use last weeks highly powerful machine learning model to generate presictions of species, and generate a confusion matrix of our data vs the predictions. Finally, we talk about the value of making your presentation based on Rmd and being able to update the presentation at the click of a button.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/052-Xaringan-Presentations)
   
