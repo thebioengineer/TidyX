@@ -1,0 +1,320 @@
+---
+title: "pitchf/x analysis"
+author: "Patrick Ward"
+date: "3/18/2021"
+output: html_document
+---
+
+## References
+
+**Data courtesy of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+## Problem Statement
+
+The FBL (fantasy baseball league) wants to predict which pitches are thrown. 
+Traditionally it was labeled by a human sitting in the stands.
+They want to productionalize it to give the classifications faster. 
+
+They hired us...
+
+## Load Data
+
+```{r setup, include=FALSE}
+
+bp <- here::here("TidyTuesday_Explained/053-MLB_pitch_classification_introduction")
+
+knitr::opts_chunk$set(echo = TRUE,
+                      root.dir = bp)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(corrplot)
+    library(plotly)
+  })
+})
+
+theme_set(theme_light())
+
+# train
+set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
+set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
+train <- bind_rows(set1, set2)
+
+#test
+test <- readRDS(file.path(bp,"2016_04_27_to_2016_04_30_pitch.rds"))
+
+names(train)
+
+
+#### Cleaning data based on EDA (below) ----------------------------------------------
+train_cleaned <- train %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+test_cleaned <- test %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO", "SC"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+## Check for any NA's
+
+train_cleaned %>%
+  summarize(across(.cols = everything(),
+                  .fns = ~sum(is.na(.x)))) %>%
+  t()
+
+test_cleaned %>%
+  summarize(across(.cols = everything(),
+                  .fns = ~sum(is.na(.x)))) %>%
+  t()
+
+```
+
+
+## EDA
+
+**Data quality Report**
+
+```{r}
+skimr::skim(train)
+```
+
+*Potential Variables to retain in the analysis*
+
+* start_speed (speed at 0 - 50ft)
+* end_speed (speed at the front of home plate)
+* pfx_x (a measure of break of the pitch in the x-direction)
+* pfx_z (a measure of break of the pitch in the y-direction)
+* px (a measure of x-value of position at the front of home plate)
+* pz (a measure of the z-value of position at the front of home plate)
+* x0 (x position at 50ft)
+* z0 (z position at 50ft)
+* vx0 (x velocity at 50ft)
+* vz0 (z velocity at 50ft)
+
+**How many pitch types are there?**
+
+* Remove NA
+* Remove KN, IN, PO, EP, and FO
+
+```{r}
+train %>%
+  count(pitch_type, sort = TRUE)
+
+```
+
+*Pitch Types*
+
+* FF = four-seam fastball
+* SL = slider
+* CH = change up
+* FT = two-seam fastball
+* SI = sinker
+* CU = curveball
+* FC = cutter
+* KC = knuckle-curve
+* FS = split-finger fastball
+
+**Boxplots of our different variables by pitch type**
+
+* Use the cleaned data, now
+
+```{r}
+
+pitch_boxplot_func <- function(x_var){
+  train_cleaned %>%
+    ggplot(aes(x = x_var, y = reorder(pitch_type, x_var))) +
+    geom_boxplot()
+}
+
+
+pitch_boxplot_func(x_var = train_cleaned$start_speed)
+pitch_boxplot_func(x_var = train_cleaned$end_speed)
+pitch_boxplot_func(x_var = train_cleaned$pfx_x)
+pitch_boxplot_func(x_var = train_cleaned$pfx_z)
+pitch_boxplot_func(x_var = train_cleaned$px)
+pitch_boxplot_func(x_var = train_cleaned$pz)
+pitch_boxplot_func(x_var = train_cleaned$x0)
+pitch_boxplot_func(x_var = train_cleaned$z0)
+pitch_boxplot_func(x_var = train_cleaned$vx0)
+pitch_boxplot_func(x_var = train_cleaned$vz0)
+
+```
+
+
+**NOTE:** `x0` and `z0` don't seem to have much variability between pitches, so they might not be that valuable.
+
+**Correlation Between Variables**
+
+```{r}
+
+pitch_cor <- round(cor(train_cleaned[, -1]), 3)
+pitch_cor
+
+corrplot.mixed(pitch_cor, lower.col = "black", tl.cex = 0.7)
+
+```
+
+
+## Hierarchical Cluster Analysis
+
+**Create a table of the median value for each pitch type**
+
+```{r}
+
+pitch_type_summary <- train_cleaned %>%
+  group_by(pitch_type) %>%
+  summarize(across(everything(),
+            .fns = median))
+
+```
+
+
+
+**Create a vector of labels**
+
+```{r}
+pitches <- pitch_type_summary$pitch_type
+```
+
+
+**Create a table of cluster data**
+
+```{r}
+
+clust_df <- pitch_type_summary %>% select(-pitch_type) %>% as.data.frame()
+rownames(clust_df) <- pitches
+
+```
+
+
+**Create Clusters**
+
+```{r}
+## scale the data and then use euclidean distance to identify "closeness"
+pitch_clust <- dist(scale(clust_df))
+
+## select a disimilarity metric
+pitch_clust_final <- hclust(pitch_clust, method = "ward.D")
+
+```
+
+
+**Plot the dendogram**
+
+```{r}
+plot(pitch_clust_final, labels = pitches, main = "pitchf/x clusters")
+```
+
+
+Looks like about 4 clusters. Let's make those more distinct
+
+```{r}
+plot(pitch_clust_final, labels = pitches, main = "pitchf/x clusters")
+rect.hclust(pitch_clust_final, k = 5, border = "red")
+```
+
+
+**Assign the clusters back to the data frame**
+
+```{r}
+
+clust_assignment <- cutree(pitch_clust_final, k = 4)
+
+pitch_clust_df <- bind_cols(pitch_type = pitches, 
+                            clust_df, 
+                            cluster_num = clust_assignment)
+
+## Which pitches in each cluster
+pitch_clust_df %>%
+  group_by(cluster_num) %>%
+  count(pitch_type) %>%
+  select(-n)
+
+## summarize clusters
+pitch_clust_df %>%
+  group_by(cluster_num) %>%
+  summarize(across(.cols = start_speed:vz0,
+                  list(avg = mean, sd = sd))) %>%
+  pivot_longer(-cluster_num) %>%
+  pivot_wider(names_from = cluster_num,
+              values_from = value)
+
+
+
+```
+
+
+**Plot the dendrogram in a more interesting way with {plotly}**
+
+```{r}
+
+dendro <- as.dendrogram(pitch_clust_final)
+
+plot_dendro(dendro, heigh = 600,xmin = -10) %>%
+  hide_legend() %>%
+  highlight("plotly_selected", persistent = TRUE, dynamic = TRUE)
+
+
+```
+
+**Altneratively, conduct the clustering over all of the pitch in the data set**
+
+```{r}
+
+## pitch type labels
+pitches <- train_cleaned$pitch_type
+
+## data frame of cluster variables
+clust_df <- train_cleaned %>% select(-pitch_type) %>% as.data.frame()
+
+## scale the data and then use euclidean distance to identify "closeness"
+pitch_clust <- dist(scale(clust_df))
+
+## select a disimilarity metric
+pitch_clust_final <- hclust(pitch_clust, method = "ward.D")
+
+## get the cluster assignments
+clust_assignment <- cutree(pitch_clust_final, k = 4)
+
+## put the results in a data frame
+pitch_clust_df <- bind_cols(pitch_type = pitches,
+                            clust_df,
+                            cluster_num = clust_assignment)
+
+pitch_clust_df %>% dim()
+pitch_clust_df %>% head()
+
+
+## summarize clusters
+pitch_clust_df %>%
+  select(-pitch_type) %>%
+  group_by(cluster_num) %>%
+  summarize(across(.cols = start_speed:vz0,
+                  list(avg = mean, sd = sd))) %>%
+  pivot_longer(-cluster_num) %>%
+  pivot_wider(names_from = cluster_num,
+              values_from = value)
+
+## Which pitches in each cluster
+table("Pitch Type" = pitch_clust_df$pitch_type, "Cluster Number" = pitch_clust_df$cluster_num)
+
+pitch_clust_df %>%
+  count(cluster_num, pitch_type) %>%
+  mutate(group = case_when(pitch_type %in% c("FF", "FT", "FC", "SI", "FS") ~ "Fastball Pitches",
+                           TRUE ~ as.character("Off-Speed Pitches"))) %>%
+  ggplot(aes(x = as.factor(cluster_num), y = n, fill = group)) +
+  geom_col()
+
+
+```
+
+
+
+
+
+

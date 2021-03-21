@@ -331,3 +331,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - There are too many Gentoo, your PI proclaims. This weeks episode Patrick and Ellis talk how to use the {xaringan} package to produce reproducible html presentations using Rmarkdown syntax. We discuss how we looked at "raw" tech data and used summary statistics to compare against the gold standard {palmerpenguins} package from Dr. Allison Horst, Dr. Alison Hill, Data from Dr. Kristen Gorman. We use last weeks highly powerful machine learning model to generate presictions of species, and generate a confusion matrix of our data vs the predictions. Finally, we talk about the value of making your presentation based on Rmd and being able to update the presentation at the click of a button.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/052-Xaringan-Presentations)
   
+- [Episode 53: MLB Pitch Classification](https://bit.ly/TidyX_Ep53)
+  
+  - This week we start a series on using machine learning to automate pitch classification. In this first episode, we discuss ways to start looking at your data and questions to formulate. We use hierarchical clustering a few different ways to start to see relationships between the different pitch types and the statistics that were captured around each pitch!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/053-MLB_pitch_classification_introduction)
+  
