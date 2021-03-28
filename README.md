@@ -331,8 +331,13 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - There are too many Gentoo, your PI proclaims. This weeks episode Patrick and Ellis talk how to use the {xaringan} package to produce reproducible html presentations using Rmarkdown syntax. We discuss how we looked at "raw" tech data and used summary statistics to compare against the gold standard {palmerpenguins} package from Dr. Allison Horst, Dr. Alison Hill, Data from Dr. Kristen Gorman. We use last weeks highly powerful machine learning model to generate presictions of species, and generate a confusion matrix of our data vs the predictions. Finally, we talk about the value of making your presentation based on Rmd and being able to update the presentation at the click of a button.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/052-Xaringan-Presentations)
   
-- [Episode 53: MLB Pitch Classification](https://bit.ly/TidyX_Ep53)
+- [Episode 53: MLB Pitch Classification Introduction](https://bit.ly/TidyX_Ep53)
   
   - This week we start a series on using machine learning to automate pitch classification. In this first episode, we discuss ways to start looking at your data and questions to formulate. We use hierarchical clustering a few different ways to start to see relationships between the different pitch types and the statistics that were captured around each pitch!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/053-MLB_pitch_classification_introduction)
+  
+- [Episode 54: MLB Pitch Classification 2 - KNN, Caret and UMAP ](https://bit.ly/TidyX_Ep54)
+  
+  - In the second episode on using machine learning to automate pitch classification from pitchfx data, we apply the K-nearest-neighbors algorithm as our first attempt at classification. We start with using the results from our naive hierarchical clustering to select 4 groups and apply the KNN algorithm. We then look at how we could evaluate performance of the model both with total mis-classification and within class mis-classification. Then we use {carat} to optimize for the best clustering and compare the results. Finally, we use UMAP to perform dimensional reduction to visualize mulitple dimensions as two and view relationships within the clusters.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/054-MLB_pitch_classification_2)
   
