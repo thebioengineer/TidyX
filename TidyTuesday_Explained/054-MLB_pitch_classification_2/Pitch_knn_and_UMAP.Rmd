@@ -1,0 +1,254 @@
+---
+title: "K Nearest Neighbors and UMAP"
+author: "Ellis Hughes & Patrick Ward"
+date: "3/20/2021"
+output: html_document
+---
+
+## References
+
+**Data courtesy of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+## Problem Statement
+
+The FBL (fantasy baseball league) wants to predict which pitches are thrown. 
+Traditionally it was labeled by a human sitting in the stands.
+They want to productionalize it to give the classifications faster. 
+
+They hired us...
+
+## Load Data
+
+```{r setup, include=FALSE}
+
+bp <- here::here("TidyTuesday_Explained/054-MLB_pitch_classification_2")
+
+knitr::opts_chunk$set(echo = TRUE,
+                      root.dir = bp)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(plotly)
+    library(class)
+    library(caret)
+    library(umap)
+  })
+})
+
+theme_set(theme_light())
+
+# train
+set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
+set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
+train <- bind_rows(set1, set2)
+
+#test
+test <- readRDS(file.path(bp,"2016_04_27_to_2016_04_30_pitch.rds"))
+
+names(train)
+
+
+#### Cleaning data based on EDA ----------------------------------------------
+
+# for more details on decisions, Check out TidyX 53
+train_cleaned <- train %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+test_cleaned <- test %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO", "SC"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+```
+
+## KNN
+
+```{r}
+
+scale_by <- function(x, mean, sd){
+  (x - mean) / sd
+}
+
+scale_values <- train_cleaned %>% 
+  select(-pitch_type) %>% 
+  lapply(function(x){
+    list(mean = mean(x), sd = sd(x))
+  })
+
+## prepare the training data
+train_pitches <- train_cleaned$pitch_type
+
+train_cleaned_scaled <- colnames(train_cleaned) %>% 
+  setdiff("pitch_type") %>%
+  lapply(function(column_name){
+    scale_by(
+      x = train_cleaned[[column_name]],
+      mean = scale_values[[column_name]][["mean"]],
+      sd = scale_values[[column_name]][["sd"]]
+    )
+  }) %>% 
+  do.call('data.frame',.) %>% 
+  setNames(colnames(train_cleaned) %>%  setdiff("pitch_type"))
+
+## prepare the testing data
+test_pitches <- test_cleaned$pitch_type
+test_cleaned_scaled <- colnames(test_cleaned) %>% 
+  setdiff("pitch_type") %>%
+  lapply(function(column_name){
+    scale_by(
+      test_cleaned[[column_name]],
+      scale_values[[column_name]][["mean"]],
+      scale_values[[column_name]][["sd"]]
+    )
+  }) %>% 
+  do.call('data.frame',.) %>% 
+  setNames(colnames(test_cleaned) %>% setdiff("pitch_type"))
+
+## run a KNN
+fit_knn <- knn(
+  train = train_cleaned_scaled,
+  test = test_cleaned_scaled,
+  cl = train_pitches,
+  k = 4, ## based on last weeks observations
+  prob = TRUE
+)
+
+## create a table of predicted and observed outcomes for the test set
+pred <- data.frame(Pred = fit_knn, Observed = test_pitches)
+table("Predicted" = pred$Pred, "Observed" = pred$Observed)
+
+## calculate the misclassification rate
+##  Overall
+miss_classification_rate <- 1 - sum(pred$Pred == pred$Observed) / nrow(test_cleaned_scaled)
+miss_classification_rate
+
+## within pitch type
+table("Predicted" = pred$Pred, "Observed" = pred$Observed) %>%
+  data.frame %>% 
+  group_by(Observed) %>%
+  summarise( mcr = 1 - Freq[Observed == Predicted] / sum(Freq))
+
+## get the probability of the majority vote
+pred_tbl <- bind_cols(pred, prob_class = attr(fit_knn, "prob"))
+pred_tbl %>% head()
+
+```
+
+## optimizing
+
+```{r optimizing-knn}
+
+tc <- bind_cols(train_cleaned_scaled, train_pitches = train_pitches)
+tc2 <- bind_cols(test_cleaned_scaled, train_pitches = test_pitches)
+
+
+set.seed(555)
+ctrl <- trainControl(method="repeatedcv",repeats = 1) #normally use 5 for 5 fold 
+knnFit <- train(
+  train_pitches ~ ., 
+  data = tc, 
+  method = "knn",
+  trControl = ctrl)
+
+#Output of kNN fit
+knnFit
+
+plot(knnFit)
+
+
+knnPredict <- predict(knnFit,newdata = tc2)
+
+table(tc2$train_pitches, knnPredict)
+
+
+## within pitch type
+table("Predicted" = knnPredict, "Observed" = tc2$train_pitches) %>% data.frame %>% group_by(Observed) %>% summarise( mcr = 1- Freq[Observed == Predicted] / sum(Freq), n = sum(Freq))
+
+```
+
+```{r knn-comparison}
+
+k_4 <- table("Predicted" = pred$Pred, "Observed" = pred$Observed) %>%
+  data.frame %>% 
+  group_by(Observed) %>%
+  summarise( mcr = 1 - Freq[Observed == Predicted] / sum(Freq))
+
+table("Predicted" = knnPredict, "Observed" = tc2$train_pitches) %>%
+  data.frame %>% 
+  group_by(Observed) %>% 
+  summarise(
+    mcr = 1 - Freq[Observed == Predicted] / sum(Freq),
+    n = sum(Freq)) %>% 
+  left_join(k_4, by = "Observed", suffix = c("_kOpt", "_k4")) %>% 
+  relocate(n,.after = ends_with("_K4"))
+
+```
+
+
+```{r UMAP}
+
+
+umap_pitch <- train_cleaned %>% 
+  select(-pitch_type) %>% 
+  as.matrix %>% 
+  umap()
+
+## run previously
+# umap_pitch_50 <- train_cleaned %>% 
+#   select(-pitch_type) %>% 
+#   as.matrix %>% 
+#   umap(
+#     n_neighbors = 50
+#   )
+# saveRDS(umap_pitch_50,file.path(bp,"UMAP_50.rds"))
+
+# umap_pitch_50 <- readRDS(file.path(bp,"UMAP_50.rds"))
+
+pitch_vect <- c(
+  FF = "four-seam fastball",
+  SL = "slider",
+  CH = "change up",
+  FT = "two-seam fastball",
+  SI = "sinker",
+  CU = "curveball",
+  FC = "cutter",
+  KC = "knuckle-curve",
+  FS = "split-finger fastball"
+)
+
+
+
+
+pitch_vect[train_cleaned$pitch_type]
+
+umap_plot <- umap_pitch %>% 
+  pluck("layout") %>% 
+  data.frame %>% 
+  setNames(c("umap1","umap2")) %>% 
+  bind_cols(umap_pitch$data) %>% 
+  mutate(
+    pitch_type = pitch_vect[train_cleaned$pitch_type]
+  ) %>% 
+  ggplot(aes(x = umap1, y = umap2)) + 
+  geom_point(aes( color = pitch_type), alpha = .5)
+
+ggplotly(umap_plot)
+
+# umap_plot_50 <- umap_pitch_50 %>% 
+#   pluck("layout") %>% 
+#   data.frame %>% 
+#   setNames(c("umap1","umap2")) %>% 
+#   bind_cols(umap_pitch$data) %>% 
+#   mutate(
+#     pitch_type = pitch_vect[train_cleaned$pitch_type]
+#   ) %>% 
+#   ggplot(aes(x = umap1, y = umap2)) + 
+#   geom_point(aes( color = pitch_type), alpha = .5)
+# 
+# ggplotly(umap_plot_50)
+
+```
