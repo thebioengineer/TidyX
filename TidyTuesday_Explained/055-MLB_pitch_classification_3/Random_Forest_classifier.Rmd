@@ -1,0 +1,215 @@
+---
+title: "Random Forests"
+author: "Ellis Hughes & Patrick Ward"
+date: "4/4/2021"
+output: html_document
+---
+
+## References
+
+**Data courtesy of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+## Problem Statement
+
+The FBL (fantasy baseball league) wants to predict which pitches are thrown. 
+Traditionally it was labeled by a human sitting in the stands.
+They want to productionalize it to give the classifications faster. 
+
+They hired us...
+
+## Load Data
+
+```{r setup, include=FALSE}
+
+bp <- here::here("TidyTuesday_Explained/055-MLB_pitch_classification_3")
+
+knitr::opts_chunk$set(echo = TRUE,
+                      root.dir = bp)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(rpart)
+    library(rpart.plot)
+    library(randomForest)
+    library(caret)
+    library(doParallel)
+  })
+})
+
+theme_set(theme_light())
+
+```
+
+```{r load-data-and-clean}
+
+## see Episode 53 - bit.ly/TidyX_Ep53 - for the background on this cleanup
+
+# train
+set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
+set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
+train <- bind_rows(set1, set2)
+
+#test
+test <- readRDS(file.path(bp,"2016_04_27_to_2016_04_30_pitch.rds"))
+
+names(train)
+
+
+#### Cleaning data based on EDA ----------------------------------------------
+
+# for more details on decisions, Check out TidyX 53
+train_cleaned <- train %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+test_cleaned <- test %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO", "SC"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+train_cleaned$pitch_type <- factor(train_cleaned$pitch_type, level = unique(train_cleaned$pitch_type))
+
+test_cleaned$pitch_type <- factor(test_cleaned$pitch_type, level = levels(train_cleaned$pitch_type))
+
+
+```
+
+
+## Decision Trees
+
+```{r decision-trees}
+
+fit_tree <- rpart::rpart(pitch_type ~ ., data = train_cleaned)
+
+summary(fit_tree)
+
+plot(fit_tree)
+text(fit_tree)
+
+rpart.plot(fit_tree)
+
+test_tree_pred <- bind_cols(
+  test_cleaned,
+  pred = predict(fit_tree, newdata = test_cleaned, type = "class"))
+
+test_tree_pred %>%
+  count(pred, pitch_type) %>%
+  group_by(pitch_type) %>%
+  summarize(N = sum(n),
+            matches = sum(ifelse(pitch_type == pred, n, 0)),
+            within_acc = matches / N)
+
+# Overall Accuracy
+confusionMatrix(test_tree_pred$pitch_type,test_tree_pred$pred)
+
+sum(diag(table(test_tree_pred$pred, test_tree_pred$pitch_type))) / sum(table(test_tree_pred$pred, test_tree_pred$pitch_type))
+
+```
+
+## Random Forests
+
+```{r random-forest}
+
+set.seed(567)
+fit_rf <- randomForest(pitch_type ~ ., data = train_cleaned, mtry = 6)
+fit_rf
+
+names(fit_rf)
+fit_rf$importance
+varImpPlot(fit_rf)
+
+test_rf_pred <- bind_cols(test_cleaned, rf_pred = predict(fit_rf, newdata = test_cleaned, type = "class"))
+test_rf_pred %>% head()
+
+test_rf_pred %>%
+  janitor::tabyl(rf_pred, pitch_type)
+
+test_rf_pred %>%
+  count(rf_pred, pitch_type) %>%
+  group_by(pitch_type) %>%
+  summarize(N = sum(n),
+            matches = sum(ifelse(pitch_type == rf_pred, n, 0)),
+            within_acc = matches / N)
+
+# Overall Accuracy
+confusionMatrix(test_rf_pred$pitch_type,test_rf_pred$rf_pred)
+
+
+sum(diag(table(test_rf_pred$rf_pred, test_rf_pred$pitch_type))) / sum(table(test_rf_pred$rf_pred, test_rf_pred$pitch_type))
+
+```
+
+
+```{r random-forest-tuned-parallel}
+
+## Tune the mtry parameter using the `caret` package
+control <- trainControl(
+  method = "repeatedcv",
+  number = 5,
+  repeats = 1,
+  search = "grid")
+
+set.seed(567)
+
+## which param to try to tune on
+tunegrid <- expand.grid(.mtry=c(3:7))
+
+## This process can take a while, so lets make it faster with parallelization
+cl <- makePSOCKcluster(5)
+registerDoParallel(cl)
+  
+fit_rf_grid <- train(pitch_type ~ .,
+                     data = train_cleaned,
+                     method="rf",
+                     metric = "Accuracy",
+                     tuneGrid = tunegrid,
+                     trControl = control)
+
+## turn off the parallelization to close the R processes
+stopCluster(cl)
+
+fit_rf_grid
+
+## Save the model
+saveRDS(fit_rf_grid, file = file.path(bp,"optimal_rf.rds"))
+
+## load model
+fit_rf_grid <- readRDS(file.path(bp,"optimal_rf.rds"))
+
+fit_rf_grid
+
+fit_rf_grid$results %>% arrange(desc(Accuracy))
+
+```
+
+
+```{r visualize}
+# plot
+plot(fit_rf_grid)
+
+## predict on test set
+
+test_rf_pred2 <- bind_cols(test_cleaned, rf_pred = predict(fit_rf_grid, newdata = test_cleaned, type = "raw"))
+
+test_rf_pred2 %>% head()
+
+test_rf_pred2 %>%
+  janitor::tabyl(rf_pred, pitch_type)
+
+test_rf_pred2 %>%
+  count(rf_pred, pitch_type) %>%
+  group_by(pitch_type) %>%
+  summarize(N = sum(n),
+            matches = sum(ifelse(pitch_type == rf_pred, n, 0)),
+            within_acc = matches / N)
+
+# Overall Accuracy
+confusionMatrix(test_rf_pred2$pitch_type,test_rf_pred2$rf_pred)
+
+sum(diag(table(test_rf_pred2$rf_pred, test_rf_pred2$pitch_type))) / sum(table(test_rf_pred2$rf_pred, test_rf_pred2$pitch_type))
+
+```
