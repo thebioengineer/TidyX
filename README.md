@@ -341,3 +341,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - In the second episode on using machine learning to automate pitch classification from pitchfx data, we apply the K-nearest-neighbors algorithm as our first attempt at classification. We start with using the results from our naive hierarchical clustering to select 4 groups and apply the KNN algorithm. We then look at how we could evaluate performance of the model both with total mis-classification and within class mis-classification. Then we use {carat} to optimize for the best clustering and compare the results. Finally, we use UMAP to perform dimensional reduction to visualize mulitple dimensions as two and view relationships within the clusters.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/054-MLB_pitch_classification_2)
   
+- [Episode 55: MLB Pitch Classification 2 - Decision Trees, Random Forests, optimization ](https://bit.ly/TidyX_Ep55)
+  
+  - For the third episode in the series on using machine learning to automate pitch classification from pitchfx data, we talk about decision trees and its famous variant: random forests. We start by discussing what a decision tree is and its value. We visualize the results and discuss the quality of the fit. Then we expand on decision trees, using the Random Forest algorithm, and discuss its performance. Finally, we use {caret} and {doParallel} to do a grid search for optimal mtry, using parallel processes to speed up the search!.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/055-MLB_pitch_classification_3)
+  
