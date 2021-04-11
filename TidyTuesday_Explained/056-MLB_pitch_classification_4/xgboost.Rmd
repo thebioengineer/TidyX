@@ -1,0 +1,309 @@
+---
+title: "xgboost"
+author: "Ellis Hughes & Patrick Ward"
+date: "4/11/2021"
+output: html_document
+---
+
+## References
+
+**Data courtesy of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+## Problem Statement
+
+The FBL (fantasy baseball league) wants to predict which pitches are thrown. 
+Traditionally it was labeled by a human sitting in the stands.
+They want to productionalize it to give the classifications faster. 
+
+They hired us...
+
+## Load Data
+
+```{r setup, include=FALSE}
+
+bp <- here::here("TidyTuesday_Explained/056-MLB_pitch_classification_4")
+
+knitr::opts_chunk$set(echo = TRUE,
+                      root.dir = bp)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(xgboost)
+    library(caret)
+    library(doParallel)
+  })
+})
+
+
+```
+
+```{r load-data-and-clean}
+
+## see Episode 53 - bit.ly/TidyX_Ep53 - for the background on this cleanup
+
+# train
+set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
+set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
+train <- bind_rows(set1, set2)
+
+#test
+test <- readRDS(file.path(bp,"2016_04_27_to_2016_04_30_pitch.rds"))
+
+names(train)
+
+
+#### Cleaning data based on EDA ----------------------------------------------
+
+# for more details on decisions, Check out TidyX 53
+train_cleaned <- train %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+test_cleaned <- test %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO", "SC"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+train_cleaned$pitch_type <- factor(train_cleaned$pitch_type, level = unique(train_cleaned$pitch_type))
+
+test_cleaned$pitch_type <- factor(test_cleaned$pitch_type, level = levels(train_cleaned$pitch_type))
+
+
+```
+
+
+## format data
+
+```{r additional-processing}
+
+## convert pitch type to numeric
+train_cleaned$pitch_type_num <- as.numeric(train_cleaned$pitch_type) - 1
+test_cleaned$pitch_type_num <- as.numeric(test_cleaned$pitch_type) - 1
+
+train_cleaned %>% 
+  distinct(pitch_type,pitch_type_num)
+
+## create training and test matrices
+train_x <- data.matrix(train_cleaned %>% select(-pitch_type, -pitch_type_num))
+train_y <- train_cleaned %>% pull(pitch_type_num)
+
+test_x <- data.matrix(test_cleaned %>% select(-pitch_type, -pitch_type_num))
+test_y <- test_cleaned %>% pull(pitch_type_num)
+
+```
+
+```{r}
+
+## store data in special XGBoost matrix
+train_xgb_matrix <- xgb.DMatrix(data = train_x, label = train_y)
+test_xgb_matrix <- xgb.DMatrix(data = test_x, label = test_y)
+
+```
+
+## xgboost
+
+#### Parameter searching
+
+```{r xgboost}
+
+## train model
+number_pitches <- length(unique(train_cleaned$pitch_type))
+
+model_parameters <- list(
+  "eval_metric" = "mlogloss",
+  "num_class"   = number_pitches,
+  "objective"   = "multi:softprob"
+  )
+
+wl <- list(train = train_xgb_matrix, test = test_xgb_matrix)
+
+pitch_xgb_train <- xgb.train(data = train_xgb_matrix,
+                     max.depth = 3,
+                     nrounds = 1000,
+                     watchlist = wl,
+                     nthreads = 3,
+                     early_stopping_rounds = 10,
+                     params = model_parameters)
+
+pitch_xgb_train
+
+```
+
+### evaluation
+
+```{r}
+## Training & test error plot
+log_loss_df <- data.frame(pitch_xgb_train$evaluation_log)
+plot(log_loss_df$iter, log_loss_df$train_mlogloss, col = 'blue')
+lines(log_loss_df$iter, log_loss_df$test_mlogloss, col = "red")
+
+# Find the iteration that minimized log loss
+min(log_loss_df$test_mlogloss)
+
+log_loss_df[which.min(log_loss_df$test_mlogloss),]
+
+best_itr <- log_loss_df[log_loss_df$test_mlogloss == min(log_loss_df$test_mlogloss), 1]
+best_itr
+
+## create model for prediction
+pitch_xgb <- xgboost(data = train_xgb_matrix,
+                     max.depth = 3,
+                     nrounds = best_itr,
+                     nthreads = 3,
+                     params = model_parameters)
+
+pitch_xgb
+
+```
+
+```{r importance}
+
+importance <- xgb.importance(model = pitch_xgb)
+
+xgb.ggplot.importance(importance) +
+  theme_bw()
+
+```
+
+```{r}
+
+## Predict probabilities
+preds <- predict(pitch_xgb, newdata = test_xgb_matrix, reshape = TRUE) %>%
+  data.frame() %>% 
+  setNames(levels(test_cleaned$pitch_type)) %>% 
+  mutate(
+    across(everything(), round, 3)
+  )
+
+# Identify the highest probability
+preds$pred_pitch <- factor(
+  levels(test_cleaned$pitch_type)[max.col(preds, ties.method = "first")],
+  levels = levels(test_cleaned$pitch_type))
+
+
+# Put the original pitch types into the predicted data frame
+preds$original_pitch_type <- test_cleaned$pitch_type
+
+preds %>% head()
+```
+
+```{r evaluation}
+
+# confusion matrix
+preds %>%
+  janitor::tabyl(pred_pitch, original_pitch_type)
+
+# overall accuracy
+sum(preds$pred_pitch == preds$original_pitch_type) / nrow(preds)
+
+# within pitch type accuracy
+preds %>%
+  count(pred_pitch, original_pitch_type) %>%
+  group_by(original_pitch_type) %>%
+  summarize(N = sum(n),
+            matches = sum(ifelse(pred_pitch == original_pitch_type, n, 0)),
+    within_acc = matches / N)
+
+```
+
+## Optimizing
+
+```{r}
+
+cross_val_ctrl <- trainControl(method = "repeatedcv",
+                        repeats = 1,
+                        number = 3,
+                        classProbs = TRUE,
+                        allowParallel = TRUE)
+
+tune_grid <- expand.grid(nrounds = 1000,
+                        eta = 0.01,
+                        gamma = 0,
+                        colsample_bytree = 1,
+                        min_child_weight = 1,
+                        subsample = 1,
+                        max_depth = seq(2, 8, by = 2))
+
+# ## This process can take a while, so lets make it faster with parallelization
+# cl <- makePSOCKcluster(7)
+# registerDoParallel(cl)
+# 
+# set.seed(7)
+# pitch_tune <- train(x = train_cleaned %>% select(-pitch_type, -pitch_type_num),
+#                   y = train_cleaned$pitch_type,
+#                   method = "xgbTree",
+#                   trControl = cross_val_ctrl,
+#                   tuneGrid = tune_grid,
+#                   metric = "Accuracy",
+#                   verbose = TRUE)
+# 
+# saveRDS(pitch_tune,file.path(bp, "xgboost_caret.rds"))
+# 
+# stopCluster(cl)
+
+pitch_tune <- readRDS(file.path(bp, "xgboost_caret.rds"))
+
+pitch_tune
+names(pitch_tune)
+
+tune_result <- pitch_tune$results
+
+tune_result[tune_result$Accuracy == max(tune_result$Accuracy), ]
+
+```
+
+*Possible Tuning Parameters*
+
+* nrounds >> default = 100. Number of trees to grow.
+
+* eta >> default = 0.3 (range = 0 to 1). Controls model learning rate by shrinking feature weights after each round until an optimum is reached. Common values are between 0.01 and 0.3.
+
+* gamma >> default = 0 (range = 0 to Inf). Prevents overfitting by controlling regularization (penalization of large coefficients that don't improve model performance) with higher values increasing regularization.
+
+* max_depth >> default = 6 (range = 0 to Inf). Controls tree depth (large trees = more complexity).
+
+* min_child_weight >> default = 1 (range = 0 to Inf). Prevents overfitting by stopping tree splitting if the leaf node has a minimum sum of instance weight.
+
+* subsample >> default = 1 (range = 0 to 1). Controls the number of observations for a tree. Common values are between 0.5 and 0.9.
+
+* colsample_bytree >> default = 1 (range = 0 to 1). Number of features supplied to a tree. Common values are between 0.5 and 0.9.
+
+* lambda >> default = 0. Used to avoid overfitting. Controls L2 regularization, similar to ridge regression.
+
+* alpha >> default = 1. Controls L1 regularization, similar to Lasso.
+
+
+```{r}
+
+# plot
+plot(pitch_tune)
+
+## predict on test set
+
+test_tune_pred <- bind_cols(
+  test_cleaned, 
+  pred = predict(pitch_tune, newdata = test_cleaned, type = "raw"))
+
+test_tune_pred %>% head()
+
+test_tune_pred %>%
+  janitor::tabyl(pred, pitch_type)
+
+test_tune_pred %>%
+  count(pred, pitch_type) %>%
+  group_by(pitch_type) %>%
+  summarize(N = sum(n),
+            matches = sum(ifelse(pitch_type == pred, n, 0)),
+            within_acc = matches / N)
+
+# Overall Accuracy
+confusionMatrix(test_tune_pred$pitch_type,test_tune_pred$pred)
+
+sum(diag(table(test_tune_pred$pred, test_tune_pred$pitch_type))) / sum(table(test_tune_pred$pred, test_tune_pred$pitch_type))
+
+```
+
