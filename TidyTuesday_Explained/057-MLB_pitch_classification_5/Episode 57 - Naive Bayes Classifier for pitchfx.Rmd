@@ -1,0 +1,142 @@
+---
+title: "Naive Bayes pitchf/x Classification"
+author: "TidyX"
+date: "4/18/2021"
+output: html_document
+---
+
+**Data courtest of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+
+## Load Data
+
+## References
+
+**Data courtesy of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+## Problem Statement
+
+The FBL (fantasy baseball league) wants to predict which pitches are thrown. 
+Traditionally it was labeled by a human sitting in the stands.
+They want to productionalize it to give the classifications faster. 
+
+They hired us...
+
+## Load Data
+
+```{r setup, include=FALSE}
+
+bp <- here::here("TidyTuesday_Explained/057-MLB_pitch_classification_5")
+
+knitr::opts_chunk$set(echo = TRUE,
+                      root.dir = bp)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(xgboost)
+    library(caret)
+    library(doParallel)
+  })
+})
+
+
+```
+
+```{r load-data-and-clean}
+
+## see Episode 53 - bit.ly/TidyX_Ep53 - for the background on this cleanup
+
+# train
+set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
+set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
+train <- bind_rows(set1, set2)
+
+#test
+test <- readRDS(file.path(bp,"2016_04_27_to_2016_04_30_pitch.rds"))
+
+names(train)
+
+#### Cleaning data based on EDA (below) ----------------------------------------------
+train_cleaned <- train %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+test_cleaned <- test %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO", "SC"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+## Check for any NA's
+
+train_cleaned %>%
+  summarize(across(.cols = everything(),
+                  .fns = ~sum(is.na(.x)))) %>%
+  t()
+
+test_cleaned %>%
+  summarize(across(.cols = everything(),
+                  .fns = ~sum(is.na(.x)))) %>%
+  t()
+
+
+train_cleaned$pitch_type <- as.factor(train_cleaned$pitch_type)
+test_cleaned$pitch_type <- as.factor(test_cleaned$pitch_type)
+```
+
+
+## Naieve Bayes Classifier
+
+```{r}
+## convert pitch type to numeric
+train_cleaned$pitch_type_num <- as.numeric(train_cleaned$pitch_type)-1
+test_cleaned$pitch_type_num <- as.numeric(test_cleaned$pitch_type)-1
+
+table(train_cleaned$pitch_type, train_cleaned$pitch_type_num)
+
+library(e1071)
+
+fit_nb <- naiveBayes(x = train_cleaned %>% select(-pitch_type, -pitch_type_num),
+                     y = train_cleaned %>% select(pitch_type_num))
+
+preds <- predict(fit_nb, newdata = test_cleaned, type = "raw") %>% 
+  data.frame() %>% 
+  setNames(levels(test_cleaned$pitch_type)) %>% 
+  mutate(
+    across(everything(), round, 3)
+  )
+
+# Identify the highest probability
+preds$pred_pitch <- factor(
+  levels(test_cleaned$pitch_type)[max.col(preds, ties.method = "first")],
+  levels = levels(test_cleaned$pitch_type))
+
+
+# Put the original pitch types into the predicted data frame
+preds$original_pitch_type <- test_cleaned$pitch_type
+
+preds %>% head()
+
+## confusion matrix
+table(preds$original_pitch_type, preds$pred_pitch,
+      dnn = c("Observed", "Predicted"))
+
+
+sum(diag(table(preds$original_pitch_type, preds$pred_pitch))) / nrow(preds)
+
+# within pitch type accuracy
+
+preds %>%
+  count(pred_pitch, original_pitch_type) %>%
+  group_by(original_pitch_type) %>%
+  summarize(N = sum(n),
+            matches = sum(ifelse(pred_pitch == original_pitch_type, n, 0)),
+    within_acc = matches / N)
+
+```
+
