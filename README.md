@@ -348,5 +348,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
 - [Episode 56: MLB Pitch Classification 4 - XGBoost ](https://bit.ly/TidyX_Ep56)
   
-  - We now turn to the famous XGBoost algoritm to help us in our fourth episode in the series on using machine learning to automate pitch classification from pitchfx data. We start by training using default parameters and observe some tricks to make training faster. Then we use {caret} and {doParallel} to do a grid search for optimal settings to be using to train and discuss the merits and disadvantages of using ever more complicated ML models.
+  - We now turn to the famous XGBoost algorithm to help us in our fourth episode in the series on using machine learning to automate pitch classification from pitchfx data. We start by training using default parameters and observe some tricks to make training faster. Then we use {caret} and {doParallel} to do a grid search for optimal settings to be using to train and discuss the merits and disadvantages of using ever more complicated ML models.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/056-MLB_pitch_classification_4)
+  
+- [Episode 57: MLB Pitch Classification 5 - Naive Bayes Classidicatrion](https://bit.ly/TidyX_Ep57)
+  
+  - We naively turn to bayes...okay, Im done. In this episode we use the Niave Bayes Classifier from the {e1071} package to classify pitches from our pitchfx data. We discuss briefly how this algorithm works, and review its performance against the other tree-based algorithms we've used so far.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/057-MLB_pitch_classification_5)
