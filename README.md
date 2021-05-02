@@ -355,3 +355,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - We naively turn to bayes...okay, I'm done. In this episode we use the Niave Bayes Classifier from the {e1071} package to classify pitches from our pitchfx data. We discuss briefly how this algorithm works, and review its performance against the other tree-based algorithms we've used so far.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/057-MLB_pitch_classification_5)
+  
+- [Episode 58: MLB Pitch Classification 6 - TensorFlow ](https://bit.ly/TidyX_Ep58)
+  
+  - The next model type is one that has had a lot of excitement over the last decade with the promise of "AI" - deep learning. Using the {keras} package from RStudio, we attempt to train a model to automate pitch classification from pitchfx data. We talk about the differences to consider when building a deep learning algorithm, and data prep that must be done. We finally review the restuls and talk a bit about black-box ML models.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/058-MLB_pitch_classification_5)
+  
