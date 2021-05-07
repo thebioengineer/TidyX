@@ -359,5 +359,5 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 - [Episode 58: MLB Pitch Classification 6 - TensorFlow ](https://bit.ly/TidyX_Ep58)
   
   - The next model type is one that has had a lot of excitement over the last decade with the promise of "AI" - deep learning. Using the {keras} package from RStudio, we attempt to train a model to automate pitch classification from pitchfx data. We talk about the differences to consider when building a deep learning algorithm, and data prep that must be done. We finally review the restuls and talk a bit about black-box ML models.
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/058-MLB_pitch_classification_5)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/058-MLB_pitch_classification_6)
   
