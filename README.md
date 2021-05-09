@@ -361,3 +361,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - The next model type is one that has had a lot of excitement over the last decade with the promise of "AI" - deep learning. Using the {keras} package from RStudio, we attempt to train a model to automate pitch classification from pitchfx data. We talk about the differences to consider when building a deep learning algorithm, and data prep that must be done. We finally review the restuls and talk a bit about black-box ML models.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/058-MLB_pitch_classification_6)
   
+- [Episode 59: MLB Pitch Classification 7 - Class Imbalance and Model Evaluation Intro ](https://bit.ly/TidyX_Ep59)
+  
+  - Throughout this series, we been attempting to predict pitch type using PitchF/X data. However, we have not directly addressed a major flaw in our data, class imbalance. The Four-seam FastBall consists of nearly 37% of our data! In this episode we apply a couple techniuqes to help address the class imbalance, and look at ways to evaluate our models performance. We talk about the pros and cons to consider, and set up for our last episode for the series.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/059-MLB_pitch_classification_7)
+  
