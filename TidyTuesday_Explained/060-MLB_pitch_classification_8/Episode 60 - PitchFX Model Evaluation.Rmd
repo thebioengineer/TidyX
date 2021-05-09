@@ -30,6 +30,7 @@ suppressPackageStartupMessages({
     library(pROC)
     library(xgboost)
     library(e1071)
+    library(keras)
     library(doParallel)
   })
 })
@@ -724,8 +725,6 @@ model_nn <- function( train, test, ..., model_seed = 555, data_prep_function = l
     as.matrix
    
 
-  set.seed(model_seed)
-  
   ## Create model
   
   model <- keras_model_sequential()
@@ -760,8 +759,9 @@ model_nn <- function( train, test, ..., model_seed = 555, data_prep_function = l
   )
   
   ## return
-  class_prob <- predict(fit_nb, newdata = test_x, type = "raw")
-  class_pred <- data.frame() %>% 
+  class_prob <- model %>% predict(test_x, type = "raw")
+  class_pred <- class_prob %>% 
+    data.frame() %>% 
     setNames(levels(train_cleaned$pitch_type)) %>% 
     mutate(
       idx = 1:nrow(.)
@@ -782,17 +782,19 @@ model_nn <- function( train, test, ..., model_seed = 555, data_prep_function = l
   
   ## return
   model_summary(
-    model = model,
+    model = NA,
     class = test$pitch_type,
     class_probs = class_prob,
     class_pred = class_pred,
     param = list( hidden = list( dense = list(n = 2, units = 128, activation = "relu")),
-                  output = list( dense = list(n = 1, units = 9, activation = "softmax"))))
+                  output = list( dense = list(n = 1, units = 9, activation = "softmax")),
+                  epochs = 50
+                  ))
 } 
 
 nn_standard <- model_nn(train_cleaned, test_cleaned)
-nn_standard_up <- model_nn(train_cleaned, test_cleaned, data_prep_function = list(data_upsample), seed = 123456)
-nn_standard_down <- model_nn(train_cleaned, test_cleaned, data_prep_function = list(data_downsample), seed = 123456)
+nn_standard_up <- model_nn(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_upsample), seed = 123456)
+nn_standard_down <- model_nn(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_downsample), seed = 123456)
 
 nn_standard_list <- list(nn_standard, nn_standard_up, nn_standard_down)
 
@@ -803,5 +805,118 @@ nn_standard_list %>%
   walk(~print(eval_acc_class(.x)))
 
 saveRDS(nn_standard_list, file.path(bp,"nn_standard_models.rds"))
+
+```
+
+Deeper NN
+
+```{r}
+
+model_nn_deep <- function( train, test, ..., model_seed = 555, data_prep_function = list(data_scale)){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  ## convert pitch type to categorical array
+  train_pitch_type_num <- to_categorical(as.numeric(train$pitch_type)-1)
+  test_pitch_type_num <- to_categorical(as.numeric(test$pitch_type)-1)
+  
+  train_x <- train %>%
+    select(-pitch_type) %>%
+    array() %>% 
+    as.matrix
+  
+  test_x <- test %>%
+    select(-pitch_type) %>%
+    array() %>% 
+    as.matrix
+   
+
+  ## Create model
+  
+  model <- keras_model_sequential()
+
+  model %>%
+    
+    ## two hidden layers
+    layer_dense(units = 500, activation = 'relu') %>%
+    layer_dense(units = 500, activation = 'relu') %>%
+    layer_dense(units = 500, activation = 'relu') %>%
+    
+    ## output layer
+    layer_dense(units = 9, activation = 'softmax')
+  
+  
+  ## define learning information and what model uses to figure out how to updae the weights next
+  model %>% compile(
+    optimizer = optimizer_adam(.01),
+    loss = 'categorical_crossentropy',
+    metrics = c('accuracy')
+  )
+  
+  set.seed(model_seed)
+  
+  ## train model
+  model %>%
+    fit(
+    x = train_x,
+    y = train_pitch_type_num,
+    validation_split = .2,
+    epochs = 100,
+    verbose = 0
+  )
+  
+  ## return
+  class_prob <- model %>% predict(test_x, type = "raw")
+  class_pred <- class_prob %>% 
+    data.frame() %>% 
+    setNames(levels(train_cleaned$pitch_type)) %>% 
+    mutate(
+      idx = 1:nrow(.)
+      ) %>% 
+    pivot_longer(
+      cols = 1:9,
+      names_to = "type") %>% 
+    group_by(idx) %>% 
+    mutate(
+      pred_pitch = type[which.max(value)]
+      ) %>% 
+    pivot_wider(
+      names_from = type, 
+      values_from = value
+      ) %>% 
+    ungroup() %>% 
+    pull(pred_pitch)
+  
+  ## return
+  model_summary(
+    model = NA,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list( hidden = list( dense = list(n = 3, units = 500, activation = "relu")),
+                  output = list( dense = list(n = 1, units = 9, activation = "softmax")),
+                  epochs = 50
+                  ))
+} 
+
+nn_deep <- model_nn_deep(train_cleaned, test_cleaned)
+nn_deep_up <- model_nn_deep(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_upsample), seed = 123456)
+nn_deep_down <- model_nn_deep(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_downsample), seed = 123456)
+
+nn_deep_list <- list(nn_deep, nn_deep_up, nn_deep_down)
+
+nn_deep_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+nn_deep_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(nn_deep_list, file.path(bp,"nn_deep_models.rds"))
 
 ```
