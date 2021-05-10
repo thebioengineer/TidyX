@@ -577,7 +577,7 @@ model_xgboost_caret <- function( train, test, ..., model_seed = 555, data_prep_f
                         colsample_bytree = 1,
                         min_child_weight = 1,
                         subsample = 1,
-                        max_depth = seq(2, 10, by = 2))
+                        max_depth = seq(2, 8, by = 2))
   
   cl <- makePSOCKcluster(7)
   registerDoParallel(cl)
@@ -614,7 +614,7 @@ model_xgboost_caret <- function( train, test, ..., model_seed = 555, data_prep_f
                         colsample_bytree = 1,
                         min_child_weight = 1,
                         subsample = 1,
-                        max_depth = seq(2, 10, by = 2))
+                        max_depth = seq(2, 8, by = 2))
     ))
 } 
 
