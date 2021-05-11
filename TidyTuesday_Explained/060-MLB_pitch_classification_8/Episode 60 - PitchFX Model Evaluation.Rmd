@@ -70,7 +70,6 @@ Productionalize Model Building, Training and Testing
 model_summary <- function(model, class, class_probs, class_pred, param = list()){
   structure(
     list(
-      model = model, 
       class_actual = class, 
       class_prob = class_probs,
       class_pred = class_pred,
