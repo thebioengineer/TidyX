@@ -313,7 +313,7 @@ model_KNN_caret <- function( train, test, ..., model_seed = 555, data_prep_funct
   
   ## return
   model_summary(
-    model = fit_rf,
+    model = knnFit,
     class = test$pitch_type,
     class_probs = class_prob,
     class_pred = class_pred,
@@ -328,10 +328,10 @@ knn_caret_down <- model_KNN_caret(train_cleaned, test_cleaned, data_prep_functio
 knn_caret_list <- list(knn_caret, knn_caret_up, knn_caret_down)
 
 knn_caret_list %>%
-  walk(eval_acc_overall)
+  walk(~print(eval_acc_overall(.x)))
 
 knn_caret_list %>%
-  walk(eval_acc_class)
+  walk(~print(eval_acc_class(.x)))
 
 saveRDS(knn_caret_list, file.path(bp,"knn_caret_models.rds"))
 
