@@ -32,6 +32,7 @@ suppressPackageStartupMessages({
     library(e1071)
     library(keras)
     library(doParallel)
+    library(gt)
   })
 })
 
@@ -192,10 +193,13 @@ eval_acc_class <- function(x){
 eval_logloss <- function(x){
   stopifnot(class(x) == "fit_model_outputs")
   stopifnot(length(x$class_actual) == nrow(x$class_prob))
-  if(is.na(x$class_prob)){
+  if(is.na(x$class_prob[[1]][[1]])){
     return(NA)
   }else{
-    mlogloss <- MultiLogLoss(y_true = x$class_actual, y_pred = x$class_prob)
+    actual <- x$class_actual
+    preds <- x$class_prob
+    colnames(preds) <- levels(actual)
+    mlogloss <- MultiLogLoss(y_true = actual, y_pred = preds)
   }
   mlogloss
 }
@@ -203,12 +207,14 @@ eval_logloss <- function(x){
 eval_multiclass_brier <- function(x){
   stopifnot(class(x) == "fit_model_outputs")
   stopifnot(length(x$class_actual) == nrow(x$class_prob))
-  if(is.na(x$class_prob)){
+  if(is.na(x$class_prob)[[1]][[1]]){
     return(NA)
   }else{
-    brier <- multiclass.Brier(truth = x$class_actual, probabilities = x$class_prob)
+    actual <- x$class_actual
+    preds <- x$class_prob
+    colnames(preds) <- levels(actual)
+    brier <- multiclass.Brier(truth = actual, probabilities =preds)
   }
-  
   brier
 }
 
@@ -216,12 +222,38 @@ eval_auc <- function(x){
   stopifnot(class(x) == "fit_model_outputs")
   stopifnot(length(x$class_actual) == length(x$class_pred))
   
+  if(is.character(x$class_pred) | is.factor(x$class_pred)){
+    x$class_pred <- factor(x$class_pred, levels = levels(x$class_actual))
+  }
+  
   suppressMessages({
-    auc <- multiclass.roc(response = x$class_actual,
+    auc <- multiclass.roc(response = as.numeric(x$class_actual),
                    predictor = as.numeric(x$class_pred))$auc
   })
   
   auc
+}
+
+summarize_models <- function(mod_list, type, optimized){
+  
+  mod_summary <- map_dfr( mod_list, function(model_summary){
+    tibble(
+      `Accuracy-Overall` = as.numeric(eval_acc_overall(model_summary)),
+      `Accuracy-Class`   = list(eval_acc_class(model_summary)),
+      logloss            = as.numeric(eval_logloss(model_summary)),
+      brier              = as.numeric(eval_multiclass_brier(model_summary)),
+      auc                = as.numeric(eval_auc(model_summary))
+    )
+  })
+    
+  bind_cols(
+    tibble(
+    model_type = type, 
+    optimized = optimized,
+    data_type = c("standard","upsampled","downsampled")
+    ),
+    mod_summary
+  )  
 }
 
 ```
@@ -232,7 +264,7 @@ eval_auc <- function(x){
 
 Train KNN using set params
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"knn_standard_models.rds"))}
 
 model_KNN <- function( train, test, ..., data_prep_function = list(scale_data)){
   
@@ -283,7 +315,7 @@ saveRDS(knn_standard_list, file.path(bp,"knn_standard_models.rds"))
 
 Train KNN - optimize
 
-```{r}
+```{r  eval=!file.exists(file.path(bp,"knn_caret_models.rds"))}
 
 model_KNN_caret <- function( train, test, ..., model_seed = 555, data_prep_function = list(scale_data)){
   
@@ -337,7 +369,7 @@ saveRDS(knn_caret_list, file.path(bp,"knn_caret_models.rds"))
 
 Train RandomForest using set params
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"rf_standard_models.rds"))}
 
 model_rf <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
   if(!is.null(data_prep_function)){
@@ -385,7 +417,7 @@ saveRDS(rf_standard_list, file.path(bp,"rf_standard_models.rds"))
 
 Train RandomForest - optimize
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"rf_caret_models.rds"))}
 
 model_rf_caret <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
   
@@ -453,7 +485,7 @@ saveRDS(rf_caret_list, file.path(bp,"rf_caret_models.rds"))
 
 Train XGBoost using set params
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"xgb_standard_models.rds"))}
 
 model_xgboost <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
   
@@ -549,7 +581,7 @@ saveRDS(xgb_standard_list, file.path(bp,"xgb_standard_models.rds"))
 
 Train XGBoost - optimize
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"xgb_caret_models.rds"))}
 
 model_xgboost_caret <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
   
@@ -576,11 +608,7 @@ model_xgboost_caret <- function( train, test, ..., model_seed = 555, data_prep_f
                         colsample_bytree = 1,
                         min_child_weight = 1,
                         subsample = 1,
-<<<<<<< HEAD
                         max_depth = seq(2, 10, by = 2))
-=======
-                        max_depth = seq(2, 8, by = 2))
->>>>>>> a3509311cbe4b9fc2d331bc3794c1b9aff81c051
   
   cl <- makePSOCKcluster(7)
   registerDoParallel(cl)
@@ -617,11 +645,7 @@ model_xgboost_caret <- function( train, test, ..., model_seed = 555, data_prep_f
                         colsample_bytree = 1,
                         min_child_weight = 1,
                         subsample = 1,
-<<<<<<< HEAD
                         max_depth = seq(2, 10, by = 2))
-=======
-                        max_depth = seq(2, 8, by = 2))
->>>>>>> a3509311cbe4b9fc2d331bc3794c1b9aff81c051
     ))
 } 
 
@@ -646,7 +670,7 @@ saveRDS(xgb_caret_list, file.path(bp,"xgb_caret_models.rds"))
 
 Train the Naive Bayes Algorithm using set params
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"bayes_standard_models.rds"))}
 
 model_naive_bayes <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
   
@@ -705,7 +729,7 @@ saveRDS(bayes_standard_list, file.path(bp,"bayes_standard_models.rds"))
 
 Train a Neural Network  Algorithm using set params
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"nn_standard_models.rds"))}
 
 model_nn <- function( train, test, ..., model_seed = 555, data_prep_function = list(data_scale)){
   
@@ -817,7 +841,7 @@ saveRDS(nn_standard_list, file.path(bp,"nn_standard_models.rds"))
 
 Deeper NN
 
-```{r}
+```{r eval=!file.exists(file.path(bp,"nn_deep_models.rds"))}
 
 model_nn_deep <- function( train, test, ..., model_seed = 555, data_prep_function = list(data_scale)){
   
@@ -925,5 +949,68 @@ nn_deep_list %>%
   walk(~print(eval_acc_class(.x)))
 
 saveRDS(nn_deep_list, file.path(bp,"nn_deep_models.rds"))
+
+```
+
+
+## Comparisons
+
+```{r}
+
+model_list <- list.files(bp, pattern = "models")
+
+model_summaries <- model_list %>% 
+  map_dfr(function(file, path){
+    
+    print(file)
+    contents <- strsplit(tools::file_path_sans_ext(file),"_")[[1]]
+
+    rds <- readRDS(file.path(path, file))
+    
+    summarize_models(rds, type = contents[[1]], optimized = contents[[2]])
+    
+  }, bp)
+
+model_summary_overall <- model_summaries %>% 
+  select(model_type, optimized, data_type, `Accuracy-Overall`, logloss, brier, auc)
+
+model_summary_class <- model_summaries %>% 
+  select(model_type, optimized, data_type, `Accuracy-Class`,`Accuracy-Overall`) %>% 
+  unnest(`Accuracy-Class`) %>% 
+  select(-matches) %>% 
+  unite(
+    "Pitch Type",
+    class_actual,
+    N,
+    sep = " - "
+  ) %>% 
+  pivot_wider(
+    names_from  = "Pitch Type",
+    values_from = within_acc
+  ) %>% 
+  arrange(desc(`Accuracy-Overall`))
+
+```
+
+
+```{r}
+
+gt(model_summary_overall) %>% 
+  gt::data_color(columns = 3, colors = "blue")
+
+```
+
+```{r}
+
+gt(model_summary_class) %>% 
+  data_color(
+    4:ncol(model_summary_class),
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = c(0,1))
+  ) %>% 
+  fmt_percent(
+    4:ncol(model_summary_class)
+  )
 
 ```
