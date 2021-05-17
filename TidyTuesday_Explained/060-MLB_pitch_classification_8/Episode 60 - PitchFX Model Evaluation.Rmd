@@ -1,0 +1,1050 @@
+---
+title: "pitchf/x model evaluation"
+author: "TidyX"
+date: "5/16/2021"
+output: html_document
+---
+
+**Data courtest of {mlbgameday}:** https://github.com/keberwein/mlbgameday
+**Resource for understanding pitchf/x data:** https://library.fangraphs.com/misc/pitch-fx/
+**Resource on the features in the pitchf/x data:** Kagan, David. (2008). Fun with PitchFX Data. 
+
+
+## Load Data
+
+```{r setup, include=FALSE}
+
+bp <- here::here("TidyTuesday_Explained/060-MLB_pitch_classification_8")
+
+knitr::opts_chunk$set(echo = TRUE,
+                      root.dir = bp)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(class)
+    library(randomForest)
+    library(caret)
+    library(MLmetrics) # for log-loss
+    library(measures) # for multi-class brier score
+    library(pROC)
+    library(xgboost)
+    library(e1071)
+    library(keras)
+    library(doParallel)
+    library(gt)
+  })
+})
+
+theme_set(theme_light())
+
+```
+
+```{r load-data-and-clean}
+
+## see Episode 53 - bit.ly/TidyX_Ep53 - for the background on this cleanup
+
+set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
+set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
+train <- bind_rows(set1, set2)
+
+#test
+test <- readRDS(file.path(bp,"2016_04_27_to_2016_04_30_pitch.rds"))
+
+#### Cleaning data based on EDA (below) ----------------------------------------------
+train_cleaned <- train %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+test_cleaned <- test %>%
+  filter(!pitch_type %in% c("KN", "IN", "PO", "EP", "FO", "SC"),
+         !is.na(pitch_type)) %>%
+  select(pitch_type, start_speed, end_speed, pfx_x, pfx_z, px, pz, x0, z0, vx0, vz0)
+
+
+train_cleaned$pitch_type <- as.factor(train_cleaned$pitch_type)
+test_cleaned$pitch_type <- as.factor(test_cleaned$pitch_type)
+```
+
+
+## Helper Functions
+
+Productionalize Model Building, Training and Testing
+
+```{r}
+
+model_summary <- function(model, class, class_probs, class_pred, param = list()){
+  structure(
+    list(
+      class_actual = class, 
+      class_prob = class_probs,
+      class_pred = class_pred,
+      model_type = class(model),
+      param = param
+      ),
+    class = "fit_model_outputs"
+  )
+}
+
+## Episode 54: bit.ly/TidyX_Ep54
+data_scale <- function(train, test, ...){
+  
+  scale_by <- function(x, mean, sd){
+    (x - mean) / sd
+  }
+  
+  scale_values <- train %>% 
+    select(-pitch_type) %>% 
+    lapply(function(x){
+      list(mean = mean(x), sd = sd(x))
+    })
+  
+  ## prepare the training data
+  train <- colnames(train) %>% 
+    setdiff("pitch_type") %>%
+    lapply(function(column_name){
+      scale_by(
+        x = train[[column_name]],
+        mean = scale_values[[column_name]][["mean"]],
+        sd = scale_values[[column_name]][["sd"]]
+        )
+      }) %>% 
+    data.frame %>% 
+    setNames(colnames(train) %>%  setdiff("pitch_type")) %>% 
+    bind_cols(pitch_type = train$pitch_type)
+  
+  ## prepare the testing data
+  test <- colnames(test) %>% 
+    setdiff("pitch_type") %>%
+    lapply(function(column_name){
+      scale_by(
+        test[[column_name]],
+        scale_values[[column_name]][["mean"]],
+        scale_values[[column_name]][["sd"]]
+        )
+      }) %>% 
+    data.frame %>% 
+    setNames(colnames(test) %>% setdiff("pitch_type")) %>% 
+    bind_cols(pitch_type = test$pitch_type)
+  
+  list(
+    train = train, 
+    test = test
+  )
+}
+
+## Episode 59: bit.ly/TidyX_Ep59
+data_downsample <- function(train, test, seed, ...){
+  set.seed(seed)
+  
+  train <- downSample(
+    x = train %>% select(-pitch_type),
+    y = train$pitch_type
+    ) %>% 
+    rename(
+      pitch_type = Class
+    )
+    
+  list(
+    train = train, 
+    test = test
+  )
+}
+
+## Episode 59: bit.ly/TidyX_Ep59
+data_upsample <- function(train, test, seed, ...){
+  set.seed(seed)
+  
+  train <- upSample(
+    x = train %>% select(-pitch_type),
+    y = train$pitch_type
+    ) %>% 
+    rename(
+      pitch_type = Class
+    )
+    
+  list(
+    train = train, 
+    test = test
+  )
+}
+
+
+## Evaluation Metrics
+
+### Accuracy
+eval_acc_overall <- function(x){
+  stopifnot(class(x) == "fit_model_outputs")
+  stopifnot(length(x$class_actual) == length(x$class_pred))
+  sum(x$class_actual == x$class_pred) / length(x$class_actual)
+}
+
+eval_acc_class <- function(x){
+  stopifnot(class(x) == "fit_model_outputs")
+  stopifnot(length(x$class_actual) == length(x$class_pred))
+  
+  data.frame(
+    class_actual = x$class_actual,
+    class_pred = x$class_pred
+    ) %>%
+  count(class_pred, class_actual) %>%
+  group_by(class_actual) %>%
+  summarize(N = sum(n),
+            matches = n[class_actual == class_pred],
+            within_acc = matches / N)
+}
+
+## Episode 59: bit.ly/TidyX_Ep59
+eval_logloss <- function(x){
+  stopifnot(class(x) == "fit_model_outputs")
+  stopifnot(length(x$class_actual) == nrow(x$class_prob))
+  if(is.na(x$class_prob[[1]][[1]])){
+    return(NA)
+  }else{
+    actual <- x$class_actual
+    preds <- x$class_prob
+    colnames(preds) <- levels(actual)
+    mlogloss <- MultiLogLoss(y_true = actual, y_pred = preds)
+  }
+  mlogloss
+}
+
+eval_multiclass_brier <- function(x){
+  stopifnot(class(x) == "fit_model_outputs")
+  stopifnot(length(x$class_actual) == nrow(x$class_prob))
+  if(is.na(x$class_prob)[[1]][[1]]){
+    return(NA)
+  }else{
+    actual <- x$class_actual
+    preds <- x$class_prob
+    colnames(preds) <- levels(actual)
+    brier <- multiclass.Brier(truth = actual, probabilities =preds)
+  }
+  brier
+}
+
+eval_auc <- function(x){
+  stopifnot(class(x) == "fit_model_outputs")
+  stopifnot(length(x$class_actual) == length(x$class_pred))
+  
+  if(is.character(x$class_pred) | is.factor(x$class_pred)){
+    x$class_pred <- factor(x$class_pred, levels = levels(x$class_actual))
+  }
+  
+  suppressMessages({
+    auc <- multiclass.roc(response = as.numeric(x$class_actual),
+                   predictor = as.numeric(x$class_pred))$auc
+  })
+  
+  auc
+}
+
+summarize_models <- function(mod_list, type, optimized){
+  
+  mod_summary <- map_dfr( mod_list, function(model_summary){
+    tibble(
+      `Accuracy-Overall` = as.numeric(eval_acc_overall(model_summary)),
+      `Accuracy-Class`   = list(eval_acc_class(model_summary)),
+      logloss            = as.numeric(eval_logloss(model_summary)),
+      brier              = as.numeric(eval_multiclass_brier(model_summary)),
+      auc                = as.numeric(eval_auc(model_summary))
+    )
+  })
+    
+  bind_cols(
+    tibble(
+    model_type = type, 
+    optimized = optimized,
+    data_type = c("standard","upsampled","downsampled")
+    ),
+    mod_summary
+  )  
+}
+
+```
+
+## Model Training
+
+### KNN  (TidyX Epsiode 54)
+
+Train KNN using set params
+
+```{r eval=!file.exists(file.path(bp,"knn_standard_models.rds"))}
+
+model_KNN <- function( train, test, ..., data_prep_function = list(data_scale)){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  ## train
+  fit_knn <- knn(
+    train = train[,setdiff(colnames(train),"pitch_type")],
+    test = test[,setdiff(colnames(test),"pitch_type")],
+    cl = train$pitch_type, 
+    k = 4)
+  
+  ## outcomes
+  class_pred <- factor(as.character(fit_knn),levels = levels(train$pitch_type))
+  class_prob <- NA
+  
+  ## return
+  model_summary(
+    model = fit_knn,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list(k=4)
+    )
+}
+
+knn_standard <- model_KNN(train_cleaned, test_cleaned, data_prep_function = list(data_scale))
+knn_standard_up <- model_KNN(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_upsample), seed = 123456)
+knn_standard_down <- model_KNN(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_downsample), seed = 123456)
+
+knn_standard_list <- list(knn_standard, knn_standard_up, knn_standard_down)
+
+knn_standard_list %>%
+  walk(eval_acc_overall)
+
+knn_standard_list %>%
+  walk(eval_acc_class)
+
+saveRDS(knn_standard_list, file.path(bp,"knn_standard_models.rds"))
+
+```
+
+Train KNN - optimize
+
+```{r  eval=!file.exists(file.path(bp,"knn_caret_models.rds"))}
+
+model_KNN_caret <- function( train, test, ..., model_seed = 555, data_prep_function = list(scale_data)){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  set.seed(model_seed)
+  ctrl <- trainControl(method="repeatedcv",repeats = 5)
+  knnFit <- train(
+    pitch_type ~ ., 
+    data = train, 
+    method = "knn",
+    trControl = ctrl)
+  
+  ## outcomes
+  class_pred <- predict(knnFit, newdata = test, type = "raw")
+  class_prob <- predict(knnFit, newdata = test, type = "prob")
+  
+  ## return
+  model_summary(
+    model = knnFit,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list(trainControl = list(method = "repeatedcv",repeats = 5))
+    )
+}
+
+knn_caret <- model_KNN_caret(train_cleaned, test_cleaned, data_prep_function = list(data_scale))
+knn_caret_up <- model_KNN_caret(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_upsample), seed = 123456)
+knn_caret_down <- model_KNN_caret(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_downsample), seed = 123456)
+
+knn_caret_list <- list(knn_caret, knn_caret_up, knn_caret_down)
+
+knn_caret_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+knn_caret_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(knn_caret_list, file.path(bp,"knn_caret_models.rds"))
+
+```
+
+### Random Forest (TidyX Epsiode 55)
+
+Train RandomForest using set params
+
+```{r eval=!file.exists(file.path(bp,"rf_standard_models.rds"))}
+
+model_rf <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  set.seed(model_seed)
+  
+  ## train
+  fit_rf <- randomForest(pitch_type ~ ., data = train, mtry = 6)
+  
+  ## return
+  class_pred <- predict(fit_rf, newdata = test, type = "class")
+  class_prob <- predict(fit_rf, newdata = test, type = "prob")
+  
+  ## return
+  model_summary(
+    model = fit_rf,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list(mtry = 6)
+    )
+} 
+
+rf_standard <- model_rf(train_cleaned, test_cleaned)
+rf_standard_up <- model_rf(train_cleaned, test_cleaned, data_prep_function = list(data_upsample), seed = 123456)
+rf_standard_down <- model_rf(train_cleaned, test_cleaned, data_prep_function = list(data_downsample), seed = 123456)
+
+rf_standard_list <- list(rf_standard, rf_standard_up, rf_standard_down)
+
+rf_standard_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+rf_standard_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(rf_standard_list, file.path(bp,"rf_standard_models.rds"))
+
+```
+
+Train RandomForest - optimize
+
+```{r eval=!file.exists(file.path(bp,"rf_caret_models.rds"))}
+
+model_rf_caret <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  control <- trainControl(
+    method = "repeatedcv",
+    number = 5,
+    repeats = 5,
+    search = "grid")
+
+  set.seed(model_seed)
+  
+  tunegrid <- expand.grid(.mtry=c(3:7))
+  
+  cl <- makePSOCKcluster(5)
+  registerDoParallel(cl)
+  
+  ## train
+  fit_rf <- train(pitch_type ~ .,
+                     data = train,
+                     method="rf",
+                     metric = "Accuracy",
+                     tuneGrid = tunegrid,
+                     trControl = control)
+  
+  ## return
+  class_pred <- predict(fit_rf, newdata = test, type = "raw")
+  class_prob <- predict(fit_rf, newdata = test, type = "prob")
+  
+  ## return
+  model_summary(
+    model = fit_rf,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list(trainControl = list(method = "repeatedcv", number = 5, repeats = 5, search = "grid"),
+                 tunegrid = list(expand.grid = list(mtry = c(3:7))))
+    )
+} 
+
+rf_caret <- model_rf_caret(train_cleaned, test_cleaned)
+rf_caret_up <- model_rf_caret(train_cleaned, test_cleaned, data_prep_function = list(data_upsample), seed = 123456)
+rf_caret_down <- model_rf_caret(train_cleaned, test_cleaned, data_prep_function = list(data_downsample), seed = 123456)
+
+rf_caret_list <- list(rf_caret, rf_caret_up, rf_caret_down)
+
+rf_caret_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+rf_caret_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(rf_caret_list, file.path(bp,"rf_caret_models.rds"))
+
+```
+
+### XGBoost (TidyX Epsiode 56)
+
+Train XGBoost using set params
+
+```{r eval=!file.exists(file.path(bp,"xgb_standard_models.rds"))}
+
+model_xgboost <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  ## convert pitch type to numeric
+  train$pitch_type_num <- as.numeric(train$pitch_type) - 1
+  test$pitch_type_num <- as.numeric(test$pitch_type) - 1
+  
+  ## create training and test matrices
+  train_x <- data.matrix(train %>% select(-pitch_type, -pitch_type_num))
+  train_y <- train %>% pull(pitch_type_num)
+  test_x <- data.matrix(test %>% select(-pitch_type, -pitch_type_num))
+  test_y <- test %>% pull(pitch_type_num)
+  
+  ## store data in special XGBoost matrix
+  train_xgb_matrix <- xgb.DMatrix(data = train_x, label = train_y)
+  test_xgb_matrix <- xgb.DMatrix(data = test_x, label = test_y)
+  
+  set.seed(model_seed)
+  
+  ## train model
+  number_pitches <- length(unique(train_cleaned$pitch_type))
+  model_parameters <- list(
+    "eval_metric" = "mlogloss",
+    "num_class"   = number_pitches,
+    "objective"   = "multi:softprob"
+    )
+  
+  wl <- list(train = train_xgb_matrix, test = test_xgb_matrix)
+
+  quiet <- capture.output({
+  fit_xgb <- xgb.train(
+    data = train_xgb_matrix,
+    max.depth = 3,
+    nrounds = 1000,
+    watchlist = wl,
+    nthreads = 3,
+    early_stopping_rounds = 10,
+    params = model_parameters,
+    verbose = FALSE
+  )})
+  
+  ## return
+  class_prob <- predict(fit_xgb, newdata = test_xgb_matrix, reshape = TRUE)
+
+  class_pred <- factor(
+    levels(test$pitch_type)[max.col(class_prob, ties.method = "first")],
+    levels = levels(test$pitch_type))
+  
+  ## return
+  model_summary(
+    model = fit_xgb,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list(
+      model_parameters = list(
+        "eval_metric" = "mlogloss",
+        "num_class"   = number_pitches,
+        "objective"   = "multi:softprob"
+      ),
+      max.depth = 3,
+      nrounds = 1000,
+      watchlist = "train",
+      nthreads = 3,
+      early_stopping_rounds = 10
+    ))
+} 
+
+xgb_standard <- model_xgboost(train_cleaned, test_cleaned)
+xgb_standard_up <- model_xgboost(train_cleaned, test_cleaned, data_prep_function = list(data_upsample), seed = 123456)
+xgb_standard_down <- model_xgboost(train_cleaned, test_cleaned, data_prep_function = list(data_downsample), seed = 123456)
+
+xgb_standard_list <- list(xgb_standard, xgb_standard_up, xgb_standard_down)
+
+xgb_standard_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+xgb_standard_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(xgb_standard_list, file.path(bp,"xgb_standard_models.rds"))
+
+
+```
+
+Train XGBoost - optimize
+
+```{r eval=!file.exists(file.path(bp,"xgb_caret_models.rds"))}
+
+model_xgboost_caret <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  set.seed(model_seed)
+  
+  ## train model
+  cross_val_ctrl <- trainControl(method = "repeatedcv",
+                        repeats = 1,
+                        number = 3,
+                        classProbs = TRUE,
+                        allowParallel = TRUE)
+  
+  tune_grid <- expand.grid(nrounds = 1000,
+                        eta = 0.01,
+                        gamma = 0,
+                        colsample_bytree = 1,
+                        min_child_weight = 1,
+                        subsample = 1,
+                        max_depth = seq(2, 10, by = 2))
+  
+  cl <- makePSOCKcluster(7)
+  registerDoParallel(cl)
+  
+  fit_xgb <- train(
+    pitch_type ~ .,
+    data = train,
+    method = "xgbTree",
+    trControl = cross_val_ctrl,
+    tuneGrid = tune_grid,
+    metric = "Accuracy",
+    verbose = TRUE
+  )
+  
+  ## return
+  class_pred <- predict(fit_xgb, newdata = test, type = "raw")
+  class_prob <- predict(fit_xgb, newdata = test, type = "prob")
+  
+  ## return
+  model_summary(
+    model = fit_xgb,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list(
+      trainControl = list(method = "repeatedcv",
+                        repeats = 1,
+                        number = 3,
+                        classProbs = TRUE,
+                        allowParallel = TRUE),
+      tunegrid = list(nrounds = 1000,
+                        eta = 0.01,
+                        gamma = 0,
+                        colsample_bytree = 1,
+                        min_child_weight = 1,
+                        subsample = 1,
+                        max_depth = seq(2, 10, by = 2))
+    ))
+} 
+
+xgb_caret <- model_xgboost_caret(train_cleaned, test_cleaned)
+xgb_caret_up <- model_xgboost_caret(train_cleaned, test_cleaned, data_prep_function = list(data_upsample), seed = 123456)
+xgb_caret_down <- model_xgboost_caret(train_cleaned, test_cleaned, data_prep_function = list(data_downsample), seed = 123456)
+
+xgb_caret_list <- list(xgb_caret, xgb_caret_up, xgb_caret_down)
+
+xgb_caret_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+xgb_caret_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(xgb_caret_list, file.path(bp,"xgb_caret_models.rds"))
+
+```
+
+
+### Naive Bayes (TidyX Epsiode 57)
+
+Train the Naive Bayes Algorithm using set params
+
+```{r eval=!file.exists(file.path(bp,"bayes_standard_models.rds"))}
+
+model_naive_bayes <- function( train, test, ..., model_seed = 555, data_prep_function = NULL){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  ## convert pitch type to numeric
+  train$pitch_type_num <- as.numeric(train$pitch_type) - 1
+  test$pitch_type_num <- as.numeric(test$pitch_type) - 1
+  
+
+  set.seed(model_seed)
+  
+  ## train model
+  fit_nb <- naiveBayes(x = train %>% select(-pitch_type, -pitch_type_num),
+                     y = train %>% select(pitch_type_num))
+  
+  ## return
+  class_prob <- predict(fit_nb, newdata = test, type = "raw")
+  class_pred <- factor(
+    levels(test$pitch_type)[max.col(class_prob, ties.method = "first")],
+    levels = levels(test$pitch_type))
+  
+  ## return
+  model_summary(
+    model = fit_nb,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list())
+} 
+
+bayes_standard <- model_naive_bayes(train_cleaned, test_cleaned)
+bayes_standard_up <- model_naive_bayes(train_cleaned, test_cleaned, data_prep_function = list(data_upsample), seed = 123456)
+bayes_standard_down <- model_naive_bayes(train_cleaned, test_cleaned, data_prep_function = list(data_downsample), seed = 123456)
+
+bayes_standard_list <- list(bayes_standard, bayes_standard_up, bayes_standard_down)
+
+bayes_standard_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+bayes_standard_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(bayes_standard_list, file.path(bp,"bayes_standard_models.rds"))
+
+
+```
+
+### Deep Learning (TidyX Epsiode 58)
+
+Train a Neural Network  Algorithm using set params
+
+```{r eval=!file.exists(file.path(bp,"nn_standard_models.rds"))}
+
+model_nn <- function( train, test, ..., model_seed = 555, data_prep_function = list(data_scale)){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  ## convert pitch type to categorical array
+  train_pitch_type_num <- to_categorical(as.numeric(train$pitch_type)-1)
+  test_pitch_type_num <- to_categorical(as.numeric(test$pitch_type)-1)
+  
+  train_x <- train %>%
+    select(-pitch_type) %>%
+    array() %>% 
+    as.matrix
+  
+  test_x <- test %>%
+    select(-pitch_type) %>%
+    array() %>% 
+    as.matrix
+   
+
+  ## Create model
+  
+  model <- keras_model_sequential()
+
+  model %>%
+    
+    ## two hidden layers
+    layer_dense(units = 128, activation = 'relu') %>%
+    layer_dense(units = 128, activation = 'relu') %>%
+    
+    ## output layer
+    layer_dense(units = 9, activation = 'softmax')
+  
+  
+  ## define learning information and what model uses to figure out how to updae the weights next
+  model %>% compile(
+    optimizer = optimizer_adam(.01),
+    loss = 'categorical_crossentropy',
+    metrics = c('accuracy')
+  )
+  
+  set.seed(model_seed)
+  
+  ## train model
+  model %>%
+    fit(
+    x = train_x,
+    y = train_pitch_type_num,
+    validation_split = .2,
+    epochs = 50,
+    verbose = 0
+  )
+  
+  ## return
+  class_prob <- model %>% predict(test_x, type = "raw")
+  class_pred <- class_prob %>% 
+    data.frame() %>% 
+    setNames(levels(train_cleaned$pitch_type)) %>% 
+    mutate(
+      idx = 1:nrow(.)
+      ) %>% 
+    pivot_longer(
+      cols = 1:9,
+      names_to = "type") %>% 
+    group_by(idx) %>% 
+    mutate(
+      pred_pitch = type[which.max(value)]
+      ) %>% 
+    pivot_wider(
+      names_from = type, 
+      values_from = value
+      ) %>% 
+    ungroup() %>% 
+    pull(pred_pitch)
+  
+  ## return
+  model_summary(
+    model = NA,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list( hidden = list( dense = list(n = 2, units = 128, activation = "relu")),
+                  output = list( dense = list(n = 1, units = 9, activation = "softmax")),
+                  epochs = 50
+                  ))
+} 
+
+nn_standard <- model_nn(train_cleaned, test_cleaned)
+nn_standard_up <- model_nn(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_upsample), seed = 123456)
+nn_standard_down <- model_nn(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_downsample), seed = 123456)
+
+nn_standard_list <- list(nn_standard, nn_standard_up, nn_standard_down)
+
+nn_standard_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+nn_standard_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(nn_standard_list, file.path(bp,"nn_standard_models.rds"))
+
+```
+
+Deeper NN
+
+```{r eval=!file.exists(file.path(bp,"nn_deep_models.rds"))}
+
+model_nn_deep <- function( train, test, ..., model_seed = 555, data_prep_function = list(data_scale)){
+  
+  if(!is.null(data_prep_function)){
+    for(func_idx in seq_along(data_prep_function)){
+      dat <- data_prep_function[[func_idx]](train, test, ...)
+      train <- dat$train
+      test <- dat$test
+    }
+  }
+  
+  ## convert pitch type to categorical array
+  train_pitch_type_num <- to_categorical(as.numeric(train$pitch_type)-1)
+  test_pitch_type_num <- to_categorical(as.numeric(test$pitch_type)-1)
+  
+  train_x <- train %>%
+    select(-pitch_type) %>%
+    array() %>% 
+    as.matrix
+  
+  test_x <- test %>%
+    select(-pitch_type) %>%
+    array() %>% 
+    as.matrix
+   
+
+  ## Create model
+  
+  model <- keras_model_sequential()
+
+  model %>%
+    
+    ## two hidden layers
+    layer_dense(units = 500, activation = 'relu') %>%
+    layer_dense(units = 500, activation = 'relu') %>%
+    layer_dense(units = 500, activation = 'relu') %>%
+    
+    ## output layer
+    layer_dense(units = 9, activation = 'softmax')
+  
+  
+  ## define learning information and what model uses to figure out how to updae the weights next
+  model %>% compile(
+    optimizer = optimizer_adam(.01),
+    loss = 'categorical_crossentropy',
+    metrics = c('accuracy')
+  )
+  
+  set.seed(model_seed)
+  
+  ## train model
+  model %>%
+    fit(
+    x = train_x,
+    y = train_pitch_type_num,
+    validation_split = .2,
+    epochs = 100,
+    verbose = 0
+  )
+  
+  ## return
+  class_prob <- model %>% predict(test_x, type = "raw")
+  class_pred <- class_prob %>% 
+    data.frame() %>% 
+    setNames(levels(train_cleaned$pitch_type)) %>% 
+    mutate(
+      idx = 1:nrow(.)
+      ) %>% 
+    pivot_longer(
+      cols = 1:9,
+      names_to = "type") %>% 
+    group_by(idx) %>% 
+    mutate(
+      pred_pitch = type[which.max(value)]
+      ) %>% 
+    pivot_wider(
+      names_from = type, 
+      values_from = value
+      ) %>% 
+    ungroup() %>% 
+    pull(pred_pitch)
+  
+  ## return
+  model_summary(
+    model = NA,
+    class = test$pitch_type,
+    class_probs = class_prob,
+    class_pred = class_pred,
+    param = list( hidden = list( dense = list(n = 3, units = 500, activation = "relu")),
+                  output = list( dense = list(n = 1, units = 9, activation = "softmax")),
+                  epochs = 50
+                  ))
+} 
+
+nn_deep <- model_nn_deep(train_cleaned, test_cleaned)
+nn_deep_up <- model_nn_deep(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_upsample), seed = 123456)
+nn_deep_down <- model_nn_deep(train_cleaned, test_cleaned, data_prep_function = list(data_scale, data_downsample), seed = 123456)
+
+nn_deep_list <- list(nn_deep, nn_deep_up, nn_deep_down)
+
+nn_deep_list %>%
+  walk(~print(eval_acc_overall(.x)))
+
+nn_deep_list %>%
+  walk(~print(eval_acc_class(.x)))
+
+saveRDS(nn_deep_list, file.path(bp,"nn_deep_models.rds"))
+
+```
+
+
+## Comparisons
+
+```{r}
+
+## get the list of all files in "BP" that end with the sequence "models.rds" in their title
+model_list <- list.files(bp, pattern = "models.rds$")
+
+model_summaries <- model_list %>% 
+  map_dfr(function(file, path){
+    
+    print(file)
+    contents <- strsplit(tools::file_path_sans_ext(file),"_")[[1]]
+
+    rds <- readRDS(file.path(path, file))
+    
+    summarize_models(rds, type = contents[[1]], optimized = contents[[2]])
+    
+  }, bp)
+
+model_summary_overall <- model_summaries %>% 
+  select(model_type, optimized, data_type, `Accuracy-Overall`, logloss, brier, auc)%>% 
+  arrange(desc(`Accuracy-Overall`))
+
+model_summary_class <- model_summaries %>% 
+  select(model_type, optimized, data_type, `Accuracy-Class`,`Accuracy-Overall`) %>% 
+  unnest(`Accuracy-Class`) %>% 
+  select(-matches) %>% 
+  unite(
+    "Pitch Type",
+    class_actual,
+    N,
+    sep = " - "
+  ) %>% 
+  pivot_wider(
+    names_from  = "Pitch Type",
+    values_from = within_acc
+  ) %>% 
+  arrange(desc(`Accuracy-Overall`))
+
+```
+
+
+```{r}
+
+gt(model_summary_overall) %>% 
+  fmt_percent(4) %>% 
+  fmt_number(5:7, decimals = 2) %>% 
+  data_color(
+    4,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = c(0,1))
+  ) %>% 
+  data_color(
+    5,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = NULL)
+  ) %>% 
+  data_color(
+    6,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = NULL)
+  ) %>%
+  data_color(
+    7,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = NULL)
+  )
+
+
+```
+
+```{r}
+
+gt(model_summary_class) %>% 
+  data_color(
+    4:ncol(model_summary_class),
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = c(0,1))
+  ) %>% 
+  fmt_percent(
+    4:ncol(model_summary_class)
+  )
+
+```
