@@ -365,4 +365,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - Throughout this series, we been attempting to predict pitch type using PitchF/X data. However, we have not directly addressed a major flaw in our data, class imbalance. The Four-seam FastBall consists of nearly 37% of our data! In this episode we apply a couple techniuqes to help address the class imbalance, and look at ways to evaluate our models performance. We talk about the pros and cons to consider, and set up for our last episode for the series.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/059-MLB_pitch_classification_7)
+
+- [Episode 60: MLB Pitch Classification 8 - Model Evaluation and Visualization ](https://bit.ly/TidyX_Ep60)
+  
+  - This week we apply everything we have learned over the last several weeks to attempt to pick the best model for our project. As a reminder, we are attempting to predict pitch type using a subset of PitchF/X data. We attempt to productionalize our evaluations by writing a series of functions that allow quick iteration across multiple input types and capturing of information. Finally, we visualize the evaluations using 2 gt tables. Thank you all so much for joining us for this mini series on ML models and being with us as we hit episode 60. This has been a wonderful ride!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/060-MLB_pitch_classification_8)
   

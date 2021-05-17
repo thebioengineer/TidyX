@@ -1,7 +1,7 @@
 ---
 title: "pitchf/x model evaluation"
 author: "TidyX"
-date: "4/21/2021"
+date: "5/16/2021"
 output: html_document
 ---
 
@@ -37,6 +37,12 @@ suppressPackageStartupMessages({
 })
 
 theme_set(theme_light())
+
+```
+
+```{r load-data-and-clean}
+
+## see Episode 53 - bit.ly/TidyX_Ep53 - for the background on this cleanup
 
 set1 <- readRDS(file.path(bp,"2016_04_21_to_2016_04_23_pitch.rds"))
 set2 <- readRDS(file.path(bp,"2016_04_24_to_2016_04_26_pitch.rds"))
@@ -266,7 +272,7 @@ Train KNN using set params
 
 ```{r eval=!file.exists(file.path(bp,"knn_standard_models.rds"))}
 
-model_KNN <- function( train, test, ..., data_prep_function = list(scale_data)){
+model_KNN <- function( train, test, ..., data_prep_function = list(data_scale)){
   
   if(!is.null(data_prep_function)){
     for(func_idx in seq_along(data_prep_function)){
@@ -957,7 +963,8 @@ saveRDS(nn_deep_list, file.path(bp,"nn_deep_models.rds"))
 
 ```{r}
 
-model_list <- list.files(bp, pattern = "models")
+## get the list of all files in "BP" that end with the sequence "models.rds" in their title
+model_list <- list.files(bp, pattern = "models.rds$")
 
 model_summaries <- model_list %>% 
   map_dfr(function(file, path){
@@ -972,7 +979,8 @@ model_summaries <- model_list %>%
   }, bp)
 
 model_summary_overall <- model_summaries %>% 
-  select(model_type, optimized, data_type, `Accuracy-Overall`, logloss, brier, auc)
+  select(model_type, optimized, data_type, `Accuracy-Overall`, logloss, brier, auc)%>% 
+  arrange(desc(`Accuracy-Overall`))
 
 model_summary_class <- model_summaries %>% 
   select(model_type, optimized, data_type, `Accuracy-Class`,`Accuracy-Overall`) %>% 
@@ -996,7 +1004,33 @@ model_summary_class <- model_summaries %>%
 ```{r}
 
 gt(model_summary_overall) %>% 
-  gt::data_color(columns = 3, colors = "blue")
+  fmt_percent(4) %>% 
+  fmt_number(5:7, decimals = 2) %>% 
+  data_color(
+    4,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = c(0,1))
+  ) %>% 
+  data_color(
+    5,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = NULL)
+  ) %>% 
+  data_color(
+    6,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = NULL)
+  ) %>%
+  data_color(
+    7,
+    colors = scales::col_numeric(
+      palette = c("red","white","blue"),
+      domain = NULL)
+  )
+
 
 ```
 
