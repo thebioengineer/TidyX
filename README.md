@@ -370,4 +370,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
   - This week we apply everything we have learned over the last several weeks to attempt to pick the best model for our project. As a reminder, we are attempting to predict pitch type using a subset of PitchF/X data. We attempt to productionalize our evaluations by writing a series of functions that allow quick iteration across multiple input types and capturing of information. Finally, we visualize the evaluations using 2 gt tables. Thank you all so much for joining us for this mini series on ML models and being with us as we hit episode 60. This has been a wonderful ride!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/060-MLB_pitch_classification_8)
+
+- [Episode 61: Data Cleaning - Regular Expressions ](https://bit.ly/TidyX_Ep61)
+  
+  - Okay, we've gotta say it - there is nothing "regular" about regular expressions. BUT that does not mean they are not an incredibly valuable tool in your programming toolbox. In this episode we go through how to apply regular expressions to a dataset and talk through some of the common tokens you might use when applying a regular expression to your dataset.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/061-Data_Cleaning_Regular_Expressions)
   
