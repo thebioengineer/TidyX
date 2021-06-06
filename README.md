@@ -376,3 +376,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - Okay, we've gotta say it - there is nothing "regular" about regular expressions. BUT that does not mean they are not an incredibly valuable tool in your programming toolbox. In this episode we go through how to apply regular expressions to a dataset and talk through some of the common tokens you might use when applying a regular expression to your dataset.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/061-Data_Cleaning_Regular_Expressions)
   
+- [Episode 62: Data Cleaning - REGEX applied & stringr ](https://bit.ly/TidyX_Ep62)
+
+  - This week we continue using Regex, and this time talk about applying it to generate data for plots. Additionally we discuss techniques such as grouping, and using the stringr package for its str_* variants of the base R regex functions.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/062-Data_Cleaning_REGEX_Applied)
+
+  
