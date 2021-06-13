@@ -381,4 +381,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - This week we continue using Regex, and this time talk about applying it to generate data for plots. Additionally we discuss techniques such as grouping, and using the stringr package for its str_* variants of the base R regex functions.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/062-Data_Cleaning_REGEX_Applied)
 
+- [Episode 63: Data Cleaning - REGEX lookarounds & Player Gantt Charts ](https://bit.ly/TidyX_Ep63)
+
+  - We lookaround with regex this week, showing an alternative approach to setting anchors in your regular expressions using lookarounds. We apply this to extracting player substitutions. Then we calculate the number of stints and duration for players to create a player gantt chart across the Miami Heat and Milwaukee Bucks Game 2 of the Eastern Conference Playoffs.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/063-Data_Cleaning_regex_lookarounds)
   
