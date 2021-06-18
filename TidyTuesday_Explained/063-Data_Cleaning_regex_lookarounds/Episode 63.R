@@ -184,7 +184,7 @@ player_stints %>%
            color = "black",
            alpha = 0.75) +
   facet_wrap( team ~ .,scales = "free_y") +
-  scale_fill_manual(values = c(mil = "darkgreen", mia = "red")) +
+  scale_fill_manual(values = c(mil = "forestgreen", mia = "red")) +
   scale_x_continuous(breaks = seq(from = 0, to = 10, by = 2)) +
   labs(y = NULL,
        x = "Substitutions",
@@ -229,13 +229,14 @@ player_stints %>%
         plot.caption = element_text(face = "bold", color = "blue"))
 
 ## When in the game did the Bucks make substitutions?
-
-player_gantt <- player_stints %>%
+player_gantt_data <- player_stints %>%
   group_by(team, player) %>%
   mutate(
     duration = sum(sub_out - sub_in),
     player = fct_reorder(player, duration)
-  ) %>% 
+  ) 
+
+player_gantt <- player_gantt_data %>% 
   ggplot() +
   geom_segment(
     aes(
@@ -246,7 +247,7 @@ player_gantt <- player_stints %>%
       color = team),
     size = 4) +
   facet_wrap( ~ team , scales = "free_y", nrow = 2) +
-  scale_color_manual(values = c(mil = "darkgreen", mia = "red")) +
+  scale_color_manual(values = c(mil = "forestgreen", mia = "red")) +
   scale_x_continuous(
     breaks = seq(from = 0, to = 48, by = 12),
     labels = c(paste0("Q",1:4), "End Game")
@@ -262,4 +263,59 @@ player_gantt <- player_stints %>%
   plot_layout(ncol = 1, nrow = 2, heights = c(3,2))
 
 
+shots <- game_data_time %>% 
+  arrange(game_time) %>% 
+  mutate(
+    score_points_mil = c(0,diff(Bucks)),
+    score_points_mia = c(0,diff(Heat))
+  ) %>% 
+  filter(
+    grepl("make|miss", play_details)
+  ) %>% 
+  mutate(
+    points = case_when(
+      possession == "mil" ~ score_points_mil, 
+      possession == "mia" ~ score_points_mia
+    ),
+    shot_result = case_when(
+      points == 3 ~ "three pointer",
+      points == 2 ~ "score",
+      points == 1 ~ "free throw",
+      points == 0 ~ "miss"
+    ),
+    player = case_when(
+      shot_result == "miss" ~ trimws(str_extract(play_details,".*(?=misses)")),
+      TRUE ~ trimws(str_extract(play_details,".*(?=makes)"))
+    ),
+    player = factor(player, levels =  levels(player_gantt_data$player))
+  ) %>%
+  select(
+    game_time, player, shot_result, team = possession
+  ) %>% 
+  left_join(
+    player_gantt_data %>% 
+      distinct(player, duration),
+    by = c("player","team")
+  )
+
+player_gantt + 
+  geom_point(
+    data = shots, 
+    aes(
+      x = game_time, 
+      y = tidytext::reorder_within(player,duration,team),
+      shape = shot_result
+    )
+  ) +
+  scale_shape_manual(
+    values = c("three pointer" = 17,
+               "score" = 16,
+               "free throw" = 18,
+               "miss" = 1)
+  ) + 
+  theme(legend.position = "bottom") + 
+  guides(
+    color = guide_none(),
+    shape = guide_legend(title = "Shot Type")
+  )
 

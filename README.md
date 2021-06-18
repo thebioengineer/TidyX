@@ -386,3 +386,7 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - We lookaround with regex this week, showing an alternative approach to setting anchors in your regular expressions using lookarounds. We apply this to extracting player substitutions. Then we calculate the number of stints and duration for players to create a player gantt chart across the Miami Heat and Milwaukee Bucks Game 2 of the Eastern Conference Playoffs.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/063-Data_Cleaning_regex_lookarounds)
   
+- [Episode 64: Data Cleaning - Ugly Excel Files ](https://bit.ly/TidyX_Ep64)
+
+  - Ugly data. Ugly EXCEL data. Thats pretty common to come across as a data scientist. People unfamiliar with how to format data are often the ones creating the excel files you work with. This week, Patrick and Ellis talk through some techniques to handle these data and turn it into usable data. Patrick wrote up this weeks example, parsing through the data to generate a nice data.frame from the ugly excel example.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/063-Data_Cleaning_Excel_Files_1)
