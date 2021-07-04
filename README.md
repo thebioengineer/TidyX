@@ -394,4 +394,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 - [Episode 65: Data Cleaning - Ugly Excel Files Part 2 ](https://bit.ly/TidyX_Ep65)
 
   - This week Ellis works through the ugly excel file, writing out the code live as he goes, and explaining how to break up the parsing into nice, bite-size pieces and generalize them. Patrick is there asking questions and clarifying how things worked. At the end of the cast they end up with similar data.frames, ready to munge for final processing.
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/063-Data_Cleaning_Excel_Files_2)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/065-Data_Cleaning_Excel_Files_2)
+  
+  - [Episode 66: Data Cleaning - Ugly Excel Files Part 3 ](https://bit.ly/TidyX_Ep66)
+
+  - Now that we have the excel file into a nice format, we go over the final pieces of processing to turn the incorrectly formatted fields into usable data. We talk about generating date objects, ifelse vs if_else, and have some fun!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/066-Data_Cleaning_Excel_Files_3)
