@@ -389,14 +389,19 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 - [Episode 64: Data Cleaning - Ugly Excel Files Part 1  ](https://bit.ly/TidyX_Ep64)
 
   - Ugly data. Ugly EXCEL data. Thats pretty common to come across as a data scientist. People unfamiliar with how to format data are often the ones creating the excel files you work with. This week, Patrick and Ellis talk through some techniques to handle these data and turn it into usable data. Patrick wrote up this weeks example, parsing through the data to generate a nice data.frame from the ugly excel example.
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/063-Data_Cleaning_Excel_Files_1)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/064-Data_Cleaning_Excel_Files_1)
   
 - [Episode 65: Data Cleaning - Ugly Excel Files Part 2 ](https://bit.ly/TidyX_Ep65)
 
   - This week Ellis works through the ugly excel file, writing out the code live as he goes, and explaining how to break up the parsing into nice, bite-size pieces and generalize them. Patrick is there asking questions and clarifying how things worked. At the end of the cast they end up with similar data.frames, ready to munge for final processing.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/065-Data_Cleaning_Excel_Files_2)
   
-  - [Episode 66: Data Cleaning - Ugly Excel Files Part 3 ](https://bit.ly/TidyX_Ep66)
+- [Episode 66: Data Cleaning - Ugly Excel Files Part 3 ](https://bit.ly/TidyX_Ep66)
 
   - Now that we have the excel file into a nice format, we go over the final pieces of processing to turn the incorrectly formatted fields into usable data. We talk about generating date objects, ifelse vs if_else, and have some fun!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/066-Data_Cleaning_Excel_Files_3)
+  
+- [Episode 67: Data Cleaning - Viewer Submitted Excel File](https://bit.ly/TidyX_Ep67)
+
+  - For the first time in over a year, and 65 episodes, Ellis and Patrick are in the same room! This week they work on a viewer-submitted excel file. After last weeks episode, we put out a call to our viewers to submit the ugly data they see so we can try to help. Github user MikePrt submitted a file from the UK Government statistics organisation (Office for National Statistics (ONS)) as an example. We extract the data and produce a simple plot.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/067-Data_Cleaning_User_Submission)
