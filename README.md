@@ -405,3 +405,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - For the first time in over a year, and 65 episodes, Ellis and Patrick are in the same room! This week they work on a viewer-submitted excel file. After last weeks episode, we put out a call to our viewers to submit the ugly data they see so we can try to help. Github user MikePrt submitted a file from the UK Government statistics organisation (Office for National Statistics (ONS)) as an example. We extract the data and produce a simple plot.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/067-Data_Cleaning_User_Submission)
+  
+- [Episode 68: Data Cleaning - Ugly Excel Files Part 4 - Saving Outputs](https://bit.ly/TidyX_Ep68)
+
+  - We continue our series on data cleaning and discuss sharing your outputs. Patrick and Ellis go over a few output file formats and two different excel libraries that give you differing levels of control over the outputs. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/068-Data_Cleaning_Excel_Files_4)

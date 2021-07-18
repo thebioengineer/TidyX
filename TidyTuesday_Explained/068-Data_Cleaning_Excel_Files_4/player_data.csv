@@ -1,0 +1,39 @@
+"player_number","height_cm","weight_kg","age_yrs","workout","training_date","duration_num","duration_min","Distance"
+"Aaron Jacob",187,75.6,26,"Jogging",2021-10-01,0.0451388888888889,65,6.2
+"Aaron Jacob",187,75.6,26,"Jogging",2021-10-02,0.03125,45,5
+"Aaron Jacob",187,75.6,26,"Jogging",2021-10-05,0.0625,90,7
+"Aaron Jacob",187,75.6,26,"Jogging",2021-10-07,0.0486111111111111,70,6.4
+"Aaron Jacob",187,75.6,26,"Jogging",2021-10-10,NA,NA,6.3
+"Aaron Jacob",187,75.6,26,"Jogging",2021-10-11,50,50,5.1
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-03,30,30,NA
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-04,45,45,NA
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-05,30,30,NA
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-06,40,40,NA
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-08,35,35,NA
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-14,55,55,NA
+"Aaron Jacob",187,75.6,26,"Swimming",2021-10-15,57,57,NA
+"Peter Mills",176,80.6,27,"Walking",2021-10-01,30,30,2
+"Peter Mills",176,80.6,27,"Walking",2021-10-03,0.04375,63,4.5
+"Peter Mills",176,80.6,27,"Walking",2021-10-04,0.0388888888888889,56,4.3
+"Peter Mills",176,80.6,27,"Walking",2021-10-05,0.0486111111111111,70,5
+"Peter Mills",176,80.6,27,"Walking",2021-10-06,0.0284722222222222,41,35
+"Peter Mills",176,80.6,27,"Walking",2021-10-07,0.0347222222222222,50,4
+"Peter Mills",176,80.6,27,"Walking",2021-10-08,0.04375,63,4.9
+"Peter Mills",176,80.6,27,"Walking",2021-10-09,0.03125,45,3
+"Peter Mills",176,80.6,27,"Walking",2021-10-10,0.0416666666666667,60,4.3
+"Peter Mills",176,80.6,27,"Walking",2021-10-11,32,32,2.3
+"Peter Mills",176,80.6,27,"Walking",2021-10-12,0.0256944444444445,37,2.5
+"Peter Mills",176,80.6,27,"Walking",2021-10-13,0.0263888888888889,38,2.25
+"Peter Mills",176,80.6,27,"Walking",2021-10-14,0.0291666666666667,42,2.9
+"Peter Mills",176,80.6,27,"Walking",2021-10-15,0.0138888888888889,20,1.5
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-03,80,80,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-04,45,45,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-05,52,52,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-07,56,56,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-08,60,60,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-09,90,90,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-10,NA,NA,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-11,66,66,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-12,57,57,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-14,63,63,NA
+"Peter Mills",176,80.6,27,"Weight Lifting",2021-10-15,95,95,NA
