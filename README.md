@@ -410,3 +410,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - We continue our series on data cleaning and discuss sharing your outputs. Patrick and Ellis go over a few output file formats and two different excel libraries that give you differing levels of control over the outputs. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/068-Data_Cleaning_Excel_Files_4)
+  
+- [Episode 69: Modern Pentathlons with Mara Averick](https://bit.ly/TidyX_Ep69)
+
+  - Ellis and Patrick are joined today by Mara Averick, a Developer Advocate for RStudio. We conclude our series on messy excel data by talking through cleaning an excel file from UIPM and reasoning out what the field and scoring are.Then we talk about Mara's role, career history, and advice she has for our viewers.
+  - UseR Highlighted: [Mara Averick](https://twitter.com/dataandme)
+  - [Source Code](https://github.com/batpigandme/modern-pentathlon) 
