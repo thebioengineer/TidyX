@@ -416,3 +416,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - Ellis and Patrick are joined today by Mara Averick, a Developer Advocate for RStudio. We conclude our series on messy excel data by talking through cleaning an excel file from UIPM and reasoning out what the field and scoring are.Then we talk about Mara's role, career history, and advice she has for our viewers.
   - UseR Highlighted: [Mara Averick](https://twitter.com/dataandme)
   - [Source Code](https://github.com/batpigandme/modern-pentathlon) 
+
+  
+- [Episode 70: Databases with {dplyr}](https://bit.ly/TidyX_Ep70)
+
+  - Making friends with your friendly database administrator is a great way to improve your effectiveness as a data scientist in your organization. But what do you do if you don't know any SQL? We present {dbplyr} by the folks at RStudio. Easily connect, interact with and send queries to databases using familiar dplyr syntax and commands.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/070-Databases_with_dbplyr) 
+  
