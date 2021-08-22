@@ -425,6 +425,10 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   
 - [Episode 71: Databases in R | Exploring Your Database with NBA data](https://bit.ly/TidyX_Ep71)
 
-  - Being handed a database without knowing its contents or where to start can be daunting. We talk about techniuqes we can use to start exploring it just like any other dataset. We get a list of the tables in your database, the column names, and show how you can write SQL to get the head of a table.
+  - Being handed a database without knowing its contents or where to start can be daunting. We talk about techniques we can use to start exploring it just like any other dataset. We get a list of the tables in your database, the column names, and show how you can write SQL to get the head of a table.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/071-Databases_with_R_2) 
-  
+ 
+- [Episode 72: Databases in R | Shiny and Databases](https://bit.ly/TidyX_Ep72)
+
+  - The fastest way for a data scientist to multiply their impact is to get their customers to be able to do the analysis themselves (with guiderails of course). Shiny provides a great user interface, combing this with some basic queries your clients may want improves response time and allows them to search to their hearts content. This week we show you a simple way to add interactivity with your database using {shiny} to query teams mean point differential at home across the 2001-2002 seasons.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/072-Databases_with_Shiny)  
