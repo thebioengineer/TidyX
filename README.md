@@ -432,3 +432,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - The fastest way for a data scientist to multiply their impact is to get their customers to be able to do the analysis themselves (with guiderails of course). Shiny provides a great user interface, combing this with some basic queries your clients may want improves response time and allows them to search to their hearts content. This week we show you a simple way to add interactivity with your database using {shiny} to query teams mean point differential at home across the 2001-2002 seasons.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/072-Databases_with_Shiny)  
+  
+- [Episode 73: Databases in R | Shiny,Databases, and Reactive Polling](https://bit.ly/TidyX_Ep73)
+
+  - Now that we have a shiny app that allows our users to access and interact with the data in our database, how do we make sure that the user configuration is showing the most up-to-date information for selection? This is done through reactive polling - a time out feature that checks to see if there are any update to the database and updates the UI selection interface accordingly. We discuss the benefits and how to use the reactivePoll function combined with an observeEvent function to really supercharge our shiny app!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/073-Databases_with_Shiny_2)  
+  
