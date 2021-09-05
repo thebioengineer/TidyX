@@ -437,4 +437,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - Now that we have a shiny app that allows our users to access and interact with the data in our database, how do we make sure that the user configuration is showing the most up-to-date information for selection? This is done through reactive polling - a time out feature that checks to see if there are any update to the database and updates the UI selection interface accordingly. We discuss the benefits and how to use the reactivePoll function combined with an observeEvent function to really supercharge our shiny app!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/073-Databases_with_Shiny_2)  
+
+- [Episode 74: Databases with R | Joins in SQL vs Local](https://bit.ly/TidyX_Ep74)
+
+  - Continuing the SQL/Database saga, we look at joins. we scrape a bunch of play by play information and game info and look at generating a database with this information. We then compare the speed of joining tables locally or within the sql database!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/074-Databases_with_R_3)  
   
