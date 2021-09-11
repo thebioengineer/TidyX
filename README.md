@@ -442,4 +442,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - Continuing the SQL/Database saga, we look at joins. we scrape a bunch of play by play information and game info and look at generating a database with this information. We then compare the speed of joining tables locally or within the sql database!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/074-Databases_with_R_3)  
+
+- [Episode 75: Databases with R | J Joins, databases, and commits in Shiny](https://bit.ly/TidyX_Ep75)
+
+  - Now that we have a database full of data, and a shiny app to play with it, how do we capture and share the information across our users using the database? In this episode we share how we might create a sample database filled with play-by-play NBA data and create a shiny app to allow a coach or SME to review and add comments to the data as they review it. Then, they can decide to commit and save their thoughts for the future!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/075-Databases_with_Shiny_3)  
   
