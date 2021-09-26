@@ -447,4 +447,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - Now that we have a database full of data, and a shiny app to play with it, how do we capture and share the information across our users using the database? In this episode we share how we might create a sample database filled with play-by-play NBA data and create a shiny app to allow a coach or SME to review and add comments to the data as they review it. Then, they can decide to commit and save their thoughts for the future!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/075-Databases_with_Shiny_3)  
+
+- [Episode 76: Databases with R | Polling databases in Shiny](https://bit.ly/TidyX_Ep76)
+
+  - In Episode 75 we introduced the idea of committing changes from a shiny app to a database. But what about scenarios with multiple users? Ellis and Patrick explore an idea to allow for polling of the database and add updates that were committed to the database to active views of the rest of the users. We use reactive polling as introduced in episode 73 and updating reactiveValues.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/076-Databases_with_Shiny_4)
   
