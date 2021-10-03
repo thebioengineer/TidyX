@@ -452,4 +452,8 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - In Episode 75 we introduced the idea of committing changes from a shiny app to a database. But what about scenarios with multiple users? Ellis and Patrick explore an idea to allow for polling of the database and add updates that were committed to the database to active views of the rest of the users. We use reactive polling as introduced in episode 73 and updating reactiveValues.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/076-Databases_with_Shiny_4)
-  
+
+- [Episode 77: Tidymodels - LM](https://bit.ly/TidyX_Ep77)
+
+  - tidymodels is an ecosystem of packages developed by RStudio (Max Kuhn, Julia Silge to name a few) that is developed to help folks apply good modeling practices from start of the cleaned data to a fully productionalized model. We are going to be stepping through and learning how to apply tidymodels together. The first episode is on applying a simple linear model versus the base R method!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/077-Tidy_Models_1)

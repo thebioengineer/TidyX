@@ -1,0 +1,191 @@
+---
+title: "Tidyx Episode 77 - Make your models look clean with broom and tidymodels"
+author: "Patrick Ward"
+output: html_document
+---
+
+**tidymodels:** A collection of packages for modeling and machine learning within in the `tidyverse` framework.
+**broom:** A package for cleaning up the *typically* messy outputs of models in `r`
+
+
+## Packages & Data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(broom)
+library(Lahman)
+
+theme_set(theme_light())
+
+## Get baseball data
+baseball <- Batting %>%
+  inner_join(People) %>%
+  inner_join(AwardsPlayers) %>%
+  filter(yearID >= 2006,
+         AB >= 300)
+
+```
+
+
+Always visualize your data!
+
+```{r}
+
+plot(baseball$H, baseball$RBI)
+
+```
+
+## Typical way of looking at the model output
+
+```{r}
+## Normal R method
+old_fit <- lm(RBI ~ H, data = baseball)
+summary(old_fit)
+```
+
+## Build a linear model in tidymodels
+
+Initialize the linear model engine
+
+
+```{r}
+
+lm_mod <- linear_reg() %>% 
+  set_mode("regression") %>% ## Not strictly necessary if we had a different model
+  set_engine("lm") 
+
+lm_mod
+
+```
+
+
+Fit the model
+
+```{r}
+
+fit_lm <- lm_mod %>%
+  fit(RBI ~ H, data = baseball)
+
+fit_lm
+```
+
+Summarize Model
+
+```{r}
+# model output from our tidymodel
+fit_lm %>%
+  pluck("fit") %>%
+  summary()
+
+# Get the same model output from the standard classic model
+summary(old_fit)
+
+```
+
+**Let's use broom to tidy this up!**
+
+```{r}
+## model coefficients and standard errors
+fit_lm %>%
+  tidy()
+
+## model fit statistics
+fit_lm %>%
+  glance()
+
+## append fitted and residual values to the original data frame
+fit_lm %>%
+  pluck("fit") %>%
+  augment()
+
+## plot model coefficients with standard errors
+fit_lm %>%
+  tidy() %>%
+  ggplot(aes(x = estimate, y = term)) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(xmin = estimate - std.error,
+                    xmax = estimate + std.error),
+                width = 0,
+                size = 1.2) +
+  facet_wrap(~term, scales = "free") +
+  expand_limits(x = 0) +
+  theme(strip.background = element_rect(fill = "black"),
+        strip.text = element_text(face = "bold"),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 12, face = "bold"))
+```
+
+
+## Making Predictions in tidymodels
+
+create a fake data set
+
+```{r}
+
+set.seed(11)
+baseball_data <- tibble(
+  player = LETTERS[1:10],
+  H = round(rnorm(n = 10, mean = 220, sd = 100), 0))
+
+baseball_data
+```
+
+
+get point estimate prediction
+
+```{r}
+predict(fit_lm, 
+        new_data = baseball_data)
+```
+
+
+get confidence intervals for predictions
+
+```{r}
+predict(fit_lm, 
+        new_data = baseball_data, 
+        type = "conf_int",
+        level = 0.95)
+```
+
+
+combine predictions and confidence intervals with new data
+
+```{r}
+baseball_data_preds <- baseball_data %>%
+  bind_cols(
+    predict(fit_lm, 
+        new_data = baseball_data)
+  ) %>%
+  bind_cols(
+    predict(fit_lm, 
+        new_data = baseball_data, 
+        type = "conf_int",
+        level = 0.95)
+  )
+
+
+baseball_data_preds
+
+```
+
+
+plot predictions 
+
+
+```{r}
+baseball_data_preds %>%
+  rename(pred_rbi = .pred, low95 = .pred_lower, high95 = .pred_upper) %>%
+  ggplot(aes(x = pred_rbi, y = reorder(player, pred_rbi))) +
+  geom_errorbar(aes(xmin = low95, xmax = high95),
+                width = 0,
+                size = 1.2) +
+  geom_point(size = 4,
+             shape = 21,
+             fill = "white",
+             color = "black")
+```
+
