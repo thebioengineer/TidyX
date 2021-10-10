@@ -1,0 +1,190 @@
+---
+title: "TidyX 78 - tidyverse model framework"
+author: "Patrick Ward"
+output: html_document
+---
+
+## Load packages & data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(datasets)
+
+theme_set(theme_light())
+
+## function set up
+plot_continuous <- function(col){
+  plt <- df %>%
+    ggplot(aes(x = {{col}}, y = Ozone)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+  plt
+}
+
+plot_categorical <- function(col){
+  plt <- df %>%
+    ggplot(aes(x = {{col}}, Ozone, y = Ozone)) +
+    geom_boxplot()
+  plt
+}
+
+```
+
+
+```{r data}
+
+data("airquality")
+
+?airquality
+
+df <- airquality %>%
+  mutate(Month.f = as.factor(Month))
+
+df %>%
+  head()
+
+df %>%
+  summarize(across(everything(),
+            ~sum(is.na(.x))))
+
+```
+
+
+## EDA
+
+```{r}
+
+df %>%
+  nrow()
+
+(plot_continuous(Solar.R) + plot_continuous(Wind)) /
+  (plot_continuous(Temp) + plot_categorical(Month.f))
+```
+
+
+## Building some tidymodels to predict Ozone
+
+The main packages in the `tidymodels` suite that we will use:
+
+
+`rsample`: train/test or cross validation splits
+`recipes`: pre-processing of data
+`parsnip`: specifying the model we want to use
+`workflows` : for putting the model together and constructing the workflow
+`yardstick`: model evaluation metrics
+`broom` : for model outputs in a clean/tidy data frame
+
+**Data splitting with `rsample`**
+
+
+```{r test-train-split}
+
+df_split <- initial_split(df,prop = 3/4, strata = Month.f)
+df_split
+
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+```
+
+
+**Create a model recipe**
+
+* Setting the recipe is just specifying the model.
+* Key note here is that there are a number of helper functions (e.g., `step_normalize()`, `step_impute_median()`, `step_dummy()`) that can be useful for handling data preparation. You would do all pre-processing in this step.
+
+```{r}
+
+aq_recipe <- 
+  recipe(
+    Ozone ~ Solar.R + Wind + Temp + Month.f ,
+    data = df_train
+  ) %>%
+  step_impute_median(Ozone, Solar.R) %>% 
+  step_normalize(Solar.R, Wind, Temp)
+
+aq_recipe
+
+```
+
+
+**Initialize the model**
+
+```{r}
+
+lm_model <- linear_reg() %>% 
+  set_engine("lm") %>%
+  set_mode("regression")
+
+lm_model
+```
+
+
+**Set up the workflow**
+
+This step is initiated with `workflow()` function
+
+```{r}
+# set the workflow
+aq_workflow <-
+  workflow() %>%
+  add_model(lm_model) %>%
+  add_recipe(aq_recipe) 
+
+aq_workflow
+```
+
+
+**Run the model on our training data set**
+
+```{r}
+
+model_fit <- aq_workflow %>% 
+  fit(data = df_train)
+
+```
+
+
+**Review Model
+
+```{r}
+
+model_fit %>% 
+  extract_fit_parsnip() %>% 
+  tidy()
+
+```
+
+**Run Model on Test Set**
+
+```{r}
+
+ozone_pred <- predict(
+  model_fit %>% extract_fit_parsnip(),
+  model_fit %>% extract_recipe() %>% bake(df_test)
+  )
+
+fit_df_test <- bind_cols(df_test, ozone_pred)
+
+```
+
+
+```{r}
+
+## plot
+fit_df_test %>%
+  ggplot(aes(x = .pred, y = Ozone)) +
+  geom_point(size = 6,
+             aes(color = Month.f),
+             alpha = 0.5) +
+  geom_abline(intercept = 0,
+              slope = 1,
+              size = 1.5,
+              linetype = "dashed")
+
+```
+
