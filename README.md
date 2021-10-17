@@ -458,7 +458,12 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
   - tidymodels is an ecosystem of packages developed by RStudio (Max Kuhn, Julia Silge to name a few) that is developed to help folks apply good modeling practices from start of the cleaned data to a fully productionalized model. We are going to be stepping through and learning how to apply tidymodels together. The first episode is on applying a simple linear model versus the base R method!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/077-Tidy_Models_1)
   
-- [Episode 77: Tidymodels - Splits and Recipes](https://bit.ly/TidyX_Ep78)
+- [Episode 78: Tidymodels - Splits and Recipes](https://bit.ly/TidyX_Ep78)
 
   - tidymodels is an ecosystem of packages developed by RStudio (Max Kuhn, Julia Silge to name a few) that is developed to help folks apply good modeling practices from start of the cleaned data to a fully productionalized model. We are going to be stepping through and learning how to apply tidymodels together. The second episode we discuss how to set up your test/train splits as well as data preprocessing using the {recipes} package in conjuction with {workflow}! This smooths out and applies good practices simply and effectively to make data prep for modeling a breeze. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/078-Tidy_Models_2)
+  
+- [Episode 79: Tidymodels - Cross-validation and Metrics](https://bit.ly/TidyX_Ep79)
+
+  - The third episode on tidymodels, we continue our data prep and model training by exploring cross-validation and metric evalidation. Ellis and Patrick show to set up a 5-fold cross validation set on your training split as well as fitting a tidymodels workflow! We finally show how to display and extract model fitting evaluation metrics.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/079-Tidy_Models_3)

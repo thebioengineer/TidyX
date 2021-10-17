@@ -1,0 +1,164 @@
+---
+title: "Episode 79 - Tidymodels Cross Validation"
+author: "Patrick Ward"
+output: html_document
+---
+
+## Load packages & data
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(datasets)
+
+theme_set(theme_light())
+
+plot_continuous <- function(col){
+  plt <- df %>%
+    ggplot(aes(x = col, y = Ozone)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+  
+  plt
+}
+
+plot_categorical <- function(col){
+  plt <- df %>%
+    ggplot(aes(x =col, Ozone, y = Ozone)) +
+    geom_boxplot()
+  
+  plt
+}
+
+data("airquality")
+
+df <- airquality %>%
+  mutate(Month.f = as.factor(Month))
+
+df %>%
+  head()
+
+df %>%
+  summarize(across(everything(),
+            ~sum(is.na(.x))))
+
+```
+
+
+
+## Data Split
+
+```{r}
+
+set.seed(487)
+df_split <- initial_split(df,prop = 3/4, strata = Month.f)
+df_split
+
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+```
+
+
+
+## Set up a recipe
+
+```{r}
+
+aq_recipe <- 
+  recipe(
+    Ozone ~ Solar.R + Wind + Temp + Month.f ,
+    data = df_train
+  ) %>%
+  step_impute_median(Ozone, Solar.R) %>% 
+  step_normalize(Solar.R, Wind, Temp)
+
+aq_recipe
+
+## To see the pre-process steps applied to the data you need to prep() the recipe and then bake() it
+aq_recipe %>% 
+  prep() %>% 
+  bake(new_data = NULL) %>% 
+  head()
+
+# now look at the pre-processing on the testing set
+aq_recipe %>% 
+  prep() %>% 
+  bake(new_data = df_test) %>% 
+  head()
+
+```
+
+
+## Specify model
+
+```{r}
+
+lm_model <- linear_reg() %>% 
+  set_engine("lm") %>%
+  set_mode("regression")
+
+lm_model
+```
+
+
+## Create workflow
+
+```{r}
+
+aq_workflow <-
+  workflow() %>%
+  add_model(lm_model) %>%
+  add_recipe(aq_recipe) 
+
+aq_workflow
+```
+
+
+## Create Cross Validation Folds to Test the Model
+
+```{r}
+set.seed(136)
+
+cv_folds <- vfold_cv(df_train, v = 5) 
+
+cv_folds
+
+```
+
+
+## Fit the Model to the Cross Validation Folds and Check Performance
+
+```{r}
+model_fit <- aq_workflow %>% 
+  fit_resamples(
+    resamples = cv_folds,
+    metrics = metric_set(rmse, rsq, mae)
+  )
+
+model_fit %>%
+  collect_metrics() %>% 
+  arrange(.metric)
+
+```
+
+
+## Fit the best model to the training set and evaluate on the test set
+
+```{r}
+fit_lm <- last_fit(
+  aq_workflow, 
+  split = df_split,
+  metrics = metric_set(rmse, rsq, mae)
+  )
+
+# Show RMSE, MAE, and RSQ
+fit_lm %>% 
+  collect_metrics()%>% 
+  arrange(.metric)
+```
+
