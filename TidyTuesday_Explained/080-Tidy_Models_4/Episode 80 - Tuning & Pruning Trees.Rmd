@@ -1,0 +1,181 @@
+---
+title: "Episode 80 - tuning trees"
+author: "Patrick Ward"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(datasets)
+
+theme_set(theme_light())
+
+data("airquality")
+df <- airquality %>%
+  mutate(Month.f = as.factor(Month))
+
+df %>%
+  head()
+```
+
+
+## Data Split
+
+```{r}
+set.seed(487)
+df_split <- initial_split(df,prop = 3/4, strata = Month.f)
+df_split
+
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+```
+
+
+## Set up a recipe
+
+```{r}
+
+aq_recipe <- 
+  recipe(
+    Ozone ~ Solar.R + Wind + Temp + Month.f ,
+    data = df_train
+  ) %>%
+  step_impute_median(Ozone, Solar.R) %>% 
+  step_normalize(Solar.R, Wind, Temp)
+
+aq_recipe
+
+## Look at the data after pre-processing
+aq_recipe %>% 
+  prep() %>% 
+  bake(new_data = NULL) %>% 
+  head()
+
+```
+
+## Specify regression tree model
+
+* We will use the `rpart` package as our engine.
+* We will use 3 tuning parameters: `cost_complexity` to help with tree pruning, `tree_depth` to set the maximum depth of the treens, and `min_n` for determining the number of data points required for a node to split further.
+
+```{r}
+tree_model <- decision_tree(
+  cost_complexity = tune(),
+  tree_depth = tune(),
+  min_n = tune()
+  ) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+## specify a grid of values for the tuning parameters
+tree_params <- grid_regular(
+  cost_complexity(), 
+  tree_depth(), 
+  min_n(), 
+  levels = 5)
+
+tree_params
+
+```
+
+
+## Create Cross Validation Folds to Test the Model
+
+```{r}
+set.seed(136)
+cv_folds <-
+ vfold_cv(df_train, 
+          v = 5) 
+
+cv_folds
+```
+
+
+## Fit the regression tree to the Cross Validation Folds
+
+```{r}
+
+## Set to the number of cores you want to make available
+doParallel::registerDoParallel(cores = 7)
+
+set.seed(5867)
+model_fit <- tune_grid(
+  tree_model,
+  aq_recipe, 
+  resamples = cv_folds, 
+  grid = tree_params
+)
+
+```
+
+
+**Model metrics & lot of tuning parameters**
+
+```{r}
+collect_metrics(model_fit)
+autoplot(model_fit)
+select_best(model_fit, "rsq")
+```
+
+
+**Finalize the model**
+
+```{r}
+tree_final <- finalize_model(tree_model, select_best(model_fit, "rmse"))
+tree_final
+```
+
+
+**Fit final model to the training data**
+
+```{r}
+fit_train <- fit(tree_final, Ozone ~ Solar.R + Wind + Temp + Month.f, df_train)
+fit_train
+
+## plot the model
+library(rpart.plot)
+
+fit_train %>%
+  extract_fit_engine() %>%
+  rpart.plot()
+
+## plot the variables of importance
+library(vip)
+
+fit_train %>%
+  vip(geom = "col",
+      aesthetics = list(
+              color = "black",
+              fill = "palegreen",
+              alpha = 0.5))
+```
+
+
+**Fit final model to the test set**
+
+```{r}
+fit_test <- last_fit(tree_final, Ozone ~ Solar.R + Wind + Temp + Month.f, df_split)
+fit_test
+
+## Collect metrics
+collect_metrics(fit_test)
+
+
+## plot of prediction vs true outcome
+fit_test %>%
+  collect_predictions() %>%
+  ggplot(aes(x = .pred, y = Ozone)) +
+  geom_abline(intercept = 0,
+              slope = 1,
+              lty = 2, 
+              size = 1.2,
+              color = "red") +
+  geom_point(size = 3) 
+
+```
+

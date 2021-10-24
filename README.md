@@ -467,3 +467,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - The third episode on tidymodels, we continue our data prep and model training by exploring cross-validation and metric evalidation. Ellis and Patrick show to set up a 5-fold cross validation set on your training split as well as fitting a tidymodels workflow! We finally show how to display and extract model fitting evaluation metrics.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/079-Tidy_Models_3)
+
+- [Episode 80: Tidymodels - Decision Trees and Tuning](https://bit.ly/TidyX_Ep80)
+
+  - The fourth episode on tidymodels, we sort out how to do parameter tuning of a model using the tune package. We set up a grid to train across and select the best model based on model metrics. We then retrain this model on the full test set and evaluate its performance against the final test set.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/080-Tidy_Models_4)
+  
