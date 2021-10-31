@@ -1,0 +1,166 @@
+---
+title: "Episdoe 81 - tidymodels logistic regression"
+author: "Patrick Ward"
+output: html_document
+---
+
+
+### Load Data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+
+## Load NHL data (hockey-reference.com)
+nhl_raw <- read_csv(here::here("TidyTuesday_Explained","081-Tidy_Models_5","nhl_data.csv")) %>%
+  janitor::clean_names()
+
+nhl_raw %>%
+  head()
+
+## find playoff teams
+nhl <- nhl_raw %>%
+  mutate(playoffs = as.numeric(grepl("\\*", team)),
+         playoffs = as.factor(playoffs))
+
+```
+
+
+### Data Splitting
+
+**Train/Test Split**
+
+```{r}
+set.seed(191)
+nhl_split <- initial_split(nhl, strata = "season")
+nhl_split
+
+str(nhl_split)
+
+nhl_season_split <- structure(
+  list(
+    data = nhl,
+    in_id = which(nhl$season == "2019-2020"),
+    out_id = NA,
+    id = tibble(id = "split")
+  ),
+  class = c("mc_split","rsplit")
+)
+
+
+nhl_train <- training(nhl_season_split)
+nhl_test <- testing(nhl_season_split)
+
+```
+
+**Cross-Validation Folds**
+
+```{r}
+
+set.seed(66)
+cv_folds <- vfold_cv(nhl_train, v = 5, strata = playoffs) 
+
+cv_folds
+```
+
+
+### Initialize Model
+
+```{r}
+
+glm_model <- logistic_reg() %>% 
+  set_engine("glm") %>%
+  set_mode("classification") 
+
+glm_model
+```
+
+
+### Setup the Recipe
+
+```{r}
+
+nhl_recipe <- 
+  recipe(
+    playoffs ~ gf_per_g + ga_per_g + sv_pct,
+    data = nhl_train
+  )
+
+nhl_recipe
+
+```
+
+
+### Set up the workflow
+
+```{r}
+
+nhl_workflow <-
+  workflow() %>%
+  add_model(glm_model) %>%
+  add_recipe(nhl_recipe) 
+
+nhl_workflow
+```
+
+
+### Fit model to cross-validated folds
+
+```{r}
+
+nhl_fit <- nhl_workflow %>% 
+  fit_resamples(
+    object = glm_model,
+    preprocessor = nhl_recipe,
+    resamples = cv_folds,
+    metrics = metric_set(roc_auc, kap, accuracy)
+  )
+
+nhl_fit %>%
+  collect_metrics()
+
+```
+
+
+### Predict on Test Data
+
+```{r}
+
+## fit final model
+fit_nhl <- nhl_workflow %>% 
+  last_fit(
+    split = nhl_season_split,
+    metrics = metric_set(roc_auc, kap, accuracy)
+  )
+
+
+nhl_test_pred <- bind_cols(
+  nhl_test,
+  fit_nhl %>% collect_predictions() %>% select(starts_with(".pred_"))
+)
+
+head(nhl_test_pred[, c("season","team","playoffs",".pred_0",".pred_1",".pred_class")])
+
+table("predicted class" = nhl_test_pred$.pred_class, "observed class" = nhl_test_pred$playoffs)
+
+nhl_test_pred %>% 
+  roc_curve(truth = playoffs, .pred_0) %>% 
+  autoplot()
+
+
+
+nhl_test_pred %>% 
+  roc_auc(truth = playoffs, .pred_0) ## defaults to first level of prediction class
+
+nhl_test_pred %>% 
+  roc_auc(truth = playoffs,
+          .pred_1,
+          event_level = "second") 
+
+fit_nhl %>% 
+  collect_metrics()
+
+```
+

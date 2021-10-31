@@ -18,6 +18,12 @@ To submit code for review, email us at tidy.explained@gmail.com
 
 To watch more episodes, go to our [youtube channel](https://www.youtube.com/channel/UCP8l94xtoemCH_GxByvTuFQ/).
 
+### Patreon
+
+If you appreciate what we are doing and would like to support TidyX, please consider signing up to be a patron through Patreon. 
+
+https://www.patreon.com/Tidy_Explained
+
 ### TidyX Episodes
 
 - [Episode 1: Introduction and Treemaps!](https://youtu.be/DXUa9X0SXkI)
@@ -472,4 +478,9 @@ To watch more episodes, go to our [youtube channel](https://www.youtube.com/chan
 
   - The fourth episode on tidymodels, we sort out how to do parameter tuning of a model using the tune package. We set up a grid to train across and select the best model based on model metrics. We then retrain this model on the full test set and evaluate its performance against the final test set.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/080-Tidy_Models_4)
+  
+- [Episode 81: Tidymodels - Logistic Regression with GLM](https://bit.ly/TidyX_Ep81)
+
+  - This week we look at how to perform a logistic regression using the tidymodels framework. During the fifth episode tidymodels, we show how to set up a logistic regression using GLM, perform a custom test/train split on the data, and calculate metrics such as ROC AUC, kappa, and accuracy. We visualize the performance and evaulate how well our model performed.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/081-Tidy_Models_5)
   
