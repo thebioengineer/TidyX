@@ -483,4 +483,8 @@ https://www.patreon.com/Tidy_Explained
 
   - This week we look at how to perform a logistic regression using the tidymodels framework. During the fifth episode tidymodels, we show how to set up a logistic regression using GLM, perform a custom test/train split on the data, and calculate metrics such as ROC AUC, kappa, and accuracy. We visualize the performance and evaulate how well our model performed.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/081-Tidy_Models_5)
-  
+
+- [Episode 82: Tidymodels - Logistic Regression with GLM](https://bit.ly/TidyX_Ep82)
+
+  - Continuing looking at classification models via tidymodels, this week we look at how to perform a multiple classification problem using random forests. We show how to tune your model, extract the optimal workflow, and then train it against your full training set and compare its performance on the test set. We calculate performance metrics such as ROC AUC and visualize the results.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/082-Tidy_Models_6)

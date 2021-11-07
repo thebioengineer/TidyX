@@ -1,0 +1,214 @@
+---
+title: "Episode 82 - Random Forest Classification"
+author: "Patrick Ward"
+output: html_document
+---
+
+
+## Load Packages & Data
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+
+penguins %>%
+  head()
+
+penguins %>%
+  summarize(across(.cols = everything(), ~sum(is.na(.))))
+
+penguins %>%
+  filter(is.na(sex))
+
+## Remove the two observations with all data missing
+penguins_cleaned <- penguins %>%
+  filter(!is.na(bill_depth_mm))
+
+```
+
+
+## Split Data
+
+**Train/Test Split**
+
+```{r}
+set.seed(6923)
+penguin_split <- initial_split(penguins_cleaned, strata = "species")
+
+train <- training(penguin_split)
+test <- testing(penguin_split)
+
+```
+
+
+**Cross Validation**
+
+```{r}
+set.seed(3344)
+cv_folds <- vfold_cv(
+  data = train, 
+  v = 5
+  ) 
+
+cv_folds
+```
+
+
+## Model Specification
+
+```{r}
+
+rf_fit <- rand_forest(
+    mtry = tune()
+  ) %>%
+  set_engine("randomForest", importance = TRUE) %>%
+  set_mode("classification")
+
+rf_tune_grid <- grid_regular(
+   mtry(range = c(1,5)),
+  levels = 5)
+
+```
+
+
+## Recipe
+
+
+```{r}
+
+penguins_rec <- recipe(
+  species ~ .,
+  data = train
+  ) %>%
+  step_impute_knn(
+    sex,
+    neighbors = 3
+  ) %>% 
+  update_role(
+    year, island,
+    new_role = "ID"
+  )
+
+
+## rows 7 and 8 have NA
+train
+
+## Notice that they are now fixed
+penguins_rec %>% 
+  prep() %>% 
+  bake(new_data = NULL)
+
+```
+
+
+## Workflow
+
+```{r}
+
+penguins_wf <- workflow() %>% 
+  add_recipe(penguins_rec) %>% 
+  add_model(rf_fit)
+
+```
+
+
+## Fit Model on Training Data
+
+
+```{r}
+
+doParallel::registerDoParallel()
+
+set.seed(582)
+
+tune_rf <- tune_grid(
+  penguins_wf,
+  resamples = cv_folds,
+  # grid = rf_tune_grid
+  grid = 5
+)
+
+tune_rf
+
+
+collect_metrics(tune_rf)
+autoplot(tune_rf)
+select_best(tune_rf, "roc_auc")
+
+```
+
+
+**Finalize the model, keep workflow**
+
+```{r}
+penguins_wf_final <- finalize_workflow(penguins_wf, select_best(tune_rf, "roc_auc"))
+
+```
+
+**Fit the final model to the training data**
+
+```{r}
+
+penguins_fit_final <- penguins_wf_final %>% 
+  last_fit(
+    split = penguin_split
+  )
+
+penguins_fit_final
+
+## plot the variables of importance
+library(vip)
+
+penguins_fit_final %>%
+  extract_fit_parsnip() %>% 
+  vip(geom = "col",
+      aesthetics = list(
+              color = "black",
+              fill = "palegreen",
+              alpha = 0.5)) +
+  theme_classic()
+
+```
+
+
+## Make Predictions on Test Data
+
+```{r}
+
+fit_test <- penguins_fit_final %>% 
+  collect_predictions()
+
+fit_test
+
+# Model was 100% accurate on test data? That doesn't make sense.
+table(
+  actual = fit_test$species,
+  predicted = fit_test$.pred_class
+  )
+
+```
+
+
+## Evaluate Model Performance
+
+```{r}
+## Collect metrics
+collect_metrics(penguins_fit_final)
+
+
+## plot of prediction vs true outcome
+
+fit_test %>%
+  roc_curve(
+    truth = species,
+    .pred_Adelie, .pred_Chinstrap, .pred_Gentoo
+  ) %>% 
+  autoplot()
+
+```
+
+
