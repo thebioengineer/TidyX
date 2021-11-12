@@ -488,3 +488,8 @@ https://www.patreon.com/Tidy_Explained
 
   - Continuing looking at classification models via tidymodels, this week we look at how to perform a multiple classification problem using random forests. We show how to tune your model, extract the optimal workflow, and then train it against your full training set and compare its performance on the test set. We calculate performance metrics such as ROC AUC and visualize the results.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/082-Tidy_Models_6)
+
+- [Episode 83: Tidymodels - Naive Bayes of Penguins](https://bit.ly/TidyX_Ep83)
+
+  - Naive bayes is the model we apply in this weeks Tidymodels series. We look at how to perform a multiple classification problem using the naive bayes theorem applied in the discrim package from tidymodels, and the klaR package to supply the engine. We show how to evaluate your model using 5-fold cross valudation, and then train it against your full training set and compare its performance on the test set. We calculate performance metrics such as ROC AUC and visualize the results.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/083-Tidy_Models_7)
