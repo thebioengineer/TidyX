@@ -493,3 +493,8 @@ https://www.patreon.com/Tidy_Explained
 
   - Naive bayes is the model we apply in this weeks Tidymodels series. We look at how to perform a multiple classification problem using the naive bayes theorem applied in the discrim package from tidymodels, and the klaR package to supply the engine. We show how to evaluate your model using 5-fold cross valudation, and then train it against your full training set and compare its performance on the test set. We calculate performance metrics such as ROC AUC and visualize the results.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/083-Tidy_Models_7)
+
+- [Episode 84: Tidymodels - Workflow Sets and model selection](https://bit.ly/TidyX_Ep84)
+
+  - Tidymodels makes it simple to try a multitude of modeling types by separating the preprocessing from the model type and creating a standardized way to apply different models. Workflow sets takes this a step further and makes it so you can train and compare these models at the same time, just like tuning. Using data from Kaggle, we look at how to perform model fitting for three model types and select the best workflow to train using our full train set and compare against our hold out test set. We calculate performance metrics such as RMSE and R-squared and visualize the results.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/084-Tidy_Models_8)

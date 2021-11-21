@@ -1,0 +1,211 @@
+---
+title: "Episode 84 - Workflow sets"
+author: "Patrick Ward"
+output: html_document
+---
+
+## Load packages & data
+
+**Insurance dataset from:** https://www.kaggle.com/mirichoi0218/insurance
+
+```{r}
+
+library(tidyverse)
+library(tidymodels)
+
+theme_set(theme_light())
+
+insurance <- read_csv(here::here("TidyTuesday_Explained","084-Tidy_Models_8","insurance.csv"))
+
+dim(insurance)
+insurance %>% head()
+
+insurance %>%
+  summarize(across(.cols = everything(),
+                   ~sum(is.na(.x))))
+
+insurance %>%
+  ggplot(aes(x = log(charges))) +
+  geom_histogram()
+
+```
+
+
+**Predict the cost of insurance [charges] based on the 6 features**
+
+
+## Split data
+
+```{r}
+
+## Train/Test
+set.seed(8675309)
+insurance_split <- initial_split(insurance, strat = "region")
+
+train <- training(insurance_split)
+test <- testing(insurance_split)
+
+## Cross Validation Split of Training Data
+set.seed(33)
+cv_folds <- vfold_cv(
+  data = train, 
+  v = 5
+  ) 
+
+cv_folds
+
+```
+
+
+## Recipe
+
+```{r}
+
+insurance_rec <- recipe(
+    charges ~ .,
+    data = train
+  ) %>%
+  step_dummy(region, one_hot = TRUE) %>%
+  step_log(charges)
+
+insurance_rec %>%
+  prep() %>%
+  bake(new_data = NULL)
+
+```
+
+
+## Model Specifications
+
+1) Linear Regression
+2) Random Forest
+3) KNN Regression
+
+
+```{r}
+
+lm_spec <- linear_reg() %>% 
+  set_engine("lm") %>%
+  set_mode("regression")
+
+rf_spec <- rand_forest() %>%
+  set_mode("regression") %>%
+  set_engine("randomForest", importance = TRUE)
+
+knn_spec <- nearest_neighbor(neighbors = 4) %>%
+  set_mode("regression")
+
+```
+
+
+## Workflow Set
+
+* Combine the pre-processing recipe and the three models together
+
+```{r}
+
+
+wf_set <-workflow_set(
+  preproc = list(insurance_rec),
+  models = list(lm_spec, rf_spec, knn_spec)
+  )
+
+wf_set
+
+```
+
+
+## Fit the models to the workflow
+
+```{r}
+
+doParallel::registerDoParallel()
+
+insurance_fit <- workflow_map(
+    wf_set,
+    "fit_resamples",
+    resamples = cv_folds,
+    seed = 22 ## replicability
+  )
+
+insurance_fit
+
+```
+
+
+## Evaluate model fits
+
+```{r}
+autoplot(insurance_fit)
+
+collect_metrics(insurance_fit)
+
+rank_results(insurance_fit, rank_metric = "rmse", select_best = TRUE)
+```
+
+
+## Extract the best workflow
+
+```{r}
+
+wf_final <- extract_workflow(insurance_fit, id = "recipe_rand_forest") %>%
+  fit(train)
+
+wf_final
+
+library(vip)
+
+wf_final %>%
+  extract_fit_parsnip() %>%
+  vip(geom = "col")
+
+```
+
+
+
+## Predict on test set
+
+
+```{r}
+
+preds <- predict(
+  wf_final %>% extract_fit_parsnip(), 
+  new_data = insurance_rec %>% prep() %>% bake(new_data = test)
+)
+
+preds %>% head()
+
+test_final <- cbind(test, preds)
+test_final %>% head()
+
+
+raw_plt <- test_final %>%
+  ggplot(aes(x = exp(.pred), y = charges)) +
+  geom_point(aes(color = region),
+             size = 2,
+             alpha = 0.5
+             ) +
+  geom_smooth(method = "lm",
+              color = "red",
+              size = 2) +
+  geom_abline(intercept = 0,
+              slope = 1,
+              size = 2,
+              color = "green",
+              linetype = "dashed") +
+  ggtitle("Charges")
+
+raw_plt
+
+```
+
+```{r}
+
+## all in one
+wf_final_full <- extract_workflow(insurance_fit, "recipe_rand_forest") %>%
+  last_fit(insurance_split)
+
+wf_final_full %>% collect_predictions()
+
+```
+
