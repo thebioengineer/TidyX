@@ -1,0 +1,341 @@
+---
+title: "Episode 85 - Tuning Workflow sets"
+output: html_document
+---
+
+## Load packages & data
+
+**Wine dataset from:** https://www.kaggle.com/sgus1318/winedata
+
+```{r}
+
+library(tidyverse)
+library(tidymodels)
+library(janitor)
+
+theme_set(theme_light())
+
+raw_wine_white <- read_csv(
+  here::here("TidyTuesday_Explained","085-Tidy_Models_9","winequality_white.csv")) %>%
+  mutate(
+    wine_type = "white"
+  )
+
+raw_wine_red <- read_csv(
+  here::here("TidyTuesday_Explained","085-Tidy_Models_9","winequality_red.csv")) %>% 
+  mutate(
+    wine_type = "red"
+  )
+
+raw_wine <- bind_rows(raw_wine_white,raw_wine_red) %>% 
+  clean_names()
+
+dim(raw_wine)
+raw_wine %>% head()
+
+raw_wine %>%
+  summarize(across(.cols = everything(),
+                   ~sum(is.na(.x))))
+
+raw_wine %>%
+  ggplot(aes(x = quality)) +
+  geom_histogram() + 
+  facet_wrap(~wine_type)
+
+raw_wine %>% 
+  mutate(wine_idx = seq_len(n())) %>% 
+  pivot_longer(
+    cols = -c(wine_idx,wine_type),
+    names_to = "measure",
+    values_to = "measurement") %>% 
+  ggplot(aes(x = measurement))+
+  geom_density() + 
+  facet_wrap(
+    measure ~ wine_type,
+    scales = "free",
+    ncol = 4
+    )
+
+```
+
+
+**Predict the cost of insurance [charges] based on the 6 features**
+
+
+## Split data
+
+```{r}
+
+## Train/Test
+set.seed(42)
+init_split <- initial_split(raw_wine, strat = "wine_type")
+
+train <- training(init_split)
+test <- testing(init_split)
+
+## Cross Validation Split of Training Data
+set.seed(42)
+cv_folds <- vfold_cv(
+  data = train, 
+  v = 5
+  ) 
+
+cv_folds
+
+```
+
+
+## Recipe
+
+```{r}
+
+log_sulfer_recipe <- recipe(
+    quality ~ .,
+    data = train
+  ) %>%
+  step_log(contains("sulfur")) %>% 
+  step_dummy(wine_type,one_hot = TRUE)
+  
+log_sulfer_recipe %>%
+  prep() %>%
+  bake(new_data = NULL) %>% 
+  head()
+
+scaling_sulfur_recipe <- recipe(
+    quality ~ .,
+    data = train
+  ) %>%
+  step_scale(contains("sulfur")) %>% 
+  step_dummy(wine_type,one_hot = TRUE)
+  
+scaling_sulfur_recipe %>%
+  prep() %>%
+  bake(new_data = NULL) %>% 
+  head()
+
+
+```
+
+
+## Model Specifications
+
+1) Linear Regression
+2) Random Forest
+3) xgboost Regression
+
+
+```{r}
+
+## Standard regression, no tuning required
+lm_spec <- linear_reg() %>% 
+  set_engine("lm") %>%
+  set_mode("regression") 
+
+## single tuning parameter
+rf_spec <- rand_forest(
+    mtry = tune()
+    ) %>%
+  set_mode("regression") %>%
+  set_engine("randomForest", importance = TRUE)
+
+## multiple tuning parameters
+xgb_spec <- boost_tree(
+  trees = tune(),
+  mtry = tune(),
+  tree_depth = tune(),
+  learn_rate = .01
+  ) %>%
+  set_mode("regression") %>% 
+  set_engine("xgboost",importance = TRUE)
+
+```
+
+
+## Workflow Set
+
+* Combine the pre-processing recipes and the three models together
+
+```{r}
+
+
+wf_set <-workflow_set(
+  preproc = list(log_sulfer_recipe, scaling_sulfur_recipe),
+  models = list(lm_spec, rf_spec, xgb_spec),
+  cross = TRUE
+  )
+
+wf_set
+
+```
+
+
+## Tune and fit the workflows
+
+```{r}
+
+doParallel::registerDoParallel(cores = 8)
+
+?tune_grid
+
+
+fit_workflows <- wf_set %>%  
+  workflow_map(
+    seed = 22, ## replicability 
+    fn = "tune_grid",
+    ## params to pass to tune grid
+    grid = 10,
+    resamples = cv_folds
+  )
+
+doParallel::stopImplicitCluster()
+
+
+```
+
+**This takes a long time, so we pre-ran this and saved it!**
+
+```{r}
+##Load pre-run workflowset
+if(FALSE){
+fit_workflows <- readRDS(
+  here::here("TidyTuesday_Explained","085-Tidy_Models_9","fit_workflows.rds"))
+}
+
+
+```
+
+```{r}
+
+fit_workflows
+
+
+```
+
+## Evaluate model fits
+
+```{r}
+autoplot(fit_workflows)
+
+collect_metrics(fit_workflows)
+
+rank_results(fit_workflows, rank_metric = "rmse", select_best = TRUE)
+```
+
+
+## Extract the best workflow
+
+```{r}
+
+metric <- "rmse"
+
+best_wf_id <- fit_workflows %>% 
+  rank_results(
+    rank_metric = metric,
+    select_best = TRUE
+  ) %>% 
+  slice(1) %>% 
+  pull(wflow_id)
+
+wf_best <- extract_workflow(fit_workflows, id = best_wf_id)
+
+
+```
+
+
+## Extract tuning results from workflowset
+
+
+```{r}
+
+
+wf_best_tuned <- fit_workflows[fit_workflows$wflow_id == best_wf_id,
+                               "result"][[1]][[1]]
+
+wf_best_tuned
+
+collect_metrics(wf_best_tuned)
+autoplot(wf_best_tuned)
+select_best(wf_best_tuned, "rmse")
+
+```
+
+## Fit the final model
+
+```{r}
+
+wf_best_final <- finalize_workflow(wf_best, select_best(wf_best_tuned, "rmse"))
+
+doParallel::registerDoParallel(cores = 8)
+
+wf_best_final_fit <- wf_best_final %>% 
+  last_fit(
+    split = init_split
+  )
+
+doParallel::stopImplicitCluster()
+
+
+wf_best_final_fit
+
+```
+
+
+## Extract Predictions on Test Data and evaluate model
+
+```{r}
+
+wf_best_final_fit %>% 
+  collect_metrics()
+
+fit_test <- wf_best_final_fit %>% 
+  collect_predictions()
+
+fit_test %>% 
+  bind_cols(test %>% 
+              select(-quality)) %>% 
+  ggplot() +
+  aes(
+      x = factor(quality),
+      y = .pred
+    ) +
+  geom_boxplot() + 
+  geom_jitter(alpha = .5) + 
+  facet_wrap(
+    ~ wine_type
+  )
+
+
+
+## confusion matrix
+fit_test %>% 
+  mutate(
+    .pred_int = round(.pred)
+  ) %>% 
+  select(
+    quality, .pred_int
+  ) %>% 
+  table()
+
+fit_test %>% 
+  mutate(
+    .pred_int = round(.pred)
+  ) %>% 
+  ggplot() +
+  aes(
+      x = factor(quality),
+      y = .pred_int
+    ) +
+  geom_violin()
+
+```
+
+## Model variable evaluation
+
+```{r}
+
+library(vip)
+extract_workflow(wf_best_final_fit) %>%
+  extract_fit_parsnip() %>%
+  vip(geom = "col")
+
+```
