@@ -1,0 +1,90 @@
+---
+title: "Episode 87 - Advent of Code Days 6"
+output: html_document
+---
+
+# Day 6
+
+```{r}
+
+library(here)
+
+ref_folder <- here("TidyTuesday_Explained/087-Advent_of_Code_Days_6")
+
+input_file <- file.path(ref_folder,"day-6-lanternfish.txt")
+lanternfish <- as.numeric(strsplit(readLines(input_file),",")[[1]])
+
+
+iterate_day <- function(fish){
+  fish <- fish - 1
+  
+  if(any(fish < 0)){
+    new_fish <- rep(8,sum(fish < 0))
+    fish[fish < 0] <- 6
+    fish <- c(fish, new_fish)
+  }
+  fish
+}
+
+iterate_day_table <- function(fish){
+  
+  names(fish) <- as.character(as.numeric(names(fish)) - 1)
+
+  if(any(names(fish) == "-1")){
+    new_fish <- c("8" = fish[["-1"]])
+    fish[["6"]] <- fish[["6"]] + fish[["-1"]]
+    fish <- fish[names(fish) %in% c(0:8)]
+    fish <- c(fish, new_fish)
+  }
+  
+  fish
+}
+
+
+### Part 1
+
+fish <- lanternfish
+fish_table <- c(table(factor(fish,levels = 0:8)))
+
+time_a <- Sys.time()
+
+for(day in seq_len(80)){
+  fish <- iterate_day(fish)
+}
+
+time_b <- Sys.time()
+
+for(day in seq_len(80)){
+  fish_table <- iterate_day_table(fish_table)
+}
+
+time_c <- Sys.time()
+
+difftime(time_b, time_a)
+difftime(time_c, time_b)
+
+length(fish)
+sum(fish_table)
+
+### Part 2
+
+fish <- lanternfish
+fish_table <- setNames(as.numeric(c(table(factor(fish,levels = 0:8)))), 0:8)
+
+time_d <- Sys.time()
+for(day in seq_len(256)){
+  fish_table <- iterate_day_table(fish_table)
+}
+time_e <- Sys.time()
+
+difftime(time_e, time_d)
+
+time_f <- Sys.time()
+for(day in seq_len(256)){
+  fish <- iterate_day(fish)
+}
+time_g <- Sys.time()
+
+as.character(sum(fish_table))
+
+```
