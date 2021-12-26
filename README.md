@@ -513,3 +513,8 @@ https://www.patreon.com/Tidy_Explained
 
   - This week we take a look at a problem from the Advent of Code, specifically day 6. Advent of Code is a fun time of year where the data science community comes together to solve a series of 25 problems posed by Eric Wastl. The goal is to see who all can solve the problems quickly and efficiently. It also provides an opportunity to work on problems unlike most of what you see in your day-to-day job. We work on finding an efficient solution to day 6 - Lanternfish. The fish reproduce at a standard rate, but calculating how many exist after a certain number of days is a problem that is trivial for small number of days, but quickly becomes too large for your computer if you approach the problem the wrong way!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/087-Advent_of_Code_Day_6)
+  
+- [Episode 88: Advent of Code Day 7 - For Loops and Lookup Vectors](https://bit.ly/TidyX_Ep88)
+
+  - We work on finding an efficient solution to Advent of Code Day 7 - Whales. We need to find the most efficient location to align a series of crab submarines in order to escape with several different constraints. We discuss how to set up an efficient for loop, and create a lookup vector!!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/088-Advent_of_Code_Day_7)

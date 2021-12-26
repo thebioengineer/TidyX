@@ -9,7 +9,7 @@ output: html_document
 
 library(here)
 
-ref_folder <- here("TidyTuesday_Explained/087-Advent_of_Code_Days_6")
+ref_folder <- here("TidyTuesday_Explained/087-Advent_of_Code_Day_6")
 
 input_file <- file.path(ref_folder,"day-6-lanternfish.txt")
 lanternfish <- as.numeric(strsplit(readLines(input_file),",")[[1]])
