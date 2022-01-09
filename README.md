@@ -518,3 +518,9 @@ https://www.patreon.com/Tidy_Explained
 
   - We work on finding an efficient solution to Advent of Code Day 7 - Whales. We need to find the most efficient location to align a series of crab submarines in order to escape with several different constraints. We discuss how to set up an efficient for loop, and create a lookup vector!!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/088-Advent_of_Code_Day_7)
+  
+- [Episode 89: Tables for Research](https://bit.ly/TidyX_Ep89)
+
+  - We reach into our mailbag this week to answer a question from one of our viewers. In one of our episodes we talked about how you could extract coefficients from your fit models using the {broom} package. However, how would one turn that into a publication ready table? In this episode we use {gt} by Rich Iannone to convert our coefficients data.frame into a nice, publication-ready table!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/089-Tables_for_Research)
+  
