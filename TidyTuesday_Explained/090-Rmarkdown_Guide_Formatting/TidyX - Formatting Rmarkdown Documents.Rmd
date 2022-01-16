@@ -1,0 +1,138 @@
+---
+title: "TidyX Episode 90 - Rmarkdown Guide - Basic Formatting"
+author: "TidyX"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+## Rmarkdown
+
+Extends the idea of scripting (pure code) to the idea of literate programming.
+This means that the output is not the side effect of the code (plots/analysis/etc), but an actual report that executes the code and puts it together with the text to form an output that is fully descriptive
+
+## Formatting
+
+### Text
+
+Text is interpreted using the markdown syntax - a way to mark up your text with
+styling cues, but be completely readable.
+Text where there is no new line between them behaves as though they were all in-line - like a paragraph in word.
+
+Putting an empty line between separate there into paragraphs.
+
+We augment and stylize the text with "decorators".
+
+Asterisks(\*) or Underlines(\_) around text make it *Italic* or _Italic with multiple words!_. 
+
+Double Asterisks(\*) or Underlines(\_) around text make it __BOLD__ or **BOLD with Multiple Words!**. 
+
+Double Tilde(\~) around text make it ~~strikethrough with~~. 
+
+Up-carrots(\^) around text make it ^superscript^.
+
+Ticks(\`) around text indicate that is `monospace`.
+
+3 Ticks(\`) around text indicate that is area is monospace:
+
+```
+This text is all monospace
+TidyX rules
+
+```
+
+
+
+### Headers
+  
+To make headers and subheaders, the new line starts with a "#". The number of "#" indicates the header level:
+
+```
+## Second level heading
+
+#### Third level heading
+
+##### Fifth level heading
+```
+
+### Lists
+
+We can create unordered lists of items (bullets) using dashes:
+
+- This would be the first bullet level
+  - moving two spaces further to the right of the first level makes a sub bullet
+    - this is a sub-sub bullet. There are only a few levels that will render so don't go crazy
+  - back up to sub bullet level
+  
+We can also make ordered lists (numbered lists) using numbers:
+
+1. This is the first numbered entry
+    1. The same logic holds for sub-levels, but needs 4 spaces over
+2. Another ordered list, needs multiple lines between
+    - sub levels can be numbered or not
+    
+### Quotes
+
+> Ellis Said Markdown is fun!
+This will continue to be a quote until we have an empty line between new text
+
+This will no longer be a quote.
+  
+### Links
+
+The Markdown Cheat Sheet includes more syntax details and information: https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf
+
+Links like above are automatically set to create hyperlinks, but we can add our own links to text too!
+Using [square braces for the text](https://en.wikipedia.org/wiki/Bracket) followed by parentheses with a link, this will set the text in the square brace to a link
+
+### Images
+
+Including Images is similar to links, but with a minor change:
+![this is the caption for the image](../../TidyX_Banner.png)
+
+![this is the caption for the image](../../TidyX_Banner.png)
+
+The exclamation is the syntactically different part, but the piece in the square braces is the images caption, and will displayed as such. This is optional to include. 
+The part in the parentheses is the link to the image. Paths are relative to the location of the rmarkdown document, but can also be URLS.
+
+### Code
+
+R code to be run is denoted as three (or more) ticks, followed by a curly brace, the letter R, a closing brace.
+The area for the R code is in a new line, and continues until if finds the matching set of ticks (same number as initial set). 
+
+```{r}
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*. (this is included text in the rmarkdown template from RStudio)
+
+```{r}
+print("Hi Patrick!")
+```
+
+Functionally, the R code written behaves exactly as though it was in an R script:
+
+```{r}
+
+plot(cars)
+
+lm(dist ~ speed, data = cars)
+
+```
+
+### Equations
+
+equations are defined by dollar signs (\$) and text between is converted into a nice equation preview.
+
+$y=a+bx+e$
+
+$dist =  -17.579 + 3.932 * speed (+/-) 15.38$
+
+## Guides and references
+
+- Rmarkdown Guide: https://bookdown.org/yihui/rmarkdown/
+- Rmarkdown Author: [Yihui Xie](https://yihui.org/)
+- [Rmarkdown Driven Development: Emily Riederer](https://emilyriederer.netlify.app/post/rmarkdown-driven-development/)
