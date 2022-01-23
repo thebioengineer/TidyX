@@ -524,8 +524,12 @@ https://www.patreon.com/Tidy_Explained
   - We reach into our mailbag this week to answer a question from one of our viewers. In one of our episodes we talked about how you could extract coefficients from your fit models using the {broom} package. However, how would one turn that into a publication ready table? In this episode we use {gt} by Rich Iannone to convert our coefficients data.frame into a nice, publication-ready table!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/089-Tables_for_Research)
   
-- [Episode 90: Rmarkdown Guide - Formatting](https://bit.ly/TidyX_Ep90)
+- [Episode 90: Rmarkdown Guide - RMD Formatting](https://bit.ly/TidyX_Ep90)
 
   - Rmarkdown is an incredible tool that is widely used by R analysts to combine prose and code together into a beautiful symphony of reproducible outputs and information sharing. However, some of the set up as a new comer can be confusing. We are starting a series to discuss some of the knowledge to help users get going with their Rmarkdown journey. This week we start on the bones and structures of Rmarkdown documents, talk about markdown syntax, setting up your text to format as expected, and add some code chunks!
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/090-Rmarkdown_Guide_Formatting
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/090-Rmarkdown_Guide_Formatting)
   
+- [Episode 91: Rmarkdown Guide - Code Chunk Options & Figure Options](https://bit.ly/TidyX_Ep91)
+
+  - Rmarkdown is an incredible tool that is widely used by R analysts to combine prose and code together into a beautiful symphony of reproducible outputs and information sharing. However, some of the set up as a new comer can be confusing. We are starting a series to discuss some of the knowledge to help users get going with their Rmarkdown journey. This week continues where we left off, talking through common chunk options that modify how your code and its outputs appear in the resulting output, and whether it even gets run at all. Then we cover common chunk options that modify figure outputs that are incredbly useful! Finally we start an rmarkdown report to demonstrate how we would use these options in a real report.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/091-Rmarkdown_Guide_Image_Outputs)  

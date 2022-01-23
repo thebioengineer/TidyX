@@ -1,0 +1,73 @@
+---
+title: "TidyX Episode 91 - Rmarkdown Guide - Chunk Options - Figures"
+author: "TidyX"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+## Code Chunks
+
+R code to be run is denoted as three (or more) ticks, followed by a curly brace, the letter R, a closing brace.
+The area for the R code is in a new line, and continues until if finds the matching set of ticks (same number as initial set). 
+
+```{r}
+
+plot(cars)
+
+lm(dist ~ speed, data = cars)
+
+```
+
+outputs of this code will be included by default unless options for the R chunks are set.
+
+## Basic Code Chunk options
+
+In the R chunk "header" many options can be set. Some basic and commonly used ones are:
+
+- a *unique* chunk name, no spaces, suggested no underscores
+- echo (boolean) - indicates whether code should be shared in the output
+- include (boolean)- indicates whether the output or code should be included in the output (still run)
+- eval (boolean) - indicates whether the code should be run
+- warning/message (boolean) - indicates whether the warnings or messages output from the code should be displayed
+
+
+```{r Regression-Cars, echo = FALSE, include = TRUE, eval = TRUE, warning = FALSE, message = TRUE}
+
+lm(dist ~ speed, data = cars)
+
+```
+
+
+```{r setup, include=FALSE}
+
+## set globally across Rmarkdown document from this point on
+knitr::opts_chunk$set(
+  echo = FALSE,
+  include = TRUE,
+  warning = FALSE, 
+  message = FALSE
+  )
+
+```
+
+## Figure Outputs
+
+We can apply basic image output features to chunks where we expect to return an image/plot/etc.
+These chunk options work across multiple output types. Prefixed with `fig.` in chunk options.
+
+There are many options, these are the ones I find used most commonly
+
+- fig.width
+- fig.height
+- fig.cap
+- fig.align
+
+```{r Plot-Cars, fig.width = 5, fig.cap = "Plot of the cars dataset", fig.align= 'center'}
+
+plot(cars)
+
+```
+

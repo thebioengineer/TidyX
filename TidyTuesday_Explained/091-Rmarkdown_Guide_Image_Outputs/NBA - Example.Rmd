@@ -1,0 +1,47 @@
+---
+title: "NBA"
+output: html_document
+---
+
+* Let's investigate some of the per game statistics of NBA teams during the 2021-2022 season!
+
+```{r setup, echo = FALSE, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(rvest)
+  })
+})
+
+theme_set(theme_light())
+
+## Get NBA per game data
+df <- read_html("https://www.basketball-reference.com/leagues/NBA_2022.html") %>% 
+  html_table(fill = T) %>%
+  .[[6]] %>%
+  tibble() %>%
+  select(-Rk) %>%
+  janitor::clean_names() %>%
+  filter(team != "League Average")
+
+```
+
+
+## Off/Def Rebounds XY Plot
+
+```{r echo = FALSE, fig.cap = "Offensive and Defensive Rebounds for each Team",}
+df %>%
+  ggplot(aes(x = orb, y = drb)) +
+  geom_point(size = 3) +
+  geom_vline(aes(xintercept = mean(orb)),
+             linetype = "dashed",
+             size = 1.2) +
+  geom_hline(aes(yintercept = mean(drb)),
+             linetype = "dashed",
+             size = 1.2) +
+  ggrepel::geom_text_repel(aes(label = team))
+
+```
+
