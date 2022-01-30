@@ -1,0 +1,131 @@
+---
+title: "Palmer Penguins!"
+output:
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+  )
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(DT)
+    library(palmerpenguins)
+  })
+})
+
+bill_len_plt <- function(x){
+  
+  x %>% 
+    select(bill_length_mm, bill_depth_mm, species) %>% 
+    ggplot(
+      aes(
+        x = bill_length_mm,
+        y = bill_depth_mm,
+        color = species)
+    ) + 
+    geom_point() + 
+    geom_smooth(method = "lm", se = FALSE)
+  
+}
+
+df <- penguins
+
+```
+
+## Palmer Penguin Islands
+
+### Biscoe Island
+
+``` {r biscoe-island, echo = FALSE, include=TRUE}
+
+df %>%
+  filter(island == "Biscoe") %>%
+  datatable()
+
+df %>%
+  filter(island == "Biscoe") %>%
+  bill_len_plt()
+
+```
+
+### Dream Island
+
+``` {r dream-island, echo = FALSE, include=TRUE}
+
+df %>%
+  filter(island == "Dream") %>%
+  datatable()
+
+df %>%
+  filter(island == "Dream") %>%
+  bill_len_plt()
+
+```
+
+
+### Torgersen Island
+
+``` {r torgersen-island, echo = FALSE, include=TRUE}
+
+df %>%
+  filter(island == "Torgersen") %>%
+  datatable()
+
+df %>%
+  filter(island == "Torgersen") %>%
+  bill_len_plt()
+
+```
+
+## Palmer Penguin Species
+
+### Adelie
+
+``` {r Adelie, echo = FALSE, include=TRUE}
+
+df %>%
+  filter(species == "Adelie") %>%
+  datatable()
+
+df %>%
+  filter(species == "Adelie") %>%
+  bill_len_plt()
+
+```
+
+
+### Gentoo
+
+``` {r Gentoo, echo = FALSE, include=TRUE}
+df %>%
+  filter(species == "Gentoo") %>%
+  datatable()
+
+df %>%
+  filter(species == "Gentoo") %>%
+  bill_len_plt()
+
+```
+
+
+### Chinstrap
+
+``` {r Chinstrap, echo = FALSE, include=TRUE}
+
+df %>%
+  filter(species == "Chinstrap") %>%
+  datatable()
+
+df %>%
+  filter(species == "Chinstrap") %>%
+  bill_len_plt()
+
+```
