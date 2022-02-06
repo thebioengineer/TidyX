@@ -1,0 +1,78 @@
+---
+title: "TidyX Episode 93 - Rmarkdown Guide - YAML Header basics"
+author: "TidyX"
+output:
+  html_document:
+    df_print: paged
+---
+
+## YAML Header
+
+Every Rmarkdown document starts with a yaml header
+This is what drives behavior of the overall rendering of the rmarkdown, as well as some basic information shown in the report
+
+The standard components of a yaml header are as follows:
+
+ - title: the title of the document - string
+ - author: who wrote the document - string
+ - date: date report was created or rendered string
+ - output: what is the rmarkdown output rendering to - function
+
+
+YAML - Yet Another Markup Language
+ 
+ - white space matters -indents indicate the contents are a "child" of the level above
+ - spaces, not tabs
+ - true/false not TRUE/FALSE (yes/no is also TRUE/FALSE)
+
+```yaml
+
+title:
+author:
+date:
+output:
+
+```
+
+entries can also accept executable R code as inline inputs. Useful for capturing accurate rendering dates:
+
+```yaml
+date: "`r Sys.Date()`"
+```
+
+## Setting Output Options
+
+The "output" entry in the yaml is a rendering function. 
+rmarkdown includes a set of renders, which can be referred to 
+directly. Common ones include:
+  
+  - html_document
+  - pdf_document
+  - word_document
+  
+Loads of other rendering functions in rmarkdown (github, md, odf, etc), as
+well as community provided renderers in packages including {officer}, {xaringan}, {flexdashboard}, {blogdown}, {distill}, {bookdown}. 
+A non-exhaustive list van be found: https://rmarkdown.rstudio.com/formats.html.
+
+As a note, if using a non-rmarkdown renderer, the package name is prepended to the renderer with two colons:
+
+```yaml
+output: flexdashboard::flex_dashboard   
+```
+
+### Customizing output appearance
+
+The rendering functions can often accept arguments to further customize/set expectations for rendering.
+
+```{r}
+? html_document
+```
+
+Arguments are passed by entering the argument name and its value as a child entry in the yaml under the rendering function:
+
+```yaml
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_depth: 2
+```

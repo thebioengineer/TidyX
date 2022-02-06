@@ -534,7 +534,13 @@ https://www.patreon.com/Tidy_Explained
   - Rmarkdown is an incredible tool that is widely used by R analysts to combine prose and code together into a beautiful symphony of reproducible outputs and information sharing. However, some of the set up as a new comer can be confusing. We are starting a series to discuss some of the knowledge to help users get going with their Rmarkdown journey. This week continues where we left off, talking through common chunk options that modify how your code and its outputs appear in the resulting output, and whether it even gets run at all. Then we cover common chunk options that modify figure outputs that are incredbly useful! Finally we start an rmarkdown report to demonstrate how we would use these options in a real report.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/091-Rmarkdown_Guide_Image_Outputs)  
 
-- [Episode 92: Rmarkdown Guide - Rmarkdown Guide - Formatting Tabs for HTML outputs](https://bit.ly/TidyX_Ep92)
+- [Episode 92: Rmarkdown Guide - Formatting Tabs for HTML outputs](https://bit.ly/TidyX_Ep92)
 
   - This weeks episode features a trick on how to make tabsets in your html outputs in Rmarkdown, as well as some advice on how to start organizing your code within an Rmarkdown document. Using the palmerpenguins dataset, we show how to make your code chunks super easy to update and things to think about when making your output.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/092-Rmarkdown_Guide_Code_tips_and_html_tabs)  
+
+- [Episode 93: Rmarkdown Guide - Rmarkdown Guide - YAML Header](https://bit.ly/TidyX_Ep93)
+
+  - The YAML header controls the macro level behaviors of your rmarkdown, from the output type, to the title, author, date, custom styling, table of contents, etc. In this episode we cover the basic YAML header contents, and how to add this customization to your rmarkdown documents. We also show two example outputs for html and word.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/092-Rmarkdown_Guide_YAML_header)  
+
