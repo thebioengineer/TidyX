@@ -539,8 +539,13 @@ https://www.patreon.com/Tidy_Explained
   - This weeks episode features a trick on how to make tabsets in your html outputs in Rmarkdown, as well as some advice on how to start organizing your code within an Rmarkdown document. Using the palmerpenguins dataset, we show how to make your code chunks super easy to update and things to think about when making your output.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/092-Rmarkdown_Guide_Code_tips_and_html_tabs)  
 
-- [Episode 93: Rmarkdown Guide - Rmarkdown Guide - YAML Header](https://bit.ly/TidyX_Ep93)
+- [Episode 93: Rmarkdown Guide - YAML Header](https://bit.ly/TidyX_Ep93)
 
   - The YAML header controls the macro level behaviors of your rmarkdown, from the output type, to the title, author, date, custom styling, table of contents, etc. In this episode we cover the basic YAML header contents, and how to add this customization to your rmarkdown documents. We also show two example outputs for html and word.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/092-Rmarkdown_Guide_YAML_header)  
 
+
+- [Episode 94: Rmarkdown Guide - Parameterized Reports](https://bit.ly/TidyX_Ep94)
+
+  -Parameterized reports allow data scientists to multiply their impact by reducing the amount of work they need to do to produce new reports. Using the YAML header, a data scientist can set parameters that change based on user inputs to create customized reports at the click of a button. In this episode we go over the basics of adding a paramter, how to customize the input either interactively or programmatically, and using the parameter in your code. Then we create a custom example on pulling NBA basketball data for multiple years and displaying a team of interest.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/094-Rmarkdown_Guide_Parameterized_Reports)  

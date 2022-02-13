@@ -1,0 +1,98 @@
+---
+title: "TidyX Episode 94 - Rmarkdown Guide - Parameterized Reports"
+author: "TidyX"
+output: html_document
+params:
+  demo_param1: "1000"
+  demo_param2: 3000
+---
+
+## Parameters
+
+As discussed ad nauseum, Rmarkdown facilitates reproducible reports that are able to
+be rerun at the click of a button. 
+
+But what if 
+  - Some value change that needs to happen every time the report is run, but you want
+   the same content (ie assumptions, model type, time period, etc)
+  - Or your manager says "this is wonderful, but I want this report for 5 different company stock performances."
+
+You _could_ copy and paste and have copies for every version or scenario.
+
+Or, you could add parameters into your YAML header and call them rather than set
+values in your document directly!
+
+
+### YAML
+
+The standard components of a yaml header are as follows:
+
+ - title: the title of the document - string
+ - author: who wrote the document - string
+ - date: date report was created or rendered string
+ - output: what is the rmarkdown output rendering to - function
+
+
+For Parameterized Reports, a new component:
+
+ - params: child content indicates the parameter values and how to set them
+ 
+```yaml
+params: 
+  my_parameter_value: 10
+  my_param_value: 20
+```
+
+Param values can also have child components, based on shiny input widgets for interactive
+user inputs
+
+```yaml
+params: 
+  my_parameter_value: 
+   label: "My Param Input"
+   value: 100
+   type: numeric
+   max: 1000
+```
+
+## Referencing params
+
+The params values can be referenced using `params$param_name` in the code chunks just
+as any other code.
+
+```{r}
+print(params$demo_param1)
+print(params$demo_param2)
+```
+
+## Rendering with Params
+
+- knit button
+  - runs params as set. If selects "knit with param", attemps to select an input method based on type.
+  
+- Code via rmarkdown::render
+  - argument "params" accepts a named list of params and values. if the param is not in the list, 
+  the default value will be used:
+  
+```{r eval = FALSE}
+
+rmarkdown::render(
+  input = "This Report.Rmd", 
+  output = "this report - 10.html"
+  params = list(
+    demo_param1 = "10"
+  ))
+
+rmarkdown::render(
+  input = "This Report.Rmd", 
+  output = "this report - 20.html"
+  params = list(
+    demo_param1 = "20"
+  ))
+
+```
+
+## Resources
+
+- Parameterized reports in R Markdown: The definitive Guide
+  - https://bookdown.org/yihui/rmarkdown/parameterized-reports.html
