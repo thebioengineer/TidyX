@@ -549,3 +549,9 @@ https://www.patreon.com/Tidy_Explained
 
   - Parameterised reports allow data scientists to multiply their impact by reducing the amount of work they need to do to produce new reports. Using the YAML header, a data scientist can set parameters that change based on user inputs to create customized reports at the click of a button. In this episode we go over the basics of adding a parameter, how to customize the input either interactively or programmatically, and using the parameter in your code. Then we create a custom example on pulling NBA basketball data for multiple years and displaying a team of interest.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/094-Rmarkdown_Guide_Parameterized_Reports)  
+
+- [Episode 95: Rmarkdown Guide - Interactive Reports with htmlwidgets](https://bit.ly/TidyX_Ep95)
+
+  - So far in our series on rmarkdown, we have covered ways to generate reports, sometimes dynamically running them with parameters. This week we cover how you can generate html reports with embedded interactivity from htmlwidgets. These widgets allow the users to inspect and explore the data embedded in the report. This sort of technique is used a lot and there are a number of html widgets in the R ecosystem. In this episode we demonstrate how to explore baseball data using interactive plots from plotly and datatables from the DT package.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/095-Rmarkdown_Guide_Widgets)  
+

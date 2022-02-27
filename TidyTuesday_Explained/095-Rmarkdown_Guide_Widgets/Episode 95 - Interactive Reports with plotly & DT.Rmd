@@ -1,0 +1,122 @@
+---
+title: "Episode 95 - Interactive Reports with plotly"
+date: "`r Sys.Date()`"
+output:
+    rmarkdown::html_document:
+    toc: true
+    code_folding: "hide"
+---
+
+```{r setup, echo = FALSE, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(Lahman)
+    library(plotly)
+    library(DT)
+  })
+})
+
+data("Batting")
+data("People")
+
+theme_set(theme_light())
+
+
+## get players between 2000 and 2019
+df <- Batting %>%
+  filter(
+    between(x = yearID, left = 2000, right = 2019),
+    AB >= quantile(AB, probs = 0.75)) %>%
+  select(playerID, yearID, teamID, G, AB, H, BB, HBP, SF) %>%
+  mutate(obp = (H + BB + HBP) / (AB + BB + HBP + SF)) %>%
+  left_join(People %>%
+              mutate(name = paste(nameFirst, nameLast, sep = " ")) %>%
+              select(playerID, name, birthYear, debut, finalGame)) %>%
+  mutate(debutYear = substr(debut, start = 1, stop = 4),
+         finalYear = substr(finalGame, start = 1, stop = 4),
+         season_age = yearID - birthYear) %>%
+  filter(debutYear >= 2000) %>%
+  group_by(playerID) %>%
+  filter(n() >= 8) %>%
+  ungroup()
+  
+## random sample of 20 players
+set.seed(4052)
+sample_names <- df %>%
+  distinct(playerID) %>% 
+  sample_n(., 20) %>%
+  pull(playerID)
+
+dat <- df %>%
+  filter(playerID %in% sample_names) %>%
+  arrange(playerID, yearID)
+
+df_teams <- Teams %>%
+  filter(between(x = yearID, left = 2000, right = 2019)) %>%
+  mutate(win_pct = W / G,
+         playoff_tm = ifelse(DivWin == "N" & WCWin == "N", "No Playoffs", "Playoffs")) %>%
+  select(name, yearID, lgID, win_pct, playoff_tm)
+
+```
+
+
+
+```{r}
+
+## declare the conditional search variable
+players <- highlight_key(x = dat, ~name)
+
+## initialize the base plotly
+plot_initialize <- plot_ly(players, color = I("black")) %>%
+  group_by(name)
+
+## create a line plot
+seasons_plot <- plot_initialize %>%
+  group_by(name) %>%
+  add_lines(x = ~yearID,
+            y = ~obp)
+
+## set up the highlight key
+highlight(
+  seasons_plot,
+  on = "plotly_click",
+  selectize = TRUE,
+  dynamic = TRUE,
+  persistent = TRUE
+)
+
+```
+
+
+
+```{r}
+
+df_teams %>%
+  mutate(name = as.factor(name),
+         yearID = as.factor(yearID),
+         lgID = as.factor(lgID)) %>%
+  datatable(rownames = FALSE,
+            filter = c("top"),
+            class = 'cell-border stripe',
+            extensions = "Buttons",
+             options = list(
+               columnDefs = list(list(targets = 4, visible = FALSE)),
+               pageLength = 30, 
+               dom = 'Brt'
+               ),
+            colnames = c("Tm", "Season", "League", "Win%")
+            ) %>%
+  formatPercentage(columns = 4,
+                   digits = 1) %>% 
+  formatStyle('name', 
+              'playoff_tm',
+              backgroundColor = styleEqual(
+                c("No Playoffs", "Playoffs"),
+                c('light grey', "palegreen")))
+
+```
+
