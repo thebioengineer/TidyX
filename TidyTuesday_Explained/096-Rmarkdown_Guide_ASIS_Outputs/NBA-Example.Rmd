@@ -1,0 +1,119 @@
+---
+title: "NBA"
+output: rmarkdown::html_document
+---
+
+* Let's investigate some of the per game statistics of NBA teams during the 2021-2022 season!
+
+```{r setup, echo = FALSE, include = FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages({
+  suppressWarnings({
+    library(tidyverse)
+    library(rvest)
+    library(plotly)
+  })
+})
+
+theme_set(theme_light())
+
+## functions
+
+z_score <- function(x){
+  z = (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+  return(z)
+}
+
+## Get NBA per game data
+  df <- read_html("https://www.basketball-reference.com/leagues/NBA_2022.html") %>% 
+  html_table(fill = T) %>%
+  .[[6]] %>%
+  tibble() %>%
+  select(-Rk) %>%
+  janitor::clean_names() %>%
+  filter(team != "League Average")
+
+```
+
+## 2022 Team Names
+
+```{r results = 'asis', echo = FALSE}
+
+team_names <- unique(df$team)
+
+team_string <- paste("-", team_names, "\n", collapse = "")
+
+cat(team_string)
+
+```
+
+```{r echo = FALSE}
+
+team_names <- data.frame(team_names = unique(df$team))
+
+knitr::kable(team_names)
+
+```
+
+## Off/Def Rebounds XY Plot
+
+```{r fig.cap = "Offensive and Defensive Rebounds for each Team"}
+df %>%
+  ggplot(aes(x = orb, y = drb)) +
+  geom_point(size = 3) +
+  geom_vline(aes(xintercept = mean(orb)),
+             linetype = "dashed",
+             size = 1.2) +
+  geom_hline(aes(yintercept = mean(drb)),
+             linetype = "dashed",
+             size = 1.2) +
+  ggrepel::geom_text_repel(aes(label = team))
+
+```
+
+
+## Team 3-Point Scoring
+
+```{r}
+
+
+three_pt <- df %>%
+  mutate(
+    three_z = z_score(x3p_percent),
+    three_pt_pct = scales::percent(x3p_percent, accuracy = 0.1)
+    ) %>%
+  ggplot(
+    aes(
+      x = three_z,
+      y = reorder(team, three_z),
+      label = three_pt_pct
+      )
+    ) +
+  geom_col(width = 0.2) +
+  geom_point(
+    aes(
+      size = x3pa
+      ),
+    color = "green") +
+  geom_vline(
+    xintercept = 0,
+    size = 1.2) +
+  scale_x_continuous(
+    breaks = seq(-3, 3, 1),
+    labels = seq(20, 80, 10)
+    ) +
+  theme(
+    legend.position = "none"
+    ) +
+  labs(
+    x = "Three Point% t-score",
+    y = NULL,
+    title = "2021-2022 Three Point%",
+    subtitle = "Dot Size = 3 Point Attempts"
+    )
+
+ggplotly(three_pt)
+
+```

@@ -555,3 +555,7 @@ https://www.patreon.com/Tidy_Explained
   - So far in our series on rmarkdown, we have covered ways to generate reports, sometimes dynamically running them with parameters. This week we cover how you can generate html reports with embedded interactivity from htmlwidgets. These widgets allow the users to inspect and explore the data embedded in the report. This sort of technique is used a lot and there are a number of html widgets in the R ecosystem. In this episode we demonstrate how to explore baseball data using interactive plots from plotly and datatables from the DT package.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/095-Rmarkdown_Guide_Widgets)  
 
+- [Episode 96: Rmarkdown Guide - ASIS Outputs](https://bit.ly/TidyX_Ep96)
+
+  - This week we discuss a fun rmarkdown r chunk option - results. This little argument can have a big impact on the looks and output of our rmarkdown reports and can give a bunch of power to the developer to make the behavior and content of the report change based on the results of the code. It can also make what could be a tedious task in rmarkdown super fast!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/096-Rmarkdown_Guide_ASIS_Outputs)  

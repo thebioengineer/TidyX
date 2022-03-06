@@ -1,0 +1,86 @@
+---
+title: "TidyX Episode 96 - Rmarkdown Guide - ASIS results"
+author: "TidyX"
+output:
+  html_document:
+    df_print: paged
+---
+
+## R Chunk Options Review
+
+There is an opportunity to control a lot of behavior of code execution and results
+
+- title
+- warnings/messages
+- image dimensions
+- code display
+
+```{r this-is-the-title, warning=FALSE, message=FALSE}
+
+cat(c(1:5))
+
+```
+
+
+## Resuts Options
+
+4 Options exist for "results" chunk options
+  - markup
+  - asis
+  - hold
+  - hide
+  
+Their behaviors impact how the results are displayed at a highest level:
+
+  - markup
+    - default option, adds markup to outputs
+    
+  - asis
+    - results are added to markdown document "asis"
+    
+  - hold
+    - "holds" outputs of code until entire chunk has been evaluated
+    
+  - hide
+    - no results are displayed
+
+## ASIS
+
+Lots of interesting impact potential to report, mainly potential for creation of dynamic content!
+
+### default
+```{r, echo = FALSE}
+
+cat(" This is some great content!\n\n")
+cat(" If you like TidyX, be sure to [subscribe!](https://www.youtube.com/tidyX_screencast?sub_confirmation=1)")
+
+```
+
+
+### asis
+```{r, results = "asis", echo = FALSE}
+
+cat(" This is some great content!\n\n")
+
+cat(" If you like TidyX, be sure to [subscribe!](https://www.youtube.com/tidyX_screencast?sub_confirmation=1)")
+
+```
+
+
+## pandoc under the hood
+
+rmarkdown converts your document into a markdown document that is then converted into the output set (html, word, pdf) through pandoc.
+pandoc is a cool piece of software included in your rstudio install.
+
+Using this knowledge, pandoc allows you to pass special code in your rmarkdown depending out the output set.
+
+<h3> Since this output is HTML, I can write <span style = "font-style:italic; color:blue;">inline</span> html </h3>
+
+This also applies to as-is outputs
+
+```{r, results = "asis", echo = FALSE}
+
+
+cat("<h3> THIS IS AN  <span style = 'font-style:italic; color:blue;'>ASIS</span> OUTPUT </h3>")
+
+```
