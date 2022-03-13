@@ -559,3 +559,9 @@ https://www.patreon.com/Tidy_Explained
 
   - This week we discuss a fun rmarkdown r chunk option - results. This little argument can have a big impact on the looks and output of our rmarkdown reports and can give a bunch of power to the developer to make the behavior and content of the report change based on the results of the code. It can also make what could be a tedious task in rmarkdown super fast!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/096-Rmarkdown_Guide_ASIS_Outputs)  
+
+- [Episode 97: Sampling, Simluation, and Intro to Bayes - Base R Distributions](https://bit.ly/TidyX_Ep97)
+
+  - A powerful tool in the R toolbox is the set of distribution functions included in base R. These functions allow data scientists to explore a variety of potential distributions to simulate data and explore possibilities. This week we go over the meaning of the p, q, d, and r prefixes of the distribution functions and work through examples of how to use them using baseball data from the {lahman} package.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/097-Simulating_Data-Intro_to_Distributions)  
+

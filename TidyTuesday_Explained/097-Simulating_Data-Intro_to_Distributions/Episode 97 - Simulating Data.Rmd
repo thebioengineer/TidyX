@@ -1,0 +1,271 @@
+---
+title: "Episode 97 - Simulating Data"
+author: "Patrick Ward"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages({
+  suppressPackageStartupMessages({
+    library(tidyverse)
+    library(gt)
+  })
+})
+
+```
+
+
+### Creating Distributions
+
+We can create distributions in `r` using one of four prefixes, indicating the description of what we would like returned, followed by a suffix indicating the distribution of data we would like to draw from. The arguments within the function are used to define the parameters of the distribution, which vary depending on the distribution type.
+
+```{r}
+
+pre <- data.frame(
+  prefix = c("p", "d", "q", "r"),
+  description = c("CDF", "PDF/PMF", "Quantile Function", "Random Draw")
+  )
+
+dist_types <- data.frame(
+  suffix = c("norm", "binom", "pois", "exp", "unif", "beta", "gamma", "t", "f", "chisq", "logis"),
+  distribution = c("normal", "binomial", "poisson", "exponential", "uniform", "beta", "gamma", "t", "f", "chi-squared", "logistic")
+)
+
+pre %>%
+  gt() %>%
+    cols_label(
+    prefix = md("**Prefix**"),
+    description = md("**Description**")
+  ) 
+
+dist_types %>%
+  gt() %>%
+    cols_label(
+    suffix = md("**Suffix**"),
+    distribution = md("**Distribution**")
+  ) 
+
+
+```
+
+
+**Some Examples**
+
+*Create a random draw of 10,000 points with a `mean = 0` and `sd = 1`*
+
+```{r}
+
+first_dist <- rnorm(n = 1e4, mean = 0, sd = 1)
+
+# histogram
+hist(first_dist, col = "light grey", xlab = NULL, main = "mean = 0; sd = 1")
+
+# density plot
+plot(density(first_dist), lwd = 2, xlab = NULL, main = "mean = 0; sd = 1")
+
+```
+
+
+
+*In a normal distribution, `mean = 0` & `sd = 1`, what is the percentage of the data is below 2 standard deviations? 1 SD? 0 SD? -1 SD?*
+
+* This is a *cumulative density* question so use `pnorm()`
+
+```{r}
+
+## sum of points less than 2
+pnorm(q = 2, mean = 0, sd = 1, lower.tail = TRUE)
+
+## inverse
+pnorm(q = 2, mean = 0, sd = 1, lower.tail = FALSE)
+
+pnorm(q = 1, mean = 0, sd = 1)
+pnorm(q = 0, mean = 0, sd = 1)
+pnorm(q = -1, mean = 0, sd = 1)
+
+## plot the data with a line at 2 SD
+plot(density(first_dist), lwd = 2, xlab = NULL, main = "mean = 0; sd = 1")
+abline(v = 2, lty = 2, lwd = 1.2, col = 'red')
+
+
+```
+
+
+*What is the probability of 5 successes in 16 attempts with a 50% probability of success?*
+
+* This is a question of probability mass, so we use `dbinom()`
+
+```{r}
+
+# dbinom() function
+dbinom(x = 5, size = 16, p = 0.5)
+
+# probability of flipping an even coin and getting a single heads
+dbinom(x = 1, size = 20, p = 0.5)
+
+```
+
+
+*Get the 95% quantiles for a normal distribution and a t-distribution*
+
+```{r}
+## normal distribution
+qnorm(p = c(0.025, 0.975), mean = 0, sd = 1)
+
+## t distribution
+qt(p = c(0.025, 0.975), df = 30 - 1)
+
+# how does t change with larger samples?
+qt(p = 0.975, df = c(30, 70, 100, 1000)-1)
+
+# Larger samples make the t-distribution look more like a normal distribution
+# Visualize the t-distribution
+
+curve(dt(x, df = 5 - 1), from = -3, to = 3, col = 'red', lwd = 2, ylim = c(0, 0.45))
+curve(dt(x, df = 30 - 1), from = -3, to = 3, col = 'green', lwd = 2, add = TRUE)
+curve(dt(x, df = 100 - 1), from = -3, to = 3, col = 'blue', lwd = 2, add = TRUE)
+curve(dt(x, df = 1000 - 1), from = -3, to = 3, col = 'orange', lwd = 2, add = TRUE)
+
+```
+
+
+### What can we do with these functions?
+
+Build Simulations!!
+
+**Why do we create simulations?**
+
+- Help us understand variation and randomness in the world
+- Statistical models are not deterministic and thus simulation can help us represent uncertainty
+- Helps account for uncertainty when making inference to the broader population (Data Generating Process is rarely known because we are usually only working with random samples of the the population of interest)
+- We can create many samples of data and assess their patterns
+
+
+**An example using regression**
+
+```{r}
+
+### Get Data 
+library(Lahman)
+head(Batting)
+
+## create 2 data sets of subsequent years 
+d2014 <- Batting %>%
+  filter(yearID == 2014,
+         AB >= 250) %>%
+  mutate(BA = H / AB) %>%
+  select(playerID, BA)
+
+d2015 <- Batting %>%
+  filter(yearID == 2015,
+         AB >= 250) %>%
+  mutate(BA = H / AB) %>%
+  select(playerID, BA)
+
+## Merge Data sets 
+dat <- d2014 %>%
+  inner_join(d2015, by = "playerID", suffix = c(".2014", ".2015"))
+
+head(dat)
+
+## Explore Year-to-Year Correlation 
+with(dat, cor.test(BA.2014, BA.2015))
+
+## Build a model to predict BA from the previous season 
+fit <- lm(BA.2015 ~ BA.2014, data = dat)
+summary(fit)
+
+preds <- predict(fit, new.data = dat, se = TRUE)
+
+plot(dat$BA.2014, dat$BA.2015, pch = 19, main = "Batting Average Predictions", xlab = "year n", ylab = "year n + 1")
+abline(fit, col = "red", lwd = 2)
+
+#### Use the model parameters to build a simulation and explore uncertainty
+# Create a matrix to store simulation results
+set.seed(3409)
+reps <- 1000
+par.est <- matrix(NA, nrow = reps, ncol = 2)
+
+# Model coefficients
+b0 <- fit$coefficients[1]     # Intercept
+b1 <- fit$coefficients[2]     # Slope parameter
+rse <- summary(fit)$sigma     # model error
+n <- 100                      # Sample size for the simulated model
+
+# Create a vector of random BA from our data to fit the model to within the simulation
+X <- runif(n = n, 
+           min = min(dat$BA.2014),
+           max = max(dat$BA.2014)
+           )
+
+## run the simulation
+for(i in 1:reps){
+	
+  # Use the regression equation to predict outcomes on our vector of random BAs
+	Y <- b0 + b1*X + rnorm(n = n, mean = 0, sd = rse) 
+	
+	# Use the predictions as outcome variables and estimate the difference between predicted and actual (X)
+	model <- lm(Y ~ X)             # An estimation of the OLS model
+	par.est[i, 1] <- model$coef[1] # Store intercepts in column 1
+	par.est[i, 2] <- model$coef[2] # Store slopes in column 2
+	
+}
+
+## mean of each estimate
+head(par.est)
+mean(par.est[, 1])
+mean(par.est[, 2])
+
+
+
+## 95th percentile interval
+quantile(par.est[, 1], probs = c(0.025, 0.975))
+quantile(par.est[, 2], probs = c(0.025, 0.975))
+
+## Original model output
+fit$coefficients
+confint(fit)
+
+## histogram of the simulated model coefficients
+par(mfrow = c(1,2))
+hist(par.est[, 1], breaks = 11, col = "gray", main = "Intercepts")
+abline(v = mean(par.est[, 1]), col = "red", lwd = 3, lty = 2)
+hist(par.est[, 2], breaks = 11, col = "gray", main = "Slopes")
+abline(v = mean(par.est[, 2]), col = "red", lwd = 3, lty = 2)
+
+## Plot uncertainty around the various possible regression lines
+# get random sample of lines
+par_rows <- sample(nrow(par.est), size = 10, replace=FALSE)
+samp_lines <- par.est[par_rows, ]
+
+plot(dat$BA.2014, dat$BA.2015, col = 'light grey', pch = 19, main = "Batting Average Predictions", xlab = "year n", ylab = "year n + 1")
+for(i in 1:length(par_rows)){
+  abline(a = samp_lines[i, 1] , b = samp_lines[i, 2])
+}
+
+## The random sample shows us that there are a number of lines that could fit this data -- our uncertainty
+## Collectively these lines make up the confidence intervals we see in our usual plots
+
+# Plot the data with confidence intervals in ggplot2
+dat %>%
+  ggplot(aes(x = BA.2014, BA.2015)) +
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  ylim(0.15, 0.37) +
+  xlim(0.18, 0.37) + 
+  theme_minimal()
+
+dev.off()
+
+## Now do the same in base R to get a feel for how it works
+plot(dat$BA.2014, dat$BA.2015, col = 'black', pch = 19, main = "Batting Average Predictions", xlab = "year n", ylab = "year n + 1", ylim = c(0.15, 0.37), xlim = c(0.18, 0.37))
+for(i in 1:nrow(par.est)){
+  abline(a = par.est[i, 1] , b = par.est[i, 2], col = 'grey')
+}
+abline(a = mean(par.est[,1]), b = mean(par.est[,2]), col = "red")
+
+```
+
