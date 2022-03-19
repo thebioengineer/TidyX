@@ -565,3 +565,7 @@ https://www.patreon.com/Tidy_Explained
   - A powerful tool in the R toolbox is the set of distribution functions included in base R. These functions allow data scientists to explore a variety of potential distributions to simulate data and explore possibilities. This week we go over the meaning of the p, q, d, and r prefixes of the distribution functions and work through examples of how to use them using baseball data from the {lahman} package.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/097-Simulating_Data-Intro_to_Distributions)  
 
+- [Episode 98: Sampling, Simluation, and Intro to Bayes - Sampling and Bootstraps](https://bit.ly/TidyX_Ep98)
+
+  - `sample` is a fun and useful base R function that allows you to select a sample of n values from a vector at random. This has important implications to setting up bootstap sets to resample existing datasets. This week we go through the differences between simulation and resampling and how to do some simple set ups to resampling that will be the foundation to the next few episodes. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/098-Simulating_Data-Simulation_and_Resampling)  
