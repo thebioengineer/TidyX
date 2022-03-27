@@ -1,0 +1,278 @@
+---
+title: "Episode 99 - Into to Bayes"
+author: "Patrick Ward"
+date: "3/21/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+theme_set(theme_minimal())
+```
+
+
+### Notes -- The Bayesics
+
+**Two schools of thought in statistics:**
+
+1) Frequentist Statistics -- Based on the idea that probability represents the frequency with which something happens. Answer the question, *What's the probability of the data given my hypothesis?* p(Data | Hypothesis)
+
+2) Bayesian Statistics -- Concerned with how probabilities represent our uncertainty about information. Answers the question, *What's the probability of my hypothesis given my data?"* p(Hypothsis | Data)
+
+**Bayesian Thinking**
+
+* Named after Reverend Thomas Bayes
+* A mathematical approach which allows us to interpret observed data within the context of our prior knowledge/assumptions/experience
+* Our prior knowledge is updated using **Bayes Theorem**
+
+$p(A | B) = ( ( p(B | A) * p(A) ) / p(B))$
+
+Where:
+
+* p(A) = prior - what I know/think !
+* p(B | A) = likelihood - observed the batter hit 5/10 - is he a .500 hitter?
+
+* p(B) = The *data* (a normalizing constant to ensure outcomes sum to 1) - evaluate what I saw based on what I know - average is .260
+
+* p(A | B) = posterior probability - final hit probability of batter, as we see more data, this will represent their true hit
+
+$p(B) = p(B | A) * p(A) + p(B | not A) * p(not A)$
+
+As we observe new data we can update our prior knowledge to reflect this information in the form of a posterior. The best part is that the posterior then becomes our new prior!
+
+### Example 1: Am I sick?
+
+You feel ill and go to the doctor. The doctor suspects you have a very rare, but deadly, illness and gives you a test that she says is able to correctly identify 95% of the people that are positive for the illness. Additionally, she informs you that the test is successful at identifying 95% of those that are negative for the disease. The former is referred to as **sensitivity** while the latter is referred to as **specificity**.
+
+The doctor returns the test and tells you that you are positive for the illness!! How probable is it that you have this particular illness?
+
+Unfortunately, neither sensitivity or specificity tell us what we really want to know, p(Illness | Positive Test). Moreover, to apply **Bayes Theorem** we will need to have some prior knowledge of the illness (the base rate). In this case, only 5% of the population ever get this particularly rare, but deadly, illness.
+
+Let's write out all of the known information:
+
+
+* p( Illness ) = 0.05                   (The current infection rate)
+* p( No Illness ) = 0.95                (1 - 0.05 --> The complement of p(Illness))
+
+* p(+ Test | Illness) = 0.95       TP
+* p(+ Test | No Illness) = 0.05    FP   (1 - 0.95 --> False Positive)
+* p(- Test | No Illness) = 0.95    TN
+* p(- Test | Illness) = 0.05       FN   (1 - 0.95 --> False negative)
+
+
+Now we can apply these values in Bayes Theorem to find the probability of illness given a positive test.
+
+$p(Illness | +) = (p(+ | Illness) * p(Illness)) / (p(+ | Illness) * p(Illness) + p(+ | No.Illness) * p(No.Illness))$
+
+
+```{r}
+## Write out all of the probabilities
+p_positive_illness <- 0.95
+p_positive_no_illness <- 1 - p_positive_illness
+
+p_negative_no_illness <- 0.95
+p_negative_illness <- 1 - p_negative_no_illness
+
+p_illness<- 0.05
+p_no_illness <- 1 - p_illness
+
+# denominator (p(B))
+p_data <- (p_positive_illness * p_illness + p_positive_no_illness * p_no_illness)
+
+## Apply Bayes Theorem
+p_illness_positive <- (p_positive_illness * p_illness) / p_data
+
+p_illness_positive
+
+```
+
+
+* Only a 50% chance (not a 95% chance) that you have the illness. Hopefully the doctor sends you out for additional testing to confirm! Following the additional testing, the posterior of 50% is now the prior and the same sensitivity and specificity values can be used if the same test is redone or new sensitivity and specificity values can be used if a new (maybe more precise) test is used.
+
+
+### Example 2: Flipping Coins
+
+* We have a coin and flip it 10 times and observe 3 heads
+* What is the probability that the coin is weighted towards heads?
+* We start with a flat prior, assigning equal weights across the entire probability range
+* Bayes Theorem:
+
+$p(Fair | 3 heads) = (p(3 heads | Fair) * p(Fair)) / (p(3 heads))$
+
+* Because flipping coins has only 2 outcomes, it represents a Bernoulli trial and thus we use the binomial distribution to represent our likelihood.
+
+```{r}
+# probability grid -- this represents the possible probabilities of the coin being weighted
+p_grid <- seq(0, 1, 0.1)
+
+# uniform prior
+prior <- rep(0.1, length(p_grid))
+
+coin <- data.frame(p_grid, prior)
+coin
+
+# likelihood
+success <- 3
+trials <- 10
+
+coin$likelihood <- dbinom(x = success, size = trials, prob = coin$p_grid)
+coin
+
+## Posterior
+# Un-standardized posterior
+coin$unstd_posterior <- coin$prior * coin$likelihood
+
+# Standard posterior
+coin$posterior <- round(coin$unstd_posterior / sum(coin$unstd_posterior), 2)
+
+coin
+
+# Notice that the standardized posterior obeys a probability distribution and sums to 1
+sum(coin$unstd_posterior)
+sum(coin$posterior)
+
+
+## plot
+par(mfrow = c(1, 2))
+plot(x = coin$p_grid, y = coin$prior, type = "l", main = "prior", col = "green", lwd = 3)
+plot(x = coin$p_grid, y = coin$posterior, type = "h", main = "posterior\nAfter observing 3 heads out of 10", col = "red", lwd = 2)
+
+```
+
+**The posterior becomes the new prior.**
+
+* We make 10 more flips and now observe 6 out of 10 heads
+
+```{r}
+## probability grid
+p_grid <- seq(0, 1, 0.1)
+
+# prior
+prior <- coin$posterior
+
+coin_2nd_flip <- data.frame(p_grid, prior)
+coin_2nd_flip
+
+# likelihood
+success <- 6
+trials <- 10
+
+coin_2nd_flip$likelihood <- dbinom(x = success, size = trials, prob = coin_2nd_flip$p_grid)
+
+coin_2nd_flip
+
+## Posterior
+# Un-standardized posterior
+coin_2nd_flip$unstd_posterior <- coin_2nd_flip$prior * coin_2nd_flip$likelihood
+
+# Standard posterior
+coin_2nd_flip$posterior <- round(coin_2nd_flip$unstd_posterior / sum(coin_2nd_flip$unstd_posterior), 2)
+
+coin_2nd_flip
+
+## Plot
+coin_2nd_flip %>%
+  select(p_grid, posterior, prior) %>% 
+  pivot_longer(
+    cols = c(posterior, prior),
+    names_to = "param",
+    values_to = "probability"
+  ) %>% 
+  ggplot(aes(x = p_grid)) +
+  geom_col(aes(y = probability,fill = param),
+           position = "dodge") + 
+  scale_fill_manual(
+    values = c("posterior" = "pale green","prior" = "light grey")
+  ) + 
+  scale_x_continuous(
+    labels = scales::percent_format()
+    )
+
+
+```
+
+
+* Start over but this time we have a prior that the coin is fair, 50/50 and we observe 3 out of 10 heads
+
+```{r}
+# probability grid -- this represents the possible probabilities of the coin being weighted
+p_grid <- seq(0, 1, 0.1)
+
+# 50/50 prior
+prior <- dbinom(x = 5, size = 10, prob = p_grid)
+
+coin <- data.frame(p_grid, prior)
+coin
+
+plot(coin$p_grid, coin$prior, type = "h", lwd = 3)
+
+# likelihood
+success <- 3
+trials <- 10
+
+coin$likelihood <- dbinom(x = success, size = trials, prob = coin$p_grid)
+coin
+
+## Posterior
+# Un-standardized posterior
+coin$unstd_posterior <- coin$prior * coin$likelihood
+
+# Standard posterior
+coin$posterior <- round(coin$unstd_posterior / sum(coin$unstd_posterior), 2)
+
+coin
+
+## plot
+coin %>%
+  select(p_grid, posterior, prior) %>% 
+  pivot_longer(
+    cols = c(posterior, prior),
+    names_to = "param",
+    values_to = "probability"
+  ) %>% 
+  ggplot(aes(x = p_grid)) +
+  geom_col(aes(y = probability,fill = param),
+           position = "dodge") + 
+  scale_fill_manual(
+    values = c("posterior" = "pale green","prior" = "light grey")
+  ) + 
+  scale_x_continuous(
+    labels = scales::percent_format()
+  )
+
+```
+
+
+**Sampling from the posterior**
+
+* Sampling from the posterior distribution allows us to build a distribution. Not really necessary for this simple model but is useful in more complex model situations.
+
+```{r}
+
+## Take 10,000 samples from the posterior
+# sample from the probability column (with replacement) but the probability observations are weighted by our posterior weights
+posterior_samples <- sample(coin$p_grid, 
+                            prob = coin$posterior, 
+                            size = 1e4, 
+                            replace = TRUE)
+
+# let's take some samples from the prior too, so we can plot them together
+prior_samples <- sample(coin$p_grid, prob = coin$prior, size = 1e4, replace = TRUE)
+
+# plot
+hist(prior_samples,
+     lwd = 3,
+     col = "green",
+     main = "Prior Samples = Green | Posterior Samples = Red",
+     ylim = c(0, 5000))
+
+hist(posterior_samples,
+     lwd = 3,
+     col = rgb(1,0,0,0.5),
+     add = TRUE)
+
+
+```
+
+
+

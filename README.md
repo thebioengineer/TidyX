@@ -569,3 +569,8 @@ https://www.patreon.com/Tidy_Explained
 
   - `sample` is a fun and useful base R function that allows you to select a sample of n values from a vector at random. This has important implications to setting up bootstap sets to resample existing datasets. This week we go through the differences between simulation and resampling and how to do some simple set ups to resampling that will be the foundation to the next few episodes. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/098-Simulating_Data-Simulation_and_Resampling)  
+
+- [Episode 99: Sampling, Simluation, and Intro to Bayes - Basic Bayes](https://bit.ly/TidyX_Ep99)
+
+  - Applying what we have learned these last few weeks, we are ready for Bayesian Statistics and Bayes theorem! This week we work through the concept behind Bayes, and attempt to talk through it in more approachable terms. We then try to apply the theorem to a few different cases to help solidify our understanding.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/099-Simulating_Data-Bayes_Intro)  
