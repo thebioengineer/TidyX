@@ -1,0 +1,226 @@
+---
+title: 'Episode 100: Beta-Binomial Conjugate'
+author: "Patrick Ward"
+output: html_document
+---
+
+### Problem Statement
+
+We are adding a new basketball player to our team and are holding tryouts. We want to determine the field goal percentage (FG%) one of the players after observing some shots.
+
+**Information me know:**
+
+* On average, tryout players that perform our drill are successful in 13 out of 20 attempts (on average), 65%.
+* We observe this new player trying out. They take the 20 shots and make 16. 
+
+Let's say that the player's performance looked like this:
+
+```{r}
+library(tidyverse)
+
+tryout <- tibble(shot_attempt = seq(1, 20),
+                    score = c(1,0,1,1,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1))
+
+tryout %>%
+  head()
+
+tryout %>%
+  summarize(fg_pct = mean(score))
+
+```
+
+
+*How confident are we that they are an 80% shooter, 15% better than the average tryout athlete we see?*
+
+Let's first layout our hypotheses:
+
+* h1 = probability of success for a tryout player = 13/20 = 0.65
+
+We can then calculate the probability of observing 16/20 baskets given our null hypothesis (h1) of 65%.
+
+p(Data | Hypothesis)
+
+```{r}
+## hypothesis
+h1 <- 0.65
+
+## probability of observing 16 out of 20 shots given the hypothesis that the success rate is 65%
+dbinom(x = 16, size = 20, prob = h1)
+
+## How about a p-value for the probability of observing 16 or more successes in 20 attempts?
+binom.test(x = 16, n = 20, p = h1, alternative = "greater")
+
+## one less
+pbinom(q = 15, size = 20, prob = h1, lower.tail = FALSE)
+```
+
+
+**But what if we have many hypotheses?**
+
+Let's see all hypotheses from 0 to 1 at 0.01 increments
+
+```{r}
+
+hypotheses <- seq(from = 0, to = 1, by = 0.01)
+
+plot(x = hypotheses,
+     y = dbinom(x = 16, size = 20, hypotheses), type = "l")
+```
+
+
+**Some issues:**
+
+1) We can have a lot of potential hypotheses
+2) The probabilities don't sum to 1, so they violate the laws of a probability distribution
+3) An issue with proportions (success/total) is that we end up with weird beliefs about our observations when sample size is small. 1/2 is not really the same as 50/100, which isn't really the same as 500/1000
+
+```{r}
+sum(dbinom(x = 16, size = 20, hypotheses))
+```
+
+
+### Enter the beta distribution
+
+* Represents a continuous range of values (probability density function) bounded between 0 and 1
+* Is the **conjugate prior** for the binomial distribution
+
+**Conjugate priors** are prior distributions that allow us to produce a solution without integral calculus (in the denominator of Bayes Theorem)
+
+* Using the beta distribution provides us with a convenient *shortcut* to update our prior knowledge with new observations. This is especially useful in times where we are dealing with a __small number of observations__.
+
+* The beta distribution has two parameters: **alpha** (the number of successes) and **beta** (the number of failures)
+
+Given our prior knowledge about the average tryout player who goes 13 for 20 in our shooting drill, the beta distribution looks like this:
+
+```{r}
+# prior alpha and beta
+prior_alpha <- 13
+prior_beta <- 20-13
+
+# prior average
+prior_alpha / (prior_alpha + prior_beta)
+
+# plot our prior beta distribution
+hypotheses <- seq(from = 0, to = 1, by = 0.01)
+
+plot(x = hypotheses,
+     y = dbeta(x = hypotheses, shape1 = prior_alpha, shape2 = prior_beta),
+     type = "l",
+     lwd = 4,
+     col = "blue",
+     ylab = "",
+     main = "Prior")
+
+```
+
+
+### Return to our primary question
+
+*How confident are we that they are an 80% shooter, 15% better than the average tryout athlete we see?*
+
+* We can use our prior knowledge that we have formulated from watching hundreds of players come through for tryouts and combine it with the observations of this player to obtain an estimate of is potential *true* performance.
+
+
+```{r}
+# 20 attempts given for the shooting drill
+N <- 20 
+
+## observe new player
+success <- sum(tryout$score == 1)
+failure <- sum(tryout$score == 0)
+
+## posterior
+posterior_alpha <- prior_alpha + success
+posterior_beta <- prior_beta + failure
+
+## The player's estimated average
+posterior_mu <- posterior_alpha / (posterior_alpha + posterior_beta)
+posterior_mu
+
+## Standard Deviation
+posterior_var <- (posterior_alpha * posterior_beta) / 
+  ((posterior_alpha + posterior_beta)^2 * (posterior_alpha + posterior_beta + 1))
+
+posterior_sd <- sqrt(posterior_var)
+posterior_sd
+
+## 90% Quantile Intervals
+low_90 <- round(qbeta(p = 0.05, shape1 = posterior_alpha, shape2 = posterior_beta), 3)
+high_90 <- round(qbeta(p = 0.95, shape1 = posterior_alpha, shape2 = posterior_beta), 3)
+
+low_90
+high_90
+
+## Plot the distribution
+plot(x = hypotheses,
+     y = dbeta(x = hypotheses, shape1 = posterior_alpha, shape2 = posterior_beta),
+     type = "l",
+     lwd = 4,
+     col = "green",
+     ylab = "",
+     main = "Posterior (Green) | Prior (Blue)")
+lines(x = hypotheses,
+     y = dbeta(x = hypotheses, shape1 = prior_alpha, shape2 = prior_beta),
+     lwd = 4,
+     lty = 2,
+     col = "blue",)
+```
+
+
+**Too be sure this wasn't a fluke, we give the player another 20 shots and this time they fit 17!**
+
+* Let's update our knowledge
+* Since Bayesian updating our previous knowledge as new data comes in, the prior we will use is the posterior from above
+
+
+```{r}
+# prior alpha and beta
+prior_alpha2 <- posterior_alpha
+prior_beta2 <- posterior_beta
+
+## New observations
+success2 <- 17
+failure2 <- N - success2
+
+## posterior
+posterior_alpha2 <- prior_alpha2 + success2
+posterior_beta2 <- prior_beta2 + failure2
+
+## The player's estimated average
+posterior_mu2 <- posterior_alpha2 / (posterior_alpha2 + posterior_beta2)
+posterior_mu2
+
+## Standard Deviation
+posterior_var2 <- (posterior_alpha2 * posterior_beta2) / ((posterior_alpha2 + posterior_beta2)^2 * (posterior_alpha2 + posterior_beta2 + 1))
+
+posterior_sd2 <- sqrt(posterior_var2)
+posterior_sd2
+
+## 90% Quantile Intervals
+low2_90 <- round(qbeta(p = 0.05, shape1 = posterior_alpha2, shape2 = posterior_beta2), 3)
+high2_90 <- round(qbeta(p = 0.95, shape1 = posterior_alpha2, shape2 = posterior_beta2), 3)
+
+low2_90
+high2_90
+
+## Plot the distribution
+plot(x = hypotheses,
+     y = dbeta(x = hypotheses, shape1 = posterior_alpha2, shape2 = posterior_beta2),
+     type = "l",
+     lwd = 4,
+     col = "red",
+     ylab = "",
+     main = "Bayesian Updating")
+lines(x = hypotheses,
+     y = dbeta(x = hypotheses, shape1 = posterior_alpha, shape2 = posterior_beta),
+     lwd = 4,
+     lty = 2,
+     col = "green",)
+lines(x = hypotheses,
+     y = dbeta(x = hypotheses, shape1 = prior_alpha, shape2 = prior_beta),
+     lwd = 4,
+     lty = 2,
+     col = "blue",)
+
+```
+

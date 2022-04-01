@@ -574,3 +574,8 @@ https://www.patreon.com/Tidy_Explained
 
   - Applying what we have learned these last few weeks, we are ready for Bayesian Statistics and Bayes theorem! This week we work through the concept behind Bayes, and attempt to talk through it in more approachable terms. We then try to apply the theorem to a few different cases to help solidify our understanding.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/099-Simulating_Data-Bayes_Intro)  
+- [Episode 100: Sampling, Simluation, and Intro to Bayes - Beta Bayes](https://bit.ly/TidyX_Ep100)
+
+  - Continuing our series on bayes, this week we learn about the conjugate prior of the binomial distribution, the beta distributions! Applying what we have learned about bayes theorem last week, we work through an example where we are trying to evaluate the performance of a basketball player in a drill where the average participant hits 65% of their shots, and this person hit 16 of 20. We discuss how to calculate some credible intervals, and update our analysis as we get more data on this player!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/100-Simulating_Data-Applying_Bayes-Beta)
+  
