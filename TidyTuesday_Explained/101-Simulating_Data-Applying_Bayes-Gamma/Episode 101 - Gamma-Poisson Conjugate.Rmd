@@ -1,0 +1,225 @@
+---
+title: 'Episode 101: Gamma-Poisson Conjugate'
+author: "Patrick Ward"
+output: html_document
+---
+
+### Notes
+
+* **Poisson Distribution:** Assigns probabilities to the number of occurrences observed
+
+* The Poisson Distribution is a distribution that depends on a single parameter, **lambda**
+* Lambda - represents the average number of occurrences in a fixed time period. It also represents the variance of the distribution!
+* As lambda increases, the Poisson Distribution begins to look more like a normal distribution (this also increases the spread/variance, since lambda represents that as well).
+
+
+### The Poisson Distribution in Action
+
+* A basketball player named Sally scores, on average, 15 points per game. What is the probability that Sally would score 25 points per game in the next game? 
+
+p(Data |  Hypothesis) = p(25 pts | Average = 15 pts)
+
+```{r}
+lambda <- 15
+pts <- 25
+
+# by hand
+pr_25_pts_per_min <- (lambda^pts * exp(-lambda)) / factorial(pts)
+pr_25_pts_per_min
+
+# r function
+dpois(x = pts, lambda = lambda)
+
+```
+
+
+What if we look at the probability across a range of possible points scored per game?
+
+```{r}
+obs <- seq(0, 30, 1)
+
+### By hand
+pr_pts_per_g <- (lambda^obs * exp(-lambda)) / factorial(obs)
+pr_pts_per_g
+
+plot(obs, pr_pts_per_g, 
+     type = "h",
+     ylim = c(0, 0.15))
+
+
+### dpois() function
+plot(obs, dpois(x = obs, lambda = lambda), 
+     type = "h",
+     ylim = c(0, 0.15))
+
+```
+
+
+### The problem statement
+
+The average player on our basketball team scores 15 points per game. Hanna has just been traded to our team and has played five games and scored 22, 27, 25, 21, 24 points each each game. We want to produce an estimate of Hanna's true scoring rate relative to what our initial population beliefs are.
+* The Scoring Rate can be hypothesized as any value from 0 to infinity
+* We need a prior distribution that represents a continuous probability distribution (PDF) and can take on any value from 0 to infinity
+
+### A Gamma Prior
+
+* **Gamma Distribution:** A two parameter distribution that represents continuous probabilities
+    - Shape parameter (aka alpha) - the number of successes
+    - Rate parameter (aka beta) - the number of observations
+    
+* Can be used as the conjugate prior for the poisson distribution
+
+**Average and Variance for the Gamma Distribution**
+
+$mu = alpha / beta$
+
+$var = alpha / beta^2$
+
+**Moment Matching: How can we determine Alpha & Beta?**
+
+* Moment matching offers a convenient way to obtain the parameters for a distribution
+* We know that the mean scoring rate for our team is 15 pts/game. We need to convert this into alpha and beta parameters so that we have the necessary prior information to combine with our observations of Hanna's data.
+* If we know the mean is 15, we could try and simply set alpha and beta up to have a relationship that represents this value. For example:
+    
+```{r}
+alpha <- 30
+beta <- 2
+
+# mean
+alpha / beta
+
+# sd
+sqrt(alpha / beta^2)
+```
+
+
+* An alternative approach is to use Moment Matching (aka, Method of Moments) to help us determine what the appropriate alpha and beta parameters might be, from a group of observations.
+
+Let's say that we originally established the average scoring rate of players in this league by observing 150 players over several seasons:
+
+```{r}
+set.seed(3)
+team <- rnorm(n = 150, mean = 15, sd = 5)
+
+team_avg <- mean(team)
+team_var <- var(team)
+team_sd <- sd(team)
+
+team_avg
+team_var
+team_sd
+```
+
+We can use the method of moments to turn these observations into alpha and beta parameters
+
+$alpha = mean^2 / variance$
+
+$beta = mean / variance$
+
+```{r}
+alpha <- team_avg^2 / team_var
+beta <- team_avg / team_var
+
+alpha
+beta
+
+alpha / beta
+sqrt(alpha / beta^2)
+
+```
+
+
+### Combine The Gamma Prior and Hanna's Observations to obtain her posterior scoring rate
+
+Create Hanna's data
+
+```{r}
+hanna_pts <- c(22, 27, 25, 21, 24)
+hanna_N <- length(hanna_pts)
+```
+
+
+Combine Hanna's observations with our prior
+
+```{r}
+
+alpha_posterior <- alpha + sum(hanna_pts)
+beta_posterior <- beta + hanna_N
+
+alpha_posterior
+beta_posterior
+
+## Mean and SD
+posterior_mu <- alpha_posterior / beta_posterior
+posterior_sd <- sqrt(alpha_posterior / beta_posterior^2)
+
+posterior_mu
+posterior_sd
+
+## 95% Credible interval
+qgamma(c(0.025, 0.975),
+       shape = alpha_posterior,
+       rate = beta_posterior)
+
+## plot
+plot(density(rgamma(n = 1e5, shape = alpha, rate = beta)),
+     col = "green",
+     lwd = 5,
+     lty = 2,
+     ylim = c(0, 0.2))
+lines(density(rgamma(n = 1e5, shape = alpha_posterior, rate = beta_posterior)),
+      col = "blue",
+      lwd = 6)
+
+```
+
+
+
+### Bayesian Updating
+
+* We observe 5 more games and Hanna doesn't perform as well as in her first 5.
+* Use the posterior from above as the new prior and update our knowledge of Hanna's scoring rate
+
+```{r}
+## Prior
+alpha2 <- alpha_posterior
+beta2 <- beta_posterior
+
+## Observe 5 more games
+hanna_pts2 <- c(4, 14, 6, 20, 9)
+hanna_N2 <- length(hanna_pts2)
+
+## Combine information to get a new posterior
+alpha_posterior2 <- alpha2 + sum(hanna_pts2)
+beta_posterior2 <- beta2 + hanna_N2
+
+alpha_posterior2
+beta_posterior2
+
+## Mean and SD
+posterior_mu2 <- alpha_posterior2 / beta_posterior2
+posterior_sd2 <- sqrt(alpha_posterior2 / beta_posterior2^2)
+
+posterior_mu2
+posterior_sd2
+
+## 95% Credible interval
+qgamma(c(0.025, 0.975),
+       shape = alpha_posterior2,
+       rate = beta_posterior2)
+
+## plot
+plot(density(rgamma(n = 1e5, shape = alpha, rate = beta)),
+     col = "green",
+     lwd = 5,
+     lty = 2,
+     ylim = c(0, 0.4))
+lines(density(rgamma(n = 1e5, shape = alpha_posterior, rate = beta_posterior)),
+      col = "blue",
+      lwd = 6)
+lines(density(rgamma(n = 1e5, shape = alpha_posterior2, rate = beta_posterior2)),
+      col = "red",
+      lwd = 6)
+
+```
+
