@@ -1,0 +1,309 @@
+---
+title: 'Episode 102: Normal-Normal Conjugate'
+author: "Patrick Ward"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+theme_set(theme_minimal())
+
+```
+
+
+### Notes
+
+* Normal distribution has two parameters: mean (mu) and standard deviation (sigma).
+* This is a joint distribution so we need to assign a prior to each parameter, meaning we would need a prior point estimate and variance for both the mean and SD.
+* Because the distribution is continuous a conjugate solution can only be applied if we make an assumption that one of the parameters is known for the observed data. We can make that assumption on either mu or sigma but often sigma is the one that is used.
+* If both parameters are unknown some form of Markov Chain Monte Carlo (e.g., Gibbs Sampling) approach is required to estimate them both
+
+
+### Problem Statement
+
+* We created a metric that rates the efficiency of a basketball players in each game. The metric is centered at zero and the player's performance are scored in a plus/minus fashion, indicating whether they are above or below `0`.
+* Our prior for this efficiency score, in our population, is a `mu = 0` and we believe that the standard deviation around mu, which we will refer to as `mu_sd`, is `mu_sd = 1`.
+* We assume that the population SD is known and to be about `2.5`. Because this is known, we do not place a prior on the variance around the SD.
+* We'd like to determine the value of a player on our team given how he has performed in several games. Basically, we want to know his season to date efficiency.
+
+### First let's check out the Normal distribution
+
+Plot our prior mu
+
+```{r}
+
+prior_mu <- 0
+mu_sd <- 1
+
+normal_values <- rnorm(n = 100000, mean = prior_mu, sd = mu_sd)
+
+plot(density(normal_values),
+     col = "blue",
+     lwd = 5,
+     main = "Prior Density")
+
+```
+
+
+What is the probability of observing a player with an efficiency score of 5 given our prior/known mu and SD?
+
+```{r}
+
+known_sd <- 2.5
+
+dnorm(x = 5, mean = prior_mu, sd = known_sd)
+
+## We can solve this by hand as well
+
+normal_dist <- function(x, mean, sd){
+  
+  p <- 1 / (sqrt(2 * pi) * sd) * exp(-(x - mean)^2 / (2*sd^2))
+  return(p)
+  
+}
+
+normal_dist(x = 5, mean = prior_mu, sd = known_sd)
+
+```
+
+
+We assume that the SD is 2.5 points. Let's plot some different hypotheses of player's efficiency score while holding that assumed SD constant at 2.5 to get a sense for what the normal distribution looks like.
+
+```{r}
+sigma <- 2.5
+mu1 <- 1
+mu2 <- -1
+mu3 <- 2
+mu4 <- -2
+mu5 <- 3
+mu6 <- -3
+
+df <- data.frame(
+  d1 = rnorm(n = 10e4, mean = mu1, sd = sigma),
+  d2 = rnorm(n = 10e4, mean = mu2, sd = sigma),
+  d3 = rnorm(n = 10e4, mean = mu3, sd = sigma),
+  d4 = rnorm(n = 10e4, mean = mu4, sd = sigma),
+  d5 = rnorm(n = 10e4, mean = mu5, sd = sigma),
+  d6 = rnorm(n = 10e4, mean = mu6, sd = sigma)
+)
+
+
+df %>%
+  pivot_longer(cols = d1:d6) %>%
+  ggplot(aes(x = value, color = name)) +
+  geom_density(size = 1.2)
+```
+
+
+* We have a whole bunch of different normal distributions who's mean varies up or down
+* Notice the spread of the normal distributions is the same because, remember, for the normal-normal conjugate to work we need to make an assumption about the standard deviation, so we are holding it constant at 2.5.
+
+
+### Dealing with the spread of our data
+
+* We can parameterize the spread around mu (mu_sd) in one of three ways:
+
+1) Express it as a standard deviation
+2) Express it as a variance (sd^2)
+3) Express it in terms of **precision**, tau, which is calculated as `1 / variance`
+
+We will use **precision** in our equations going forward and we will refer to it as `tau`.
+
+
+### Organizing our data
+
+We are ready to tackle the issue of determining our player's current efficiency given some observed game performances. 
+
+Recall the two pieces of prior information that we have about the population:
+
+1) The population mean (`mu`) is `0`
+2) The spread around the populatoin mean, `mu_sd` is `1`
+
+```{r}
+mu_prior <- 0
+mu_sd <- 1
+tau_prior <- 1 / mu_sd^2
+
+mu_prior
+mu_sd
+tau_prior
+```
+
+
+Recall that we need to assume the standard deviation, since the normal distribution is a joint distribution, one of the parameters needs to be assumed. We assume it to be 2.5.
+
+```{r}
+assumed_sd <- 2.5
+assumed_tau <- 1 / assumed_sd^2
+```
+
+
+Observe the efficiency score of our player over a few days
+
+```{r}
+
+obs_efficiency <- c(0.3, 2.5, -1.2, 3.1, 2.9, 1.8)
+
+mean(obs_efficiency)
+sd(obs_efficiency)
+
+```
+
+
+### Calculating the posterior
+
+* We are ready to apply our conjugate shortcut
+* The mean of the posterior can be calculated as such:
+
+$mu.posterior = (tau.prior * mu.prior + sum(assumed.tau * mu.observed)) / (tau.prior + N_obs * assumed.tau)$
+
+* The tau (precision of the posterior) can be calculated as:
+
+$tau.posterior = tau.prior + N_obs * assumed.tau$
+
+* Using algebra, we can convert the posterior tau to a posterior SD:
+
+$tau = 1 / sd^2$
+$tau * sd^2 = 1$
+$sd^2 = 1 / tau$
+$sd = sqrt(1 / tau)$
+
+Let's write a function to do this all for us!
+
+```{r}
+# mu0 = mu_prior
+# tau0 = tau_prior
+# mu_obs = mu observed/collected data
+# assumed_tau = assumed_tau
+# N = number of observations for the basketball player
+
+normal_conjugate_posterior <- function(mu0, tau0, assumed_tau, mu_obs){
+  
+  N <- length(mu_obs)
+  
+  numerator <- (tau0 * mu0 + assumed_tau * sum(mu_obs))
+  denominator <- (tau0 + N * assumed_tau)
+  
+  mu_posterior <- numerator / denominator
+  
+  tau_posterior <- tau0 + N * assumed_tau
+  
+  sd_posterior <- sqrt(1 / tau_posterior)
+  
+  data.frame(
+    'posterior_mu' = mu_posterior,
+    'posterior_sd' = sd_posterior,
+    'posterior_precision' = tau_posterior
+  )
+  
+}
+
+### Apply the to the data to get the posterior parameters
+
+posterior_efficiency <- normal_conjugate_posterior(
+  mu0 = mu_prior,
+  tau0 = tau_prior,
+  assumed_tau = assumed_tau,
+  mu_obs = obs_efficiency
+  )
+
+posterior_efficiency
+
+## 95% Interval
+qnorm(
+  c(0.025, 0.975),
+  mean = posterior_efficiency$posterior_mu,
+  sd = posterior_efficiency$posterior_sd
+  )
+
+
+```
+
+
+Plot the posterior
+
+```{r}
+
+prior_sim <- rnorm(n = 100000, mean = prior_mu, sd = mu_sd)
+
+posterior_sim <- rnorm(n = 100000, mean = posterior_efficiency$posterior_mu, sd = posterior_efficiency$posterior_sd)
+
+plot(density(prior_sim),
+     col = "blue",
+     lwd = 5,
+     main = "Posterior Density",
+     ylim = c(0, 1))
+lines(density(posterior_sim),
+     col = "red",
+     lwd = 5)
+abline(v = 0,
+       lty = 2,
+       lwd = 5)
+
+
+sum(posterior_sim > 0)/100000
+
+```
+
+
+
+### Bayesian Updating
+
+We observe 5 more games
+
+```{r}
+new_obs <- c(-2.2, 5.1, 3.6, 2.9, 4.0)
+```
+
+
+Use the posterior from above as our new prior for mu and precision and run the analysis.
+
+**Remember: The `assumed_tau` will stay the same since that is an assumption we are willing to make in order for the normal-normal conjugate to work.**
+
+```{r}
+
+mu_prior2 <- posterior_efficiency$posterior_mu
+tau_prior2 <- posterior_efficiency$posterior_precision
+
+posterior_efficiency2 <- normal_conjugate_posterior(
+  mu0 = mu_prior2,
+  tau0 = tau_prior2,
+  assumed_tau = assumed_tau,
+  mu_obs = new_obs)
+
+posterior_efficiency2
+
+# 95% Interval
+qnorm(c(0.025, 0.975), mean = posterior_efficiency2$posterior_mu, sd = posterior_efficiency2$posterior_sd)
+
+```
+
+
+Plot the updated efficiency score
+
+```{r}
+
+posterior_sim_2 <- rnorm(n = 100000, mean = posterior_efficiency2$posterior_mu, sd = posterior_efficiency2$posterior_sd)
+
+plot(density(prior_sim),
+     col = "blue",
+     lwd = 5,
+     main = "Posterior Density",
+     ylim = c(0, 0.7))
+lines(density(posterior_sim),
+     col = "red",
+     lwd = 5)
+lines(density(posterior_sim_2),
+     col = "green",
+     lwd = 5)
+abline(v = 0,
+       lty = 2,
+       lwd = 5)
+
+sum(posterior_sim > 0)/100000
+sum(posterior_sim_2 > 0)/100000
+
+```
+

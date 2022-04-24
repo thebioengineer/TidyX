@@ -582,7 +582,13 @@ https://www.patreon.com/Tidy_Explained
   
 - [Episode 101: Sampling, Simluation, and Intro to Bayes - Poisson/Gamma](https://bit.ly/TidyX_Ep101)
 
-  - Ever wonder how you could estimate the probability of a rate? Well, enter the Poisson distribution. Armed with "lambda", representing both the mean and sd of a distribution, we are able to similuate and calculate probabilities of number of occurances, such as points scored in a game by a player. However, to apply bayes theorem and get credible intervals, we need a continuous probability, enter the conjugate prior: gamma. We use this to perform bayesian updating and caculate credible intervals to give us insight on a new player to our pretend basketball team.
+  - Ever wonder how you could estimate the probability of a rate? Well, enter the Poisson distribution. Armed with "lambda", representing both the mean and sd of a distribution, we are able to simulate and calculate probabilities of number of occurrences, such as points scored in a game by a player. However, to apply bayes theorem and get credible intervals, we need a continuous probability, enter the conjugate prior: gamma. We use this to perform bayesian updating and calculate credible intervals to give us insight on a new player to our pretend basketball team.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/101-Simulating_Data-Applying_Bayes-Gamma)
+    
+  - [Episode 102: Sampling, Simluation, and Intro to Bayes - Normal-Normal Conjugate](https://bit.ly/TidyX_Ep102)
+
+  - This week we take a look at the most common, but also potential the most confusing distribution for our purposes - the normal distribution. We discuss how a bayesian looks at and uses a normal distribution, in where our mean and standard deviation both have their own distribution. An assumption is applied for us to work through a simple problem this week where we determine the probability of a basketball player being above average in a made up efficiency metric, and we demonstrate how to use bayesian updating as we gain new information on the player.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/102-Simulating_Data-Applying_Bayes-Normal)
     
   
