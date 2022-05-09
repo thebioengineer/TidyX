@@ -1,0 +1,193 @@
+---
+title: 'Episode 103: Gibbs Sampler'
+author: "Patrick Ward"
+output: html_document
+---
+
+### Notes
+
+* In the Normal-Normal Conjugate example (episode 102) we had to make an assumption about one of the two parameters, mean or SD, in order for the conjugate shortcut to work. That assumption was that one of those parameters was known. This allowed us to use the shortcut to then derive the other parameter given our prior and some observed data.
+
+* The problem is that we often don't want to assume one of the parameters is known. Rather, we'd like to be able to sample from the joint distribution for both the mean and SD and update our prior accordingly.
+
+* Enter **GIBBS Sampling**. The Gibbs sampler is one (of several) posterior simulation options that are available to us during Bayesian inference.
+
+* Basically, we update the prior distribution with our observations and then make a random draw from the respective distribution to simulate a single posterior value. We do this simulation thousands of times and create a posterior distribution for each of the parameters.
+
+### Problem statement from Episode 102
+
+* Our prior for this efficiency score, in our population, is a `mu = 0` and `sd = 1`
+* We'd like to determine the value of a player on our team given how he has performed in several games.
+
+* Since we are now going to simulate the joint distribution, one for the mean and one for the SD, we need a prior for both. 
+
+**The mean**
+
+* We believe the population mean to be 0 but we feel that it can vary slightly, with a SD of `1`. Thus, for our mean value we have a mu of 0 and sigma of 1 `(2 - -2) / 4`
+
+```{r}
+mu0 <- 0
+tau0 <- (2 - -2) / 4
+```
+
+**The SD**
+
+* The SD is a little trickier. We are going to use a Gamma Distribution (see Episode 101) and thus we need to derive a shape and rate parameter from our prior SD values
+* For our standard deviation, we estimate the population SD to 2 and we estimate it to have 95% interval of about 0.75 (1.25, 2.75), giving us an average SD of 2 and a sigma of 0.375 `(2.75 - 1.25) / 4`.
+
+We will simulate a normal distribution and then estimate the shape and rate parameter using the method of moments.
+
+```{r}
+set.seed(476)
+sd_sim <- rnorm(n = 1e3, mean = 2, sd = 0.375)
+
+sd_sim_avg <- mean(sd_sim)
+sd_sim_var <- var(sd_sim)
+sd_sim_sd <- sd(sd_sim)
+
+sd_sim_avg
+sd_sim_var
+sd_sim_sd
+
+## episode 101
+# (avg_sd^2)/ avg_var
+alpha <- sd_sim_avg^2 / sd_sim_var
+# avg/var
+beta <- sd_sim_avg / sd_sim_var
+
+alpha
+beta
+
+alpha / beta
+sqrt(alpha / beta^2)
+```
+
+
+### Observe Data for our Player
+
+```{r}
+obs_efficiency <- c(3, 2.5, .2, 3.1, 2.9, 1.8)
+
+mean(obs_efficiency)
+sd(obs_efficiency)
+```
+
+
+### Gibbs Sampler
+
+```{r}
+
+## Set the number of simulations & burnin rate
+N_sims <- 11000
+burn_in <- 1000
+
+## Get priors
+# prior mean
+mu0
+tau0
+
+# prior SD
+sd_mu <- alpha
+sd_sigma <- beta
+
+## summarize observed data
+SSE <- sum((obs_efficiency - mean(obs_efficiency))^2)
+mu_obs <- mean(obs_efficiency)
+n_obs <- length(obs_efficiency)
+var_obs <- SSE / n_obs
+
+## set up empty vectors for collecting results
+posterior_mu <- rep(NA, N_sims)
+posterior_sigma <- rep(NA, N_sims)
+
+## GIBBS Sampler
+for(i in 1:N_sims){
+  
+  ## calculate precision
+  precision <- n_obs / var_obs + 1/tau0
+  
+  ## posterior mean simulations
+  mu1 <- (mu_obs * n_obs/var_obs + mu0/tau0) / precision
+  sd1 <- sqrt(1 / precision)
+  mu <- rnorm(n = 1, mean = mu1, sd = sd1)
+  
+  ## posterior precision simulations
+  shape <- sd_mu + n_obs/2
+  rate <- sd_sigma + SSE / 2
+  sigma <- 1 / rgamma(n = 1, shape = shape, rate = rate)
+  
+  ## store simulation results
+  posterior_sigma[i] <- sqrt(sigma)
+  posterior_mu[i] <- mu
+}
+
+## remove the burn in values
+posterior_mu <- posterior_mu[-(1:burn_in)]
+posterior_sigma <- posterior_sigma[-(1:burn_in)]
+
+par(mfrow = c(1,2))
+hist(posterior_mu)
+hist(posterior_sigma)
+
+mean(posterior_mu)
+mean(posterior_sigma)
+
+quantile(posterior_mu, probs = c(0.025, 0.975))
+quantile(posterior_sigma, probs = c(0.025, 0.975))
+
+# trace plots
+par(mfrow = c(2, 1))
+plot(posterior_mu, type = "l", main = "Posterior Mean Trace Plot", col = "red")
+plot(posterior_sigma, type = "l", main = "Posterior Sigma Trace Plot", col = "blue")
+
+dev.off()
+
+# joint plot of mu and sigma
+plot(posterior_mu, posterior_sigma, pch = 19, main = "Joint Plot of Mu & Sigma")
+
+
+### Sample from the posterior
+post_mu_sample <- sample(x = posterior_mu, size = 1000, replace = TRUE)
+post_sd_sample <- sample(x = posterior_sigma, size = 1000, replace = TRUE)
+posterior_sample <- rnorm(n = 100000, mean = post_mu_sample, sd = post_sd_sample)
+
+## plot
+plot(density(posterior_sample),
+     col = "red",
+     lwd = 5)
+abline(v = mean(posterior_sample),
+       lwd = 2,
+       col = "black")
+abline(v = mean(posterior_sample) - sd(posterior_sample),
+       lwd = 2,
+       lty = 2,
+       col = "black")
+abline(v = mean(posterior_sample) + sd(posterior_sample),
+       lwd = 2,
+       lty = 2,
+       col = "black")
+```
+
+
+
+Compare results to output from the `LearnBayes` package
+
+```{r}
+
+library(LearnBayes)
+
+x <- normpostsim(obs_efficiency,
+                 prior = list(
+                   mu = c(mu0, tau0^2),
+                   sigma2 = c(alpha, beta)
+                   )
+                 )
+
+mean(x$mu)
+mean(sqrt(x$sigma2))
+
+mean(posterior_mu)
+mean(posterior_sigma)
+
+```
+
