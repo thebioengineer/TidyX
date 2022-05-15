@@ -591,10 +591,15 @@ https://www.patreon.com/Tidy_Explained
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/102-Simulating_Data-Applying_Bayes-Normal)
     
-  - [Episode 103: Sampling, Simluation, and Intro to Bayes - Normal-Gibbs Sampler](https://bit.ly/TidyX_Ep103)
+- [Episode 103: Sampling, Simluation, and Intro to Bayes - Normal-Gibbs Sampler](https://bit.ly/TidyX_Ep103)
 
   - The final episode in this series on bayes, we use learnings from several prior episodes to apply a new technique, Gibbs Sampling. This tool is used when there are multiple parameters that are being evaluated, each with their own parameters. We continue with the example from last week, but demonstrate how we can use a Gibbs Sampler to generate a distribution without having set the mean and standard deviation for a players efficiency metric. We also show a simple function that applies what we have learned in a simple API.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/103-Simulating_Data-Applying_Bayes-Gibbs_Sampler)
     
+- [Episode 104: R Classes and Objects - dates and POSIXt](https://bit.ly/TidyX_Ep104)
+
+  - This week we go on a date. Well, we talk about a date. Okay, okay, we talk about how to look and use date and datetime objects in R. We start with a high level overview of object systems that exist in R, and then reach into our mailbag to answer a question about lubridate. We talk about the fundamentals of date and POSIXt type objects, and ways to use them. Then we go over some of the difficulties of their behavior and how the {lubridate} package really makes dealing with dates much simpler.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/104-R_Classes-Dates)
     

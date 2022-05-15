@@ -1,0 +1,163 @@
+---
+title: "R Classes - Dates"
+author: "Ellis Hughes"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Objects
+
+- Rich Object system (Base, S3, S4, R6, RC, ...R7?)
+- Define behavior through different semantics
+- Large % of R packages use S3
+- Bioconductor favors S4
+- R6 behaves like a Python Class.
+
+See Hadley Wickham's thoughts in Advanced R -
+https://adv-r.hadley.nz/oo.html
+
+## Date Type Objects (S3)
+
+- Date
+- POSIXct
+- POSIXlt
+
+### Date Objects
+
+```{r Date-Objects}
+
+# Provide an ISO date, easily converts
+date1 <- as.Date("2022-01-01")
+
+# a date object contains a number only
+# number represents number of days since the origin 1970-01-01
+dput(date1)
+
+## Alternatively provide a number and an origin. 
+### Number represents days
+### Origin is date to start counting from
+date2 <- as.Date(0, origin = "2022-01-01")
+date3 <- as.Date(365, origin = "2021-01-01")
+
+as.numeric(date1)
+as.numeric(date2)
+as.numeric(date3)
+
+## Base R origin is 1970-01-01
+as.numeric(as.Date(0, origin = "1970-01-01"))
+
+## When converting dates in Excel, origin is 1899-12-31
+
+
+```
+
+## POSIXct
+
+- POSIXct represents number of seconds from origin (1970-01-01)
+- Sub-day units (down to milliseconds)
+- Time Zones
+- Multiple formats
+  
+```{r cars}
+
+date_time1 <- as.POSIXct("2022-01-01 8:00:01 PM PST") 
+
+date_time1
+as.numeric(date_time1)
+dput(date_time1)
+
+as.numeric(date_time1)/60
+
+## Alternatively provide a number and an origin. 
+### Number represents seconds
+### Origin is date to start counting from
+### Gets confusing with timezone manipulation
+date_time2 <- as.POSIXct(0, origin = "2022-01-01 00:00:00AM")
+date_time3 <- as.POSIXct(365*24*60*60, origin = "2021-01-01 00:00:00AM", tz = "UTC")
+
+```
+
+
+## Working with Dates/Date-time
+
+Lubridate Cheat Sheet: https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf
+
+```{r pressure, echo=FALSE}
+
+library(lubridate)
+
+### parsing helpers - Lubridate getting started page 
+
+?strptime
+
+## 20110604
+as.Date("20110604")
+as.Date("20110604", format = "%Y%m%d")
+
+ymd("20110604")
+ymd("2011/06/04")
+ymd("2011-06-04")
+ymd("2011 06 04")
+
+mdy("06042011")
+dmy("04062011")
+
+
+## 20110604 103000
+as.POSIXct("20110604 103000", format = "%Y%m%d %H%M%S", tz = "UTC")
+ymd_hms("20110604 103000")
+
+
+## Time differences/Intervals
+date1 <- as.POSIXct(0, origin = "2022-01-01")
+date2 <- as.POSIXct(10, origin = "2022-01-01")
+date3 <- as.POSIXct(10, origin = "2021-01-01")
+
+### Base R
+date2 - date1
+date3 - date1
+
+difftime(date2, date1, units = "mins")
+10/60
+
+difftime(date2, date1, units = "days")
+difftime(date2, date1, units = "secs")
+
+as.numeric(difftime(date2, date1, units = "secs"))
+as.numeric(date2-date1)
+as.numeric(date3-date1)
+
+
+### Lubridate
+d1d2_interval <- interval(date2,date1)
+as.duration(d1d2_interval)
+
+## Adding/subtracting time
+
+### Base R
+date1 <- as.POSIXct("2022-01-01")
+date1 + 7 ## adds 7 seconds
+as.Date(date1) + 7 ## adds 7 days
+
+date1 + (7*24*60*60) ## to move forward 7 days in posixct
+
+### Lubridate
+date1 + dweeks(1)
+as.Date(date1) + dweeks(1)
+
+# dpicoseconds, ... dseconds, dminutes, dmonths, dyears
+
+## Formatting outputs
+
+### Base R
+?strptime
+format(date1, "%Y-%d-%m %H:%M %Z")
+format(date1, "%y-%d-%m %H:%M %Z") ## case matters
+
+```
+
+
+
