@@ -603,3 +603,9 @@ https://www.patreon.com/Tidy_Explained
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/104-R_Classes-Dates)
     
+- [Episode 105: R Classes and Objects - Base](https://bit.ly/TidyX_Ep105)
+
+  - In the past 104 episodes, we realized we never spent time going over the base object types in R, how to build them up, and access them. This is something we have done in every episode, but decided this was the week we go over the mechanics of how it all works. We use four base object types; boolean, integer, numeric, and character, and show you how to build vectors, matrices, and data.frames. We go over how we think about objects.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/105-R_Classes-Base)
+    

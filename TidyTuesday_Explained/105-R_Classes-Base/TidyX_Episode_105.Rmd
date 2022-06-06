@@ -5,13 +5,11 @@ editor_options:
   chunk_output_type: console
 ---
 
-R Objects
----------
+## R Objects
 
 -   Rich Object system (Base, S3, S4, R6, RC, ...)
 
-Objects - what are they
-=======================
+# Objects - what are they
 
 -   Think of an object as a box
 
@@ -37,10 +35,9 @@ TRUE #LOGICALS (BOOLEAN) - a true or false value
 
 ```
 
-Variable Assignment
-===================
+# Variable Assignment
 
--   Value assignment to variables is done through '\<-'
+-   Value assignment to variables is done through '\<-' '="
 
 -   To continue the box metaphor
 
@@ -51,8 +48,7 @@ Variable Assignment
 sampleObject <- TRUE #TRUE or FALSE
 ```
 
-Objects in Objects
-==================
+# Objects in Objects
 
 ### The next object level up are
 
@@ -64,13 +60,14 @@ Objects in Objects
 
     -   More complicated boxes, that hold the smaller boxes within them
 
-\#\#Vector
+##Vector
 
 -   Vectors hold other objects
 
     -   in a single Dimension
 
         -   think of a skinny box that can only hold a single line of boxes
+        -   Sleeve of oreos
 
     -   Objects with in the vector are of the same type
 
@@ -78,10 +75,10 @@ Objects in Objects
 
 ```{r Objects_in_Objects_Vectors}
 
-VECTORS_LOGICAL<-c(TRUE,TRUE,FALSE) 
+VECTORS_LOGICAL <- c(TRUE,TRUE,FALSE) 
 
-VECTORS_NUMERIC<-c(1,2.5,3.14159267834)
-VECTORS_NUMERIC_SEQUENCE<-1:10
+VECTORS_NUMERIC <- c(1,2.5,3.14159267834)
+VECTORS_NUMERIC_SEQUENCE <- 1:10
 
 VECTORS_CHARACTER<-c("THIS","is","A","Character","Vector")
 ```
@@ -92,8 +89,7 @@ When you print a vector, it looks like this:
 VECTORS_CHARACTER
 ```
 
-Objects in Objects
-==================
+# Objects in Objects
 
 **Matrix**
 
@@ -107,15 +103,17 @@ Objects in Objects
 
 ```{r Objects_in_Objects_Matrices}
 MATRIX_LOGICAL<-matrix(c(TRUE,TRUE,FALSE,FALSE,TRUE,TRUE),ncol=2)
+
 MATRIX_NUMERIC<-matrix(c(1,2,3,4,5,6,7,8,9),ncol=3)
 
-DATA_FRAME_MIX <- data.frame(c(TRUE,TRUE,FALSE),
-                         c(132.4,56.7,89),
-                         c("THIS","IS A","DATA.FRAME!"))
+DATA_FRAME_MIX <- data.frame(
+  col1 = c(TRUE,TRUE,FALSE),
+  col2 = c(132.4,56.7,89),
+  col3 = c("THIS","IS A","DATA.FRAME!")
+  )
 ```
 
-Objects in Objects
-==================
+# Objects in Objects
 
 ### Accessing Content
 
@@ -141,10 +139,10 @@ VECTORS_LOGICAL[c(2,3,4)]
 ```{r matrix_extraction}
 MATRIX_NUMERIC[1,1]
 DATA_FRAME_MIX[1:2,]
+DATA_FRAME_MIX[,1,2]
 ```
 
-Objects in Objects
-==================
+# Objects in Objects
 
 ### Changing/Assigning Content
 
@@ -158,7 +156,7 @@ Objects in Objects
 ```{r assignment_specific}
 
 MATRIX_NUMERIC[1,]<-45
-MATRIX_NUMERIC[c(2),c(2,3)]<-20
+MATRIX_NUMERIC[2,c(2,3)]<-c(20,40)
 
 ```
 
@@ -166,8 +164,7 @@ MATRIX_NUMERIC[c(2),c(2,3)]<-20
 MATRIX_NUMERIC
 ```
 
-Objects in Objects
-==================
+# Objects in Objects
 
 ### Names
 
@@ -177,14 +174,15 @@ Objects in Objects
 
 -   If each column of the chocolates box on the left had a name describing its contents
 
-    -   "dark\_round"
-    -   "swirled\_round"
-    -   "light\_round"
-    -   "swirled\_square"
+    -   "dark_round"
+    -   "swirled_round"
+    -   "light_round"
+    -   "swirled_square"
 
 ![](ref_images/sees_assorted_Select.jpg){style="margin:auto, width: 100%" width="285"}
 
 ```{r, eval=FALSE}
-chocolate_box[,2]
-chocolate_box[,"swirled_round"]
+chocolate_box[,c(2,4)]
+chocolate_box[,c("swirled_round","swirled_square")]
+chocolate_box$swirled_round
 ```
