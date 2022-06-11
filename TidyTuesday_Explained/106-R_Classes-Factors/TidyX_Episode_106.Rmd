@@ -1,0 +1,165 @@
+---
+title: "TidyX Episode 106 - R Classes - Factors"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Factors - what are they
+
+- `factor()`
+
+- Provides a way to provide different categories/enumerations of things without specifying a 
+  priority preference. 
+    - IE. in `mtcars` car manufacturers may be a included in a regression, but 
+    order in which they are included in the model shouldn't impact the results. 
+    Or Ferrari is not greater than Mazda from a regression standpoint.
+    
+- Option for providing ordinality when it is important to sort categories
+    - IE First, Second, Third, are categories, but there is an order to them
+
+- Until R4.0.0, stringsAsFactors was default `TRUE`when loading data with 
+    base R functions (read.table) or creating a data.frame
+
+```{r creation-of-factors, eval=FALSE}
+
+## Factors can be build from other vectors
+factor(c("Hello","world","Hello","TidyX"))
+factor(c(TRUE,FALSE,TRUE))
+factor(c(1,2,3))
+
+## You can specify the levels that exist in the factor vector
+factor(c("B","A","C","D","A","B"), levels = LETTERS)
+
+## Check factor levels using `levels()`
+ex_f <- factor(c("Hello","world","Hello","TidyX"))
+levels(ex_f)
+
+## You can specify whether there is an ordinality to the levels
+## order is Increasing when ordinal
+factor(c("B","A","C","D","A","B"), levels = LETTERS, ordered = TRUE)
+factor(c("B","A","C","D","A","B"), levels = rev(LETTERS), ordered = TRUE)
+
+## Factor structure
+dput(factor(c("Hello","world","Hello","TidyX")))
+
+```
+
+Factors can be a memory-efficient way to store your vectors where repeated values are common:
+
+```{r}
+
+large_char_vector <- sample(
+  c("TEST","THIS","IS","A","LARGE","NUMBER","OF","WORDS"),
+  100000,
+  replace = TRUE
+  )
+
+large_char_vector_f <- as.factor(large_char_vector)
+
+print(object.size(large_char_vector), units = "MB")
+print(object.size(large_char_vector_f), units = "MB")
+
+```
+
+Levels of factors are the important piece to them, and they can be edited
+
+```{r}
+
+vec <- factor(c("Hello","world","Hello","TidyX"))
+vec
+
+factor(c("Hello","world","Hello","TidyX"), levels = c("world","Hello"))
+
+levels(vec) <- c("Amazing","Viewers","Are")
+vec
+
+## fails due to not having at least the same number of levels
+levels(vec) <- c("Check","the TidyX")
+
+```
+
+# Factor Conversion
+
+Conversion into factors is relatively simply, but conversion back is not as simple
+for all types (numeric)
+
+```{r}
+
+char_f <- factor(c("Hello","world","Hello","TidyX"))
+bool_f <- factor(c(TRUE,FALSE,TRUE))
+num_f  <- factor(c(3,30,2,1,10,4,1000))
+
+## character works as expected b/c it has a method for conversion
+as.character(char_f)
+
+## boolean works as expected b/c it has a method for conversion
+as.logical(bool_f)
+
+## as.numeric extract the numeric representations of the factors
+as.numeric(num_f)
+
+## conversion to character then numeric is how you can extract back to numeric
+as.numeric(as.character(num_f))
+
+```
+
+# Factors Uses
+
+Regression
+
+```{r}
+
+library(tidyverse)
+
+mtcars_f <- mtcars %>% 
+  mutate(
+    cyl_f_ = factor(cyl),
+    cyl_f2_ = factor(cyl, levels = c("8","6","4"))
+  )
+
+lm_num <- lm(mpg ~ cyl, data = mtcars_f)
+lm_f <- lm(mpg ~ cyl_f_, data = mtcars_f)
+lm_f2 <- lm(mpg ~ cyl_f2_, data = mtcars_f)
+  
+lm_num
+lm_f
+lm_f2
+
+summary(lm_num)
+summary(lm_f)
+summary(lm_f2)
+
+
+
+tibble(
+  lm_num_pred_num = predict(lm_num, newdata = data.frame(cyl = 3.6)),
+  lm_num_pred_int = predict(lm_num, newdata = data.frame(cyl = 4)),
+  lm_f_pred = predict(lm_f, newdata = data.frame(cyl_f_ = "4")),
+  lm_f2_pred = predict(lm_f2, newdata = data.frame(cyl_f2_ = "4"))
+)
+
+```
+
+ggplot bar order
+
+```{r}
+
+ggplot(mtcars_f) +
+  geom_boxplot(
+    aes(x = cyl, y = mpg)
+  )
+
+ggplot(mtcars_f) +
+  geom_boxplot(
+    aes(x = cyl_f_, y = mpg)
+  )
+
+ggplot(mtcars_f) +
+  geom_boxplot(
+    aes(x = cyl_f2_, y = mpg)
+  )
+
+````
+
+

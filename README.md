@@ -608,4 +608,9 @@ https://www.patreon.com/Tidy_Explained
   - In the past 104 episodes, we realized we never spent time going over the base object types in R, how to build them up, and access them. This is something we have done in every episode, but decided this was the week we go over the mechanics of how it all works. We use four base object types; boolean, integer, numeric, and character, and show you how to build vectors, matrices, and data.frames. We go over how we think about objects.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/105-R_Classes-Base)
-    
+ 
+- [Episode 106: R Classes and Objects - Factors](https://bit.ly/TidyX_Ep106)
+
+  - A common question until R4.0.0 was "why is stringsAsFactors TRUE by default" to many a new R programmer. In this episode we discuss the mysterious factor object that is in base R. Why does it exist, how do you use it, and how to work with it are questions we attempt to answer here. We demonstrate changing vectors to and from factors, how factors impact regression models, and how to use factors to generate plots!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/106-R_Classes-Factors)   
