@@ -613,4 +613,11 @@ https://www.patreon.com/Tidy_Explained
 
   - A common question until R4.0.0 was "why is stringsAsFactors TRUE by default" to many a new R programmer. In this episode we discuss the mysterious factor object that is in base R. Why does it exist, how do you use it, and how to work with it are questions we attempt to answer here. We demonstrate changing vectors to and from factors, how factors impact regression models, and how to use factors to generate plots!
 
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/106-R_Classes-Factors)   
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/106-R_Classes-Factors) 
+  
+- [Episode 107: R Classes and Objects - Lists, Part 1](https://bit.ly/TidyX_Ep107)
+
+  - Listy, list, lists. This episode we talk about one of our favorite, most flexible objects in R, a list. These objects can do almost anything, because they just don't care. Ellis and Patrick talk about how to create lists, discuss how they can nest and contain different object types, extraction of contents, and iterating over them. They talk about the {purrr} package and the valuable `map` family of functions, compare them to some of the `apply` family of functions, and compare them to a list. 
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/107-R_Classes-Lists)     
+  
