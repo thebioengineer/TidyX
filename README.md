@@ -619,5 +619,11 @@ https://www.patreon.com/Tidy_Explained
 
   - Listy, list, lists. This episode we talk about one of our favorite, most flexible objects in R, a list. These objects can do almost anything, because they just don't care. Ellis and Patrick talk about how to create lists, discuss how they can nest and contain different object types, extraction of contents, and iterating over them. They talk about the {purrr} package and the valuable `map` family of functions, compare them to some of the `apply` family of functions, and compare them to a list. 
 
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/107-R_Classes-Lists)     
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/107-R_Classes-Lists)    
+  
+- [Episode 108: R Classes and Objects - Lists, Part 2](https://bit.ly/TidyX_Ep108)
+
+  - Listy, list, lists. AGAIN. This episode we continue our talk about lists. Last week we showed some methods to create and work with lists, and this week we show a variety of ways that lists can be used. We demonstrate summary statistics gathering, recording model results, and even looping over a list to generate a PDF report! 
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/108-R_Classes-Lists-Part2)     
   
