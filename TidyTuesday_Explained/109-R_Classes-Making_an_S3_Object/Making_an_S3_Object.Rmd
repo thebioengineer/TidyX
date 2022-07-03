@@ -1,0 +1,118 @@
+---
+title: "TidyX Episode 109 - R Classes - Making An S3 Object"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## R Objects
+
+- Rich Object system (Base, S3, S4, R6, RC, ...R7?)
+- Large % of R packages use S3
+
+See Hadley Wickham's thoughts in Advanced R -
+https://adv-r.hadley.nz/oo.html
+
+## Benefits of an S3 Object
+
+- Relatively simple to initialize
+- Piggyback off of existing infrastructure
+- Incredibly Flexible and easily expandable
+
+- Initialize with `structure()` function
+
+```{r}
+
+my_s3 <- structure(
+  .Data = 24
+)
+
+my_s3
+
+```
+
+## Defining your Object
+
+- use "class" tag to add a _new_ class
+- set various internal attributes using other tags
+- Add data/non meta information via .Data
+
+```{r}
+
+my_s3 <- structure(
+  .Data = list(
+    message = "TidyX is Awesome!",
+    authors = c("Ellis", "Patrick")
+  ),
+  creation_time = Sys.time(),
+  class = "custom_message"
+)
+
+my_s3
+
+```
+
+## Developing Methods
+
+- print, format, etc are all "generics", applying a method developed for the specific class
+- ie. predict across all the model types!
+
+```{r}
+
+print
+
+print.custom_message <- function(x,...){
+  
+  print_message <- c(
+    "< Start Message >",
+    paste0("  Contents: ",x$message),
+    paste0("  Author: ", paste0(x$authors, collapse = ", ")),
+    paste0("  Creation Time: ", format(attr(x, "creation_time"))),
+    "< End Message >"
+  )
+  
+  cat(
+    print_message,
+    sep = "\n"
+  )
+  
+}
+
+my_s3
+
+```
+
+## Develop Class Creator
+
+- Avoid calling `structure()` directly
+- Abstract some of the concepts needed
+
+```{r}
+
+new_message <- function(message, by){
+  
+  structure(
+    .Data = list(
+      message = message,
+      authors = by
+    ),
+    creation_time = Sys.time(),
+    class = "custom_message"
+  )
+  
+}
+
+m1 <- new_message(
+  "You should Like and Subscribe to TidyX",
+  by = "Ellis"
+)
+ m1
+
+new_message(
+  "Consider becoming a Patron at Patreon - patreon.com/Tidy_Explained",
+  by = c("Patrick", "Ellis")
+)
+
+```
+
+

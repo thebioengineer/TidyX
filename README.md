@@ -627,3 +627,9 @@ https://www.patreon.com/Tidy_Explained
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/108-R_Classes-Lists-Part2)     
   
+- [Episode 109: R Classes and Objects - Making an S3 Object,  Part 1](https://bit.ly/TidyX_Ep109)
+
+  - So far we have discussed the EXISTING objects included in base R. But our viewers may remember mention of additional object systems; s3, s4, RC, R6. In this episode we introduce the idea of making your own object in the S3 object system. Ever wonder how a tibble was made and how so many functions "just work" with it. Here we start to give you some insight to this idea by creating our own object and its own print method. Then we demo how you write a function to serve as a contrsuctor of that object!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/109-R_Classes-Making_an_S3_Object)   
+  
