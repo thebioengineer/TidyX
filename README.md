@@ -629,7 +629,12 @@ https://www.patreon.com/Tidy_Explained
   
 - [Episode 109: R Classes and Objects - Making an S3 Object,  Part 1](https://bit.ly/TidyX_Ep109)
 
-  - So far we have discussed the EXISTING objects included in base R. But our viewers may remember mention of additional object systems; s3, s4, RC, R6. In this episode we introduce the idea of making your own object in the S3 object system. Ever wonder how a tibble was made and how so many functions "just work" with it. Here we start to give you some insight to this idea by creating our own object and its own print method. Then we demo how you write a function to serve as a contrsuctor of that object!
+  - So far we have discussed the EXISTING objects included in base R. But our viewers may remember mention of additional object systems; s3, s4, RC, R6. In this episode we introduce the idea of making your own object in the S3 object system. Ever wonder how a tibble was made and how so many functions "just work" with it. Here we start to give you some insight to this idea by creating our own object and its own print method. Then we demo how you write a function to serve as a constructor of that object!
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/109-R_Classes-Making_an_S3_Object)   
   
+- [Episode 110: R Classes and Objects - Making an S3 Object - Part 2 - S3 Tournament](https://bit.ly/TidyX_Ep110)
+
+  - We extend the idea of creating our own objects this week by demonstrating "s3 in practice". We pretend to be a Data Scientist for a a local sports betting company. The season has just ended for a local sports league. And we want to predict who will will the whole enchilada. First we need to sort out how we will simulate a single game. We create objects representing teams, and a series of functions to predict team performance and eventually a game winner!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/110-R_Classes-S3_in_practice)  
