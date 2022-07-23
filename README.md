@@ -638,3 +638,11 @@ https://www.patreon.com/Tidy_Explained
   - We extend the idea of creating our own objects this week by demonstrating "s3 in practice". We pretend to be a Data Scientist for a a local sports betting company. The season has just ended for a local sports league. And we want to predict who will will the whole enchilada. First we need to sort out how we will simulate a single game. We create objects representing teams, and a series of functions to predict team performance and eventually a game winner!
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/110-R_Classes-S3_in_practice)  
+
+- [Episode 111: Nate Latshaw, UFC Data, and data.table](https://bit.ly/TidyX_Ep111)
+
+  - This week we are joined by the one and only Nate Latshaw. Nate is a software engineer and open source contributor, making amazing visualizations of UFC data in R. Some of Nates work includes a complex shiny app that has a lot of different ways to explore UFC fighter data. This week we are walked through how some of the visualizations are made, get a quick introduction to data.table, and get an inside look to how Nate creates such amazing visualizations. After the code, we talk about Nates career, experience in the open source community, and advice for those looking to start their own open works!
+
+  - Nate can be found at @NateLatshaw
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/111-Nate_Latshaw_datatable_and_UFC_Data)  
