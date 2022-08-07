@@ -646,3 +646,9 @@ https://www.patreon.com/Tidy_Explained
   - Nate can be found at @NateLatshaw
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/111-Nate_Latshaw_datatable_and_UFC_Data)  
+
+- [Episode 112: R Classes and Objects - Making an S3 Object - Part 3 - S3 Tournament](https://bit.ly/TidyX_Ep112)
+
+  - This is the final episode on creating and applying s3 objects. We discuss some comments we recieved from viewers asking about why s3 objects vs a named list, and then get down to business to completing our single round elimination tournatent. We create an object to represent a matchup, then abstract up to a tournament round, and finally the full tournament.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/112-R_Classes-S3_Tournament) 
