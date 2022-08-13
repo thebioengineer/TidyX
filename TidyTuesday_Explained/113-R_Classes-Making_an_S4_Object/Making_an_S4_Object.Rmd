@@ -1,0 +1,143 @@
+---
+title: "TidyX Episode 113 - R Classes - Making An S4 Object"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## R Objects
+
+- Rich Object system (Base, S3, S4, R6, RC, ...R7?)
+- Large % of R packages use S3
+- Bioconductor embraced S4
+
+See Hadley Wickham's thoughts in Advanced R -
+https://adv-r.hadley.nz/oo.html
+
+## Benefits of an S4 Object
+
+- More strictly defined system
+  - class defined name and architecture
+- formalized "Slots" for storing data in the object
+  - slot types will not change
+- Uses "methods" still
+
+"A (Not So) Short Introduction to S4" - Christophe Genolini https://cran.r-project.org/doc/contrib/Genolini-S4tutorialV0-5en.pdf
+
+
+## Creating an S4
+
+- S3 may be initialize with `structure()` function
+- S4 requires object definition first with `setClass()`, then creation of a new object with `new()`
+
+```{r}
+
+## define the class
+setClass(
+  Class = "my_s4",
+  ## what sort of data can be entered
+  slots = c(x = "numeric"),
+  ## default values
+  prototype = list(x = numeric())
+  )
+
+my_s4_obj <- new("my_s4", x = 24) 
+
+my_s4_obj
+
+#invalid entry into x
+new("my_s4", x = "asdofnasodinf") 
+
+```
+
+## Defining your Object
+
+- use "class" tag to add a _new_ class
+- set various internal attributes using other tags
+- Add data/non meta information via .Data
+
+```{r}
+
+setClass(
+  Class = "custom_message",
+  ## what sort of data can be entered
+  slots = c(message = "character",
+            authors = "character",
+            creation_time = "POSIXct"), 
+  ## default values
+  prototype = list(
+    message = character(),
+    authors = character(),
+    creation_time = Sys.time()
+  )
+)
+
+my_message <- new(
+  "custom_message",
+  message = "TidyX is Awesome!",
+  authors = c("Ellis", "Patrick")
+  )
+
+my_message
+
+```
+
+## Developing Methods
+
+- print, format, etc are all "generics", applying a method developed for the specific class
+- ie. predict across all the model types!
+- s3 uses dot notation to create new methods: print.custom_message
+- s4 methods must be set using `setMethod()`, and uses the "show" method
+
+```{r}
+
+setMethod("show",signature = signature(object = "custom_message"),
+  function(object){
+    print_message <- c(
+      "< Start Message >",
+      paste0("  Contents: ",object@message),
+      paste0("  Author: ", paste0(object@authors, collapse = ", ")),
+      paste0("  Creation Time: ", format(object@creation_time)),
+      "< End Message >"
+    )
+    
+    cat(
+      print_message,
+      sep = "\n"
+    )
+  })
+
+my_message
+
+```
+
+## Develop Class Creator
+
+- Avoid calling `new()` directly
+- Abstract some of the concepts needed
+
+```{r}
+
+new_message <- function(message, by){
+  new(
+    "custom_message",
+    message = message,
+    authors = by
+  )
+}
+
+m1 <- new_message(
+  "You should Like and Subscribe to TidyX",
+  by = "Ellis"
+)
+
+m1
+
+new_message(
+  "Consider becoming a Patron at Patreon - patreon.com/Tidy_Explained",
+  by = c("Patrick", "Ellis")
+)
+
+```
+
+
