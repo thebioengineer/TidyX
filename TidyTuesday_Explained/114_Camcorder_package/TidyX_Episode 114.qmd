@@ -1,0 +1,109 @@
+---
+title: "TidyX Episode 114 - camcorder"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+{camcorder} has been a fun project for the past \~ 2 years
+
+<https://github.com/thebioengineer/camcorder>
+
+Developed to help Cédric Scherer and Georgios Karamanis with their cool gifs that are recordings of their plot making process
+
+Recently highlighted by Rami Krispin (<https://www.linkedin.com/feed/update/urn:li:activity:6953022051725041664/>)
+
+## Thoughts behind package
+
+-   Plot making is an iterative process
+-   Tools in R to make plots are super powerful
+-   *but* the rstudio "viewer" and "plots" panes are not ideal
+-   Manually saving the image to open and view. or change sizes is not simple
+
+```{r}
+
+library(ggplot2)
+
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist))
+
+## To see actual output, need to save and view file
+ggsave(file.path(tempdir(),"examplefile.pdf"), device = cairo_pdf)
+
+## only works on windows computers(!!)
+shell.exec(file.path(tempdir(),"examplefile.pdf"))
+
+unlink(file.path(tempdir(),"examplefile.pdf"))
+
+```
+
+## Camcorder
+
+```{r}
+
+library(camcorder)
+
+## to initalize recording
+
+gg_record(device = cairo_pdf)
+
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist))
+
+
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist)) + 
+  labs(
+    title = "Car Speed vs Stopping Distance"
+  )
+  
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist)) +
+  geom_vline(xintercept = 20) +
+  labs(
+    title = "Car Speed vs Stopping Distance"
+  )
+
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist)) +
+  geom_smooth(aes(x = speed, y = dist)) +
+  geom_vline(xintercept = 20) +
+  labs(
+    title = "Car Speed vs Stopping Distance"
+  )
+
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist)) +
+  geom_smooth(aes(x = speed, y = dist)) +
+  geom_vline(xintercept = 20) +
+  labs(
+    title = "Car Speed vs Stopping Distance",
+    x = "Speed (MPH)",
+    y = "Stopping Distance (ft)"
+  ) 
+
+
+ggplot(cars) + 
+  geom_point(aes(x = speed, y = dist)) +
+  geom_smooth(aes(x = speed, y = dist)) +
+  geom_vline(xintercept = 20) +
+  labs(
+    title = "Car Speed vs Stopping Distance",
+    x = "Speed (MPH)",
+    y = "Stopping Distance (ft)"
+  ) +
+  theme_classic(
+    base_family = "Times New Roman"
+  )
+
+gg_stop_recording()
+
+
+
+```
+
+```{r}
+
+gg_playback(first_image_duration = 3) ## sets first image to be displayed for 3 frames
+
+```

@@ -658,3 +658,9 @@ https://www.patreon.com/Tidy_Explained
   - We move onto the next, and possibly one of the more divisive (is that possible?) object systems in R - the S4 sytem. This system takes the free-wheeling s3 object class and says no more. Everything must be clearly defined up front, from the content of your object to its methods. We discuss some basics of why we use objects before getting into the nitty gritty of creating a few objects using the s4 system. We create a "print" method to demonstrate how to create a custom method, and show how to make a constructor.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/113-R_Classes-Making_an_S4_Object) 
+
+- [TidyX Episode 114 | camcorder R package](https://bit.ly/TidyX_Ep114)
+
+  - We take a step away from R objects to talk about a package that Ellis has been developing for the past 2 years - camcorder. Ellis talks about why he wrote the package, the ideas behind it, and folks might find value in it. He walks through an example of how to use the package, and gives a few call outs for folks that have supported the project throughout its two years.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/114-Camcorder_package) 
