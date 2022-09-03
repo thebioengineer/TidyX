@@ -664,3 +664,9 @@ https://www.patreon.com/Tidy_Explained
   - We take a step away from R objects to talk about a package that Ellis has been developing for the past 2 years - camcorder. Ellis talks about why he wrote the package, the ideas behind it, and folks might find value in it. He walks through an example of how to use the package, and gives a few call outs for folks that have supported the project throughout its two years.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/114-Camcorder_package) 
+
+- [TidyX Episode 115 | R Classes and Objects - Making an S4 Object,  Part 2 - S4 Tournament](https://bit.ly/TidyX_Ep115)
+
+  - We finally come back to talking about S4 objects this week and talk about how one might use an S4 object IRL. We look back and what we did for S3 objects and decide to use the same context but this time talk about how we would solve this problem in S4 instead of S3. We talk about creating new S4 generics and methods, and incorporate some view suggestions to create an object holding the results of a simulated game! We also open with a quick tangent to talk about an amusing thread by Danielle Navarro (https://twitter.com/djnavarro/status/1565515145488797696) on S3 chaos.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/115-R_Classes-S4_in_practice) 
