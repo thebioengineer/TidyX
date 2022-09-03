@@ -4,7 +4,7 @@
 ### Hosts
 [Ellis Hughes](https://twitter.com/Ellis_hughes) and [Patrick Ward](https://twitter.com/OSPpatrick). 
 
-Ellis has been working with R since 2015 and has a background working as a statistical programmer in support of both Statistical Genetics and HIV Vaccines. He also runs the Seattle UseR Group. 
+Ellis has been working with R since 2015 and has a background working as a statistical programmer in support of both Statistical Genetics and HIV Vaccines, and currently works as a Data Science Lead. He also runs the Seattle UseR Group. 
 
 Patrick's current work centers on research and development in professional sport with an emphasis on data analysis in American football. Previously, He was a sport scientist within the Nike Sports Research Lab. Research interests include training and competition analysis as they apply to athlete health, injury, and performance.
 
