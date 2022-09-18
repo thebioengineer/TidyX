@@ -670,3 +670,10 @@ https://www.patreon.com/Tidy_Explained
   - We finally come back to talking about S4 objects this week and talk about how one might use an S4 object IRL. We look back and what we did for S3 objects and decide to use the same context but this time talk about how we would solve this problem in S4 instead of S3. We talk about creating new S4 generics and methods, and incorporate some view suggestions to create an object holding the results of a simulated game! We also open with a quick tangent to talk about an amusing thread by Danielle Navarro (https://twitter.com/djnavarro/status/1565515145488797696) on S3 chaos.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/115-R_Classes-S4_in_practice) 
+
+- [TidyX Episode 116 | R Classes and Objects - Making an S4 Object,  Part 3 - S4 Tournament](https://bit.ly/TidyX_Ep116)
+
+  - This week we close out our s4 discussion by finalizing our code to simulate tournaments. we built up last week simluated games, but
+now we simulate tournament rounds, create new s4 classes and methods, and ultimately simluate a tournament. We update how we were approaching calling the likely winner of a tournament to simulate a tournament 1000 times.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/116-R_Classes-S4_Tournament) 
