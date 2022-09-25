@@ -1,0 +1,156 @@
+---
+title: "Creating Subject ID's and Withing Subject Observation Counters"
+output: html_document
+---
+
+## Data
+
+```{r}
+library(tidyverse)
+
+dat <- tibble(
+  Subject = as.factor(c(rep("Al", 20), rep("Tom", 35), rep("Kerry", 13))),
+  variable = round(rnorm(mean = 300, sd = 50, n = Subject), 0)
+  ) %>% 
+  group_by(Subject) %>% 
+  mutate(
+    observation = seq_along(Subject)
+  ) %>% 
+  ungroup()
+
+dat
+```
+
+
+## How many observations per subject
+
+```{r}
+
+dat %>%
+  count(Subject, sort = TRUE)
+
+```
+
+
+
+## Unique IDs
+
+Give each subject an id (in case we don't want to expose their names in our study)
+
+```{r}
+
+dat_id <- dat %>%
+  group_by(Subject) %>%
+  mutate(index = cur_group_id())
+
+
+
+
+
+## random order
+rand_dat <- dat %>% 
+  .[sample(1:nrow(dat), nrow(dat), replace = FALSE),] %>%
+  group_by(Subject) %>%
+  mutate(index = cur_group_id()) 
+
+
+
+
+
+## joining
+dat_join <- tibble(Subject = c("Al", "Kerry", "Tom", "Jerry"),
+                   index = c(1, 2, 3, 4)) %>%
+  right_join(dat, by = "Subject")
+
+
+
+dat_id %>% 
+  arrange(index, observation) %>% 
+  head()
+
+rand_dat %>% 
+  arrange(index, observation) %>% 
+  head()
+
+dat_join %>% 
+  arrange(index, observation) %>% 
+  head()
+
+dat_id %>%
+  count(Subject, index)
+
+```
+
+
+## Creat an ID for groupings of 5 observations
+
+What if we want to break up each subject's observations into groupings of 5? Also, some of the subjects do not have a total number of observations divisble by 5, so we need to make sure that we count by 5's but can end on a non-five divisible number.
+
+To do this, we use integer division, which simply divides two numbers, discards the remainder and leaves the integer.
+
+For example, 10/7 = 1.4. The result for integer vision will be 1, discarding the .4
+
+```{r}
+
+10/7
+10 %/% 7
+
+```
+
+Let's try this on one subject before applying it to everyone.
+
+* Kerry only had 13 observations. Pull just her observations
+
+```{r}
+
+kerry <- dat_id %>% 
+  filter(Subject == "Kerry") %>% 
+  pull(variable)
+
+```
+
+* We can count along an index of each observation using the `seq_along()` function
+
+```{r}
+
+seq_along(kerry)
+
+```
+
+* Let's apply integer division to each of the indexes in the sequence
+
+```{r}
+
+seq_along(kerry) %/% 5
+
+```
+
+* Integer division is giving us the groupings in 4's
+* What if we subtract each index number by 1, first?
+
+```{r}
+
+(seq_along(kerry) - 1) %/% 5
+
+```
+
+
+* That works! Now we just need to add 1 to the results and we have a counter by 5's
+
+```{r}
+(seq_along(kerry) - 1) %/% 5 + 1
+```
+
+* Now apply it to all subjects
+
+```{r}
+
+dat_id_grouped <- dat_id %>%
+		group_by(Subject) %>%
+		mutate(group5 = (seq_along(Subject) - 1) %/% 5 + 1)
+
+dat_id_grouped %>%
+  knitr::kable(align = 'c')
+
+```
+

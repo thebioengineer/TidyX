@@ -677,3 +677,9 @@ https://www.patreon.com/Tidy_Explained
 now we simulate tournament rounds, create new s4 classes and methods, and ultimately simluate a tournament. We update how we were approaching calling the likely winner of a tournament to simulate a tournament 1000 times.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/116-R_Classes-S4_Tournament) 
+
+- [TidyX Episode 117 | Creating Participant IDs](https://bit.ly/TidyX_Ep117)
+
+  - Ever wonder how you can use tidyverse tools to create unique identifiers for your experiment records? wonder no longer. This week we show you how to use the lesser known `cur_group_id()` function to get the group id number to serve as a participant ID. THen we demonstrate how you can also use joins, and finally discuss creating an index for grouping observations of the same participant using integer division!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/117-Creating_Participant_IDs) 
