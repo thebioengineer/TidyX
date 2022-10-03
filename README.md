@@ -680,6 +680,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
 - [TidyX Episode 117 | Creating Participant IDs](https://bit.ly/TidyX_Ep117)
 
-  - Ever wonder how you can use tidyverse tools to create unique identifiers for your experiment records? wonder no longer. This week we show you how to use the lesser known `cur_group_id()` function to get the group id number to serve as a participant ID. THen we demonstrate how you can also use joins, and finally discuss creating an index for grouping observations of the same participant using integer division!
+  - Ever wonder how you can use tidyverse tools to create unique identifiers for your experiment records? wonder no longer. This week we show you how to use the lesser known `cur_group_id()` function to get the group id number to serve as a participant ID. Then we demonstrate how you can also use joins, and finally discuss creating an index for grouping observations of the same participant using integer division!
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/117-Creating_Participant_IDs) 
+
+- [TidyX Episode 118 | Windowing Functions with {zoo} and tidyverse](https://bit.ly/TidyX_Ep118)
+
+  - What technology lets you see through a wall? Windows. This episode we take a look at the ever useful tidyverse and how we can perform windowing to calculate values across windows. We celebrate Albert Pujols hitting 700 career home runs by looking at his career home runs and perform examples of different windowing calculations. We show how these calculations can be used as part of your visualization to add context.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/118-Windows) 
