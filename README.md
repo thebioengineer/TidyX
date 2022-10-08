@@ -689,3 +689,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - What technology lets you see through a wall? Windows. This episode we take a look at the ever useful tidyverse and how we can perform windowing to calculate values across windows. We celebrate Albert Pujols hitting 700 career home runs by looking at his career home runs and perform examples of different windowing calculations. We show how these calculations can be used as part of your visualization to add context.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/118-Windows) 
+
+- [TidyX Episode 119 | Slice n' Dicing data with tidyverse](https://bit.ly/TidyX_Ep119)
+
+  - This week we look at a common function we use to help us select random subsets of data in tidyverse - slice_sample. This function is the predecessor to sample_n and sample_frac, and allows us to quickly and easily grab n rows or a proportion of the data in a single line of code. We go over a few different arguments and set ups that people might use these functions!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/119-Slice_n_Dice) 
