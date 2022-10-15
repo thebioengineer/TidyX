@@ -695,3 +695,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - This week we look at a common function we use to help us select random subsets of data in tidyverse - slice_sample. This function is the predecessor to sample_n and sample_frac, and allows us to quickly and easily grab n rows or a proportion of the data in a single line of code. We go over a few different arguments and set ups that people might use these functions!
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/119-Slice_n_Dice) 
+  
+- [TidyX Episode 120 | Working with columns in Tidyverse](https://bit.ly/TidyX_Ep120)
+
+  - Selecting, renaming, and moving around columns around is an incredibly common tast for data scientists. So much so that there are loads of little helpers embeded into the tidyverse world to improve quality of life. This episode we highlight the use of some of these helpers, such as the starts_with, ends_with, matches, and where functions, along with super important functions such as relocate and rename to move around columns and rename them respecively. Finally, we close with going over the differences between the dplyr::pull function and the purrr:pluck function.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/120-col_miners_daughter) 
