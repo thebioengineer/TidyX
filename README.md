@@ -698,6 +698,13 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   
 - [TidyX Episode 120 | Working with columns in Tidyverse](https://bit.ly/TidyX_Ep120)
 
-  - Selecting, renaming, and moving around columns around is an incredibly common tast for data scientists. So much so that there are loads of little helpers embeded into the tidyverse world to improve quality of life. This episode we highlight the use of some of these helpers, such as the starts_with, ends_with, matches, and where functions, along with super important functions such as relocate and rename to move around columns and rename them respecively. Finally, we close with going over the differences between the dplyr::pull function and the purrr:pluck function.
+  - Selecting, renaming, and moving around columns around is an incredibly common task for data scientists. So much so that there are loads of little helpers embedded into the tidyverse world to improve quality of life. This episode we highlight the use of some of these helpers, such as the starts_with, ends_with, matches, and where functions, along with super important functions such as relocate and rename to move around columns and rename them respectively. Finally, we close with going over the differences between the dplyr::pull function and the purrr:pluck function.
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/120-col_miners_daughter) 
+
+- [TidyX Episode 121 | Tell me what you want - user submitted data](https://bit.ly/TidyX_Ep121)
+
+  - This week we get into some data engineering problems provided by a viewer! Ellis and Patrick are provided some wide data that contains some *simulated* data of a few patients after surgery. Our job is to turn this into some useful long data based on what we were provided. Using tools from the last few weeks, we demonstrate how to use mutate, relocate, rename, pivot_longer and pivot_wider. We show to approaches, one using more advanced regex and pivoting tools to make the data useful.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/121-tell_me_what_you_want) 
+
