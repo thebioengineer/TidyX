@@ -708,3 +708,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/121-tell_me_what_you_want) 
 
+- [TidyX Episode 122 | Event based data and filtering](https://bit.ly/TidyX_Ep122)
+
+  - Event-based time series data is a super common type of data. But it does come with some unique challenges. This week we talk through some techniques a person might use to explore and filter this data into something more useful. We simulate event data where three participants have N observations and at any one of these observations an event may occur. We calculate number of events, time between events, how to get n observations post each event, and how to grab observations from two named events!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/122-event_based_filtering) 
+
