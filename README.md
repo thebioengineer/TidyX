@@ -714,3 +714,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/122-event_based_filtering) 
 
+- [TidyX Episode 123 | Criss Cross Apple Sauce - Crossing in Tidyverse](https://bit.ly/TidyX_Ep123)
+
+  - Crossing vectors and dataframes to generate new data or compare existing data is a very common practice in data analysis. Whether generating values to allow you to grid search or comparing values, there are helpers in R to make this process much easier. The tidyr `crossing` function and its familiars make this process a piece of cake. We explore the behaviors of these functions and give an example of how they can be useful!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/123-criss_cross_apple_sauce) 
+
