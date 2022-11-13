@@ -720,3 +720,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/123-criss_cross_apple_sauce) 
 
+- [TidyX Episode 124 | Combining Multiple Conditions](https://bit.ly/TidyX_Ep124]
+
+  -This episode we work through a problem that was submitted by a colleague of Patrick: "I have multiple different potential values that I want to report based on a reference value. What would be a good way to combine them? case_when and ifelse don't seem to be doing it". We walk through the scenario, explain why case_when and ifelse fail, and provide a few solutions!
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/124-Combining_Multiple_Conditions) 
+
