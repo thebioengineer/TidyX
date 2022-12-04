@@ -722,13 +722,19 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
 - [TidyX Episode 124 | Combining Multiple Conditions](https://bit.ly/TidyX_Ep124)
 
-  -This episode we work through a problem that was submitted by a colleague of Patrick: "I have multiple different potential values that I want to report based on a reference value. What would be a good way to combine them? case_when and ifelse don't seem to be doing it". We walk through the scenario, explain why case_when and ifelse fail, and provide a few solutions!
+  - This episode we work through a problem that was submitted by a colleague of Patrick: "I have multiple different potential values that I want to report based on a reference value. What would be a good way to combine them? case_when and ifelse don't seem to be doing it". We walk through the scenario, explain why case_when and ifelse fail, and provide a few solutions!
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/124-Combining_Multiple_Conditions) 
 
 - [TidyX Episode 125 | Combining Multiple Conditions, Followup](https://bit.ly/TidyX_Ep125)
 
-  -We reach into our mailbag to answer questions submitted by our viewers from our last episode. We go over a suggestion from @datadavidz to use the enframe function, explain how to un-rowwise your tibble, and give a solution to a similar problem submitted by Jeff Rothschild!
+  - We reach into our mailbag to answer questions submitted by our viewers from our last episode. We go over a suggestion from @datadavidz to use the enframe function, explain how to un-rowwise your tibble, and give a solution to a similar problem submitted by Jeff Rothschild!
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/125-Combining_Multiple_Conditions_Followup) 
+
+- [TidyX Episode 126 | Keeping duplicates on pivoting](https://bit.ly/TidyX_Ep126)
+
+  - This week we pick up a problem that you too may have faced - pivoting your data and not getting the expected format due to some unexpected content in your data. This week we go through an example from Patrick, where we want to pivot values and keep the duplicated values independent. We work through a few different approaches to explain the thought process and how you too can preserve duplicates on pivot_wider.
+
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/126-preserving_duplicated_on_pivots) 
 

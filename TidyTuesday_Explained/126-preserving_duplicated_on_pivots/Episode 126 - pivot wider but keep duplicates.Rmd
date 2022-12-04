@@ -1,0 +1,116 @@
+---
+title: 'Episode 126: pivot wider but keep duplicates'
+author: "Patrick Ward"
+output: html_document
+---
+
+`pivot_wider()` is a useful function for pivoting data from a long data set to a wide data set. The issue is that if the data has duplicated rows, `pivot_wider()` will default to converting the data to nested lists.
+
+We will use an example from the `mtcars` data set using the `cyl` and `wt` columns and we will start by converting `cyl` to a factor variable since it only has three levels (4, 6, and 8).
+
+```{r}
+library(tidyverse)
+
+dat <- mtcars %>%
+  select(wt, cyl) %>%
+  mutate(cyl = as.factor(cyl))
+
+dat %>%
+  head()
+```
+
+
+**Goal:** We want to pivot the data so that `wt` is the id column and `cyl` to be pivoted wider.
+
+```{r}
+
+tribble(
+   ~ wt, ~`8`,  ~`6`, ~`4`,
+  2.620,    0,     1,    0, 
+  2.875,    0,     1,    0, 
+  2.320,    0,     0,    1, 
+  2.320,    0,     0,    1, 
+  3.215,    0,     1,    0, 
+  3.440,    1,     0,    0, 
+  3.440,    0,     1,    0, 
+  3.460,    0,     1,    0
+)
+
+```
+
+## First Attempt (and failure)
+
+```{r}
+dat %>%
+  pivot_wider(
+    values_from = cyl, 
+    names_from = cyl
+  )
+
+```
+
+* We get an issue about the fact that there are duplicates with respect to `wt` and `cyl`, which causes R to put the results into a list and gives us a warning with some ways to solve the issue.
+
+## Second Attemt (and failure)
+
+```{r}
+dat %>%
+  pivot_wider(values_from = cyl, 
+              names_from = cyl,
+              values_fn = length)
+```
+
+* At first glace, this looks like adding the `values_fn = length` argument has worked! But notice that this is a tible of 29 rows. The original data has 32 rows.
+
+```{r}
+nrow(dat)
+```
+
+
+* Notice that if there is a duplicate, the `values_fn = length` function adds a `2` under the respecitve `cyl` column (e.g., row 5).
+
+## Third Approach (and fail)
+
+```{r}
+dat %>%
+  group_by(wt, cyl) %>%
+  mutate(wt_id = row_number()) %>% 
+  pivot_wider(values_from = cyl, 
+              names_from = cyl,
+              id_cols = c(wt_id, wt),
+              values_fn = length)
+```
+
+
+* So close!! We have 31 rows instead of 32, though.
+* The issue is `wt == 3.44`
+
+```{r}
+dat %>%
+  select(cyl, wt) %>% 
+  group_by(wt, cyl) %>%
+  mutate(wt_id = row_number()) %>%
+  filter(wt == 3.44)
+```
+
+
+## Fourth Approach (success!)
+
+* Creat an id variable for `wt`
+* Create an id variable for `wt` and `cyl` together
+* Also, get rid of the NA's and put the prefix `cyl` in front of the pivoted columns
+
+```{r}
+dat %>%
+  select(cyl, wt) %>% 
+  group_by(wt, cyl) %>%
+  mutate(wt_id = row_number(),
+         wt_cyl_id = paste(wt_id, cyl, sep = "_")) %>% 
+  pivot_wider(values_from = cyl, 
+              names_from = cyl,
+              id_cols = c(wt_cyl_id, wt),
+              values_fill = 0,
+              names_prefix = "cyl",
+              values_fn = length)
+```
+
