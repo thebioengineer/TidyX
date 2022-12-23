@@ -749,3 +749,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - We solve Day 1 of advent of code in two ways this week. Ellis bases his approach using base R, applying a loop and pre-allocating a vector, while Patrick reads the in as a data.frame and applies tidyverse functions to come to the same conclusions. We discuss how sometimes the format of the data can be informational, and how you should approach processing when that matters. 
 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/128-AOC_Day1)
+
+- [TidyX Episode 129 | Generating Snowflakes](https://bit.ly/TidyX_Ep129)
+
+  - Inspired by a blog Ellis saw online (see below), we write a snowflake generator using R. We talk about how you can write functions to build up to more complicated processes and use our highschool trig again. Happy Holidays from TidyX. 
+  - Original Snowflake Blog Post: https://cloudfour.com/thinks/coding-a-snowflake-generator/
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/129-snowflakes)
