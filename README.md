@@ -755,3 +755,8 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Inspired by a blog Ellis saw online (see below), we write a snowflake generator using R. We talk about how you can write functions to build up to more complicated processes and use our highschool trig again. Happy Holidays from TidyX. 
   - Original Snowflake Blog Post: https://cloudfour.com/thinks/coding-a-snowflake-generator/
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/129-snowflakes)
+  
+- [TidyX Episode 130 | Independent Interactive Reports with Plotly](https://bit.ly/TidyX_Ep130)
+
+  - Ellis and Patrick got a question from a viewer asking how they can share interactive reports with their stakeholders _without_ using shiny! Well, the answer is right in front of us in the use of Rmarkdown to generate html reports combined with the power of htmlwidgets from plotly. We generate a report that can be shared through a single file, that provides some fun interactivity to look at baseball batting averages.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/130-Interactive-Reports-Rmarkdown-and-Plotly)

@@ -1,0 +1,194 @@
+---
+title: "TidyX Episode 130 - MLB Hitting Production"
+author: "TidyX"
+output: 
+  html_document:
+    toc: TRUE
+    number_sections: FALSE
+    toc_float: TRUE
+    toc_collapsed: FALSE
+    theme: lumen
+editor_options: 
+  chunk_output_type: console
+---
+
+# Report Details {.tabset}
+
+**This report provides a view into the hitting performance of MLB players drafted 2010 and on who have played in at least 8 seasons.**
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+
+suppressWarnings({
+  suppressPackageStartupMessages({
+    library(crosstalk)
+    library(plotly)
+    library(tidyverse)
+    library(Lahman)
+  })
+})
+
+```
+
+```{r data-prep, include = FALSE}
+
+### Data
+dat <- Batting %>%
+  #Person information
+  left_join(People) %>% 
+  # Get the position played by the person that year
+  left_join(Fielding %>% select(playerID, yearID, POS)) %>% 
+  mutate(
+    first_season = substr(debut, start = 1, stop = 4), # Had a full date 
+    name = paste(nameLast, nameFirst, sep = ", ")
+  ) %>%
+  filter(first_season >= 2010) %>%
+  mutate(
+    obp = (H + BB + HBP) / (AB + BB + HBP + SF),
+    batting_avg = H / AB
+  ) %>%
+  select(playerID, name, yearID, POS, AB, batting_avg, obp) %>%
+  filter(AB >= 100) %>%
+  group_by(playerID) %>%
+  mutate(experience = row_number()) %>%
+  arrange(playerID) %>%
+  ## Reduce number of players listed to only those that played 8 seasons (arbitrary)
+  group_by(playerID) %>%
+  filter((max(yearID) - min(yearID) >= 7)) ## Min 8 years (rookie year is year 0)
+
+```
+
+## Player Production
+
+### Rookie Season Production
+
+-   Select the rookie season of interest
+-   Place your cursor over a dot to see which player it is
+
+```{r}
+#### Rookie season performance plot
+## set highlighting capabilities for rookie season stats
+rookie_key <- highlight_key(
+  x = dat %>% filter(experience == 1),
+  ~yearID
+  )
+
+rookie_plt <- bscols(
+  widths = c(2,10),
+  filter_checkbox(
+    id = "yearID", 
+    label = "Season",
+    sharedData = rookie_key,
+    group =  ~yearID
+    ),
+  
+  plot_ly(
+    data = rookie_key, 
+    x = ~batting_avg, 
+    y = ~obp, 
+    showlegend = FALSE
+    ) %>%
+    ## add points and the text argument adds tooltip information
+    add_markers(
+      text = ~name,
+      marker = list(color = '#56B4E9', size = 15)
+    ) %>% 
+    layout(yaxis = list(title = "OBP")) %>%
+    layout(xaxis = list(title = "Batting Avg")) %>%
+    layout(title = "Rookie Season Production")
+)
+
+rookie_plt
+
+```
+
+### Player Time Series
+
+-   Select a player of interest to observe their trend relative to the population
+-   Add additional players to compare their performance and change color so that the individuals stand out
+
+```{r}
+#### Player time series plot
+# player highlight key
+player_key <- highlight_key(dat, ~name)
+
+# player time series plot using the highlight key
+player_ts <- plot_ly(
+    data = player_key, 
+    color = I("black"),
+    line = list(width = 5)
+  ) %>%
+  group_by(name) %>%
+  add_lines(
+    x = ~yearID,
+    y = ~batting_avg
+  ) %>% 
+  layout(yaxis = list(title = "Batting Average"), autosize = FALSE) %>%
+  layout(xaxis = list(title = "Season"), autosize = FALSE) %>%
+  layout(title = "Career Batting Average Trend")   
+
+# player plot with interactive capability
+player_plt <- highlight(
+  player_ts,
+  selectize = TRUE,
+  dynamic = TRUE,
+  persistent = TRUE
+)
+
+player_plt
+```
+
+## Distribution of performance by position
+
+-   Select the position of interest to see on base percentage
+-   Change colors when adding new positions to allow for comparison
+
+```{r}
+#### Position histogram
+# position highlight key
+pos_key <- highlight_key(dat, ~POS)
+
+# BA histogram
+ba_hist <- plot_ly(
+  data = pos_key, 
+  color = I("light grey")
+  ) %>%
+  group_by(POS) %>%
+  add_histogram(x = ~batting_avg) %>%
+  layout(
+    xaxis = list(title = "Batting Avg"), 
+    autosize = FALSE
+    )
+
+# OBP histogram
+obp_hist <- plot_ly(
+    data = pos_key, 
+    color = I("light grey")
+  ) %>%
+  group_by(POS) %>%
+  add_histogram(x = ~obp) %>%
+  layout(
+    xaxis = list(title = "OBP"), 
+    autosize = FALSE
+    )
+
+subplot(
+  ba_hist, 
+  obp_hist, 
+  nrows = 1, 
+  shareY = TRUE,
+  titleX = TRUE
+  ) %>%
+  layout(
+    barmode = "overlay",
+    showlegend = FALSE
+  ) %>%
+  highlight(
+    dynamic = TRUE,
+    selectize = TRUE,
+    persistent = TRUE,
+    selected = attrs_selected(opacity = 0.5)
+  )
+
+```
