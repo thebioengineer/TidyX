@@ -10,7 +10,7 @@ Patrick's current work centers on research and development in professional sport
 
 ### Description
 
-The goal of TidyX is to explain how R code works. We are focusing on submissions to the #TidyTuesday Project to help promote the great work being done there. 
+The goal of TidyX is to explain how R code works. We are focusing on explaining topics either we find interesting or submissions from our viewers. Historically we explained how submissions to the #TidyTuesday Project worked to help promote the great work being done there. 
 
 In this repository, you will find copies of the code we've explained, and the code we wrote to show the concept on a new dataset.
 
@@ -760,3 +760,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - Ellis and Patrick got a question from a viewer asking how they can share interactive reports with their stakeholders _without_ using shiny! Well, the answer is right in front of us in the use of Rmarkdown to generate html reports combined with the power of htmlwidgets from plotly. We generate a report that can be shared through a single file, that provides some fun interactivity to look at baseball batting averages.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/130-Interactive-Reports-Rmarkdown-and-Plotly)
+
+- [TidyX Episode 131 | Player Selection in Shiny](https://bit.ly/TidyX_Ep131)
+
+  - This week we work on a problem likely most sports scientists have dealt with - how to select a player by name when there are multiple players with the same name! We show two ways, first using selectInput and creating unique records for each player in the selection choices, and using DT and the ability datatable's have to create reactive inputs when they are clicked.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/131-IPlayer_selection_in_shiny)
+
