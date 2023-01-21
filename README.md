@@ -766,3 +766,8 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - This week we work on a problem likely most sports scientists have dealt with - how to select a player by name when there are multiple players with the same name! We show two ways, first using selectInput and creating unique records for each player in the selection choices, and using DT and the ability datatable's have to create reactive inputs when they are clicked.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/131-IPlayer_selection_in_shiny)
 
+- [TidyX Episode 132 | Fuzzy Matching Shiny](https://bit.ly/TidyX_Ep132)
+
+  - Expanding on what was done in episode 127, and taking the theme from the last few episodes on shiny, we demonstrate how you too can create a shiny app that will empower your non-programmer team to perform their own fuzzy matching. We use a collection of different techniques including uioutputs, DataTable, and a download handler! 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/132-Fuzzy_Matching_Shiny)
+
