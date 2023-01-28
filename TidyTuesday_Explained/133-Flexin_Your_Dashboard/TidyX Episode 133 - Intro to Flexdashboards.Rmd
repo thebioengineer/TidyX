@@ -1,0 +1,155 @@
+---
+title: "TidyX Episode 133: Intro to Flexdashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(DT)
+library(plotly)
+
+theme_set(theme_light())
+
+set.seed(6)
+dat <- tibble(
+  player = rep(c("Aandrew", "Bill", "Hank", "Tom"), each = 100),
+  training_day = rep(1:100, times = 4),
+  training_load = round(rnorm(n = 100*4, mean = 300, sd = 50), 1))
+
+```
+
+
+Team Output
+=======================================================================
+
+Column {data-width=30}
+-----------------------------------------------------------------------
+
+### Team Notes
+
+* The team had a spike in training for days 75 to 80 but that has now 
+subsided and stabilized around 275 training load units.
+
+* Be ready to adjust training as we enter the *playoffs*.
+
+* This is a __note__ for the coach!
+
+* this is a [google link](www.google.com)
+
+
+Column {data-width=70}
+-----------------------------------------------------------------------
+
+### Team Plot
+
+```{r fig.width = 12}
+
+dat %>%
+  group_by(training_day) %>%
+  summarize(avg_tl = mean(training_load)) %>%
+  mutate(roll_tl7 = RcppRoll::roll_mean(x = avg_tl, n = 7, align = "right", fill = NA)) %>%
+  ggplot(aes(x = training_day, y = avg_tl)) +
+  geom_line(size = 1.2,
+            color = "grey",
+            alpha = 0.8) +
+  geom_line(aes(y = roll_tl7),
+            color = "black",
+            size = 1.2) +
+  annotate(geom = "text",
+           x = 3,
+           y = 375,
+           label = "-- Daily TL",
+           hjust = 0,
+           color = "grey") +
+    annotate(geom = "text",
+           x = 3,
+           y = 365,
+           hjust = 0,
+           label = "-- 7 day rolling avg",
+           color = "black") +
+  labs(x = "Training Session",
+       y = "Training Load",
+       title = "Average Team Training Load") +
+  ylim(200, 400)
+
+```
+
+
+### Team Table
+
+```{r}
+
+dat %>%
+  group_by(training_day) %>%
+  summarize(avg_tl = mean(training_load)) %>%
+  mutate(roll_tl7 = RcppRoll::roll_mean(x = avg_tl, n = 7, align = "right", fill = NA)) %>%
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            colnames = c("Session", "Avg TL", "7 Day Rolling Avg")) %>%
+  formatRound(columns = c("avg_tl", "roll_tl7"),
+              digits = 1)
+
+```
+
+
+
+Player Output
+======================================================================
+
+Column {data-width=20}
+-----------------------------------------------------------------------
+
+### Notes
+
+* Andrew has ben complaining about sore hamstrings
+* Tom has been responding well to the new training approach
+
+Column {data-width=80}
+-----------------------------------------------------------------------
+
+### Player Training Load
+
+```{r fig.width = 8}
+
+plt <- dat %>%
+  group_by(player) %>%
+  mutate(roll_tl7 = RcppRoll::roll_mean(x = training_load, n = 7, align = "right", fill = NA)) %>%
+  ggplot(aes(x = training_day, y = training_load)) +
+  geom_line(size = 1.2,
+            color = "grey",
+            alpha = 0.8) +
+  geom_line(aes(y = roll_tl7),
+            color = "black",
+            size = 1.2) +
+  labs(x = "Training Session",
+       y = "Training Load") +
+  facet_wrap(~player) +
+  theme(strip.background = element_rect(fill = "black"),
+        strip.text = element_text(color = "white", face = "bold"))
+
+ggplotly(plt)
+
+```
+
+### Player Table
+
+```{r}
+
+dat %>%
+  group_by(player) %>%
+  mutate(roll_tl7 = RcppRoll::roll_mean(x = training_load, n = 7, align = "right", fill = NA),
+         player = as.factor(player)
+         ) %>% 
+  datatable(rownames = FALSE,
+            class = 'cell-border stripe',
+            filter = 'top',
+            colnames = c("Player", "Session", "Avg TL", "7 Day Rolling Avg")) %>%
+  formatRound(columns = c("training_load", "roll_tl7"),
+              digits = 1)
+
+```
+

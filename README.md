@@ -770,4 +770,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - Expanding on what was done in episode 127, and taking the theme from the last few episodes on shiny, we demonstrate how you too can create a shiny app that will empower your non-programmer team to perform their own fuzzy matching. We use a collection of different techniques including uioutputs, DataTable, and a download handler! 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/132-Fuzzy_Matching_Shiny)
+  
+- [TidyX Episode 133 | Intro to Flexdashboard - Flexing your Dashboard](https://bit.ly/TidyX_Ep133)
+
+  - Somehow for 132 episodes we have not done a flexdashboard! This changes now. A flexdashboard is an advanced rmarkdown that allows you to create serverless dashboards. Nicely format and display your content for your stakeholders in interactive websites, and move away from manually creating them or using excel.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/133-Flexin_Your_Dashboard)
+
 
