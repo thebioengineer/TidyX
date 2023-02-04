@@ -776,4 +776,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Somehow for 132 episodes we have not done a flexdashboard! This changes now. A flexdashboard is an advanced rmarkdown that allows you to create serverless dashboards. Nicely format and display your content for your stakeholders in interactive websites, and move away from manually creating them or using excel.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/133-Flexin_Your_Dashboard)
 
+- [TidyX Episode 134 | Conditional Styling with DT](https://bit.ly/TidyX_Ep134)
+
+  - DT offers a lot of power to the users in the ability to quickly make interactive tables in R. However, that is not its only superpower. Offering a number of formatting functions to style the contents for both in visual display and string formatting, there are many options for a power user. We go through the basics and some advanced skills like formatting based on another column or styling an entire row.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/134-Conditional_Formatting_with_DT)
+
+
 
