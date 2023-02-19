@@ -782,4 +782,8 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/134-Conditional_Formatting_with_DT)
 
 
+- [TidyX Episode 135 | Github cron jobs](https://bit.ly/TidyX_Ep135)
+
+  - This week, we discuss using cron jobs in Github to automate the process of scraping webpages at a set cadence (e.g., every morning at 6am).
+  - [Source Code](https://github.com/thebioengineer/sports_report_daily)
 
