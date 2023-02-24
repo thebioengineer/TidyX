@@ -786,4 +786,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - This week, we discuss using cron jobs in Github to automate the process of scraping webpages at a set cadence (e.g., every morning at 6am).
   - [Source Code](https://github.com/thebioengineer/sports_report_daily)
+  
+- [TidyX Episode 136 | Fuzzy Joins on Dates](https://bit.ly/TidyX_Ep136)
+
+  - Sometimes. Thats the thing. Some Times. We answer a viewer question extending from a prior epsiode answering the question of how do I join participant data from samples to the closest date of an event within N number of days? We try to give an answer, working through problem solving and try to give you the tools to solve this problem too!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/136-Fuzzy_Dates)
+
 
