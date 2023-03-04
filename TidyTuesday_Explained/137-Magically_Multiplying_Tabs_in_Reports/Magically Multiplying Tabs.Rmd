@@ -1,0 +1,70 @@
+---
+title: "TidyX Episode 137: Magically Multiplying Tabs"
+date: '2023-03-03'
+output:
+  rmarkdown::html_document:
+      keep_md: true
+---
+
+## {.tabset}
+
+```{r  echo=FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+
+dat <- tibble(
+  player = rep(c("Bob", "Kam", "AJ"), each = 400),
+  performance = rnorm(n = 400*3, mean = 250, sd = 10)
+)
+
+```
+
+```{r results='asis'}
+
+players <- unique(dat$player)
+
+for(player_of_interest in players){
+  
+  cat('\n\n### ',player_of_interest,'\n\n')
+  
+  cat("This is some plot summarizing how ", player_of_interest, " performs!\n\n")
+  
+  d <- dat %>%
+    filter(player == player_of_interest)
+  
+  hist_plot <- d %>%
+    ggplot(aes(x = performance)) +
+    geom_histogram()
+  
+  ## must print ggplots in a for loop
+  print(hist_plot)
+
+}
+
+```
+
+## This is a new section
+
+This is some text here! The tab section has ended. Display content that is to be rendered by markdown is "asis"
+
+```{r}
+
+dat %>%
+  group_by(player) %>% 
+  summarize(
+    Mean = mean(performance),
+    SD = sd(performance)
+  ) %>% 
+  knitr::kable()
+
+```
+
+
+```{r}
+
+c(1,2,3,4)
+
+```
+
+

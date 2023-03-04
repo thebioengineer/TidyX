@@ -792,4 +792,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Sometimes. That's the thing. Some Times. We answer a viewer question extending from a prior episode answering the question of how do I join participant data from samples to the closest date of an event within N number of days? We try to give an answer, working through problem solving and try to give you the tools to solve this problem too!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/136-Fuzzy_Dates)
 
+- [TidyX Episode 137 | Magically Multiplying Tabbed Reports](https://bit.ly/TidyX_Ep137)
+
+  - How can you easily generate a report with the same number of tabs as there are players on your team? This week we answer a viewer-submitted question on how you can build up tabbed reports without manually writing each tab. We show how to take advantage of the `results="asis"` chunk option in rmarkdown to make your reports quickly and easily!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/137-Magically_Multiplying_Tabs_in_Reports)
+
 
