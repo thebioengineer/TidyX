@@ -1,0 +1,23 @@
+---
+title: "tab-content"
+---
+
+```{r echo = FALSE, warn = FALSE, message=FALSE, results = "asis"}
+
+cat("This is some plot summarizing how ",player_of_interest," performs!\n\n")
+```
+
+```{r echo  = FALSE, warn = FALSE, message = FALSE}
+d <- dat %>%
+  filter(player == player_of_interest)
+
+hist_plot <- d %>%
+  ggplot(aes(x = performance)) +
+  geom_histogram()
+
+## Turn ggplot into a plotly
+hist_plot %>%
+  ggplotly()
+  
+```  
+

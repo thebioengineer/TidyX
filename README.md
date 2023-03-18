@@ -797,4 +797,9 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - How can you easily generate a report with the same number of tabs as there are players on your team? This week we answer a viewer-submitted question on how you can build up tabbed reports without manually writing each tab. We show how to take advantage of the `results="asis"` chunk option in rmarkdown to make your reports quickly and easily!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/137-Magically_Multiplying_Tabs_in_Reports)
 
+- [TidyX Episode 138 | Interactive Magically Multiplying Tabbed Reports](https://bit.ly/TidyX_Ep138)
+
+  - Last week we answered how to easily generate a report with the same number of tabs as there are players on your team, but we got a great question from a viewer - these tabs are great, but how do I add a plotly or other interactive content to these tabs. Just converting the histogram into a plotly using ggplotly fails. This is where the concept of child documents comes in. We give a brief introduction to child rmarkdown documents and their value then show how you can make your magically multiplying tabbed report interactive!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/138-Interactive_Multiplying_Tabs)
+
 

@@ -1,0 +1,45 @@
+---
+title: "DOES NOT WORK"
+output: html_document
+---
+
+## {.tabset}
+
+```{r  echo=FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(tidyverse)
+library(plotly)
+
+dat <- tibble(
+  player = rep(c("Bob", "Kam", "AJ"), each = 400),
+  performance = rnorm(n = 400*3, mean = 250, sd = 10)
+)
+
+```
+
+```{r results='asis'}
+
+players <- unique(dat$player)
+
+for(player_of_interest in players){
+  
+  cat('\n\n### ',player_of_interest,'\n\n')
+  
+  cat("This is some plot summarizing how ", player_of_interest, " performs!\n\n")
+  
+  d <- dat %>%
+    filter(player == player_of_interest)
+  
+  hist_plot <- d %>%
+    ggplot(aes(x = performance)) +
+    geom_histogram()
+  
+  ## Turn ggplot into a plotly
+  hist_plot %>% 
+    ggplotly()
+    
+}
+
+```
+
