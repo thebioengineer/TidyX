@@ -802,4 +802,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Last week we answered how to easily generate a report with the same number of tabs as there are players on your team, but we got a great question from a viewer - these tabs are great, but how do I add a plotly or other interactive content to these tabs. Just converting the histogram into a plotly using ggplotly fails. This is where the concept of child documents comes in. We give a brief introduction to child rmarkdown documents and their value then show how you can make your magically multiplying tabbed report interactive!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/138-Interactive_Multiplying_Tabs)
 
+- [TidyX Episode 139 | Normalizing Z-Scores, pitfalls and generalizing](https://bit.ly/TidyX_Ep139)
+
+  - Training ML models often requires users to normalize their inputs, and z-scores are a powerful tool for this. But how do you normalize when you have a dataset where you want to only use a subset to normalize on to then predict on the next set? In this episode we talk about the process of building a function (or function factory) to do this easily and flexibly!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/139-Normalizing_with_z_scores)
+
+
 
