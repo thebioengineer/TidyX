@@ -1,0 +1,107 @@
+---
+title: "Andres Lagerlöf TidyX Question"
+format: html
+editor: visual
+---
+
+### Question:
+
+How to produce output in a single column with the names of all competitions and the participants in each competition, grouped by category and gender. The output format has to look like this: first competition on top, followed by category and gender and the names for each participant.
+
+This is the input
+
+|               |              |            |                 |
+|---------------|--------------|------------|-----------------|
+| **venue**     | **category** | **gender** | **participant** |
+| competition A | red          | female     | Jane            |
+| competition A | red          | female     | Ana             |
+| competition A | blue         | female     | Hillary         |
+| competition A | green        | female     | Ruth            |
+| competition A | red          | male       | Antony          |
+| competition A | yellow       | male       | Oscar           |
+| competition B | blue         | female     | Eva             |
+| competition C | orange       | male       | Rupert          |
+| competition C | green        | male       | John            |
+
+\
+And this is what the result should look like
+
+\
+**Competition A**
+
+red, female
+
+Jane
+
+Ana
+
+blue, female
+
+Hillary
+
+green female
+
+Ruth
+
+red male
+
+Antony
+
+yellow male
+
+Oscar
+
+**Competition B**
+
+blue, female
+
+Eva
+
+**Competition C**
+
+orange, male
+
+Rupert
+
+green, male
+
+John
+
+\
+
+So, to be clear, this is the output format\
+
+**competition name \[1\]**
+
+category\[1\], gender\[1\]
+
+name 1
+
+name n
+
+category\[2\], gender\[1\]
+
+name 1
+
+name n
+
+category\[1\], gender\[2\]
+
+**competition name \[2\]**
+
+category\[2\], gender\[1\]
+
+name 1
+
+name n
+
+category\[3\], gender\[2\]
+
+name 1
+
+name n
+
+\
+More background information: there are many unique **competitions**, each competition has one or more **categories** (red, blue, green in the example) categories, where they exist the categories are the same across competition (red in competition 1 is equal to red in competition 3) each category has three **genders** (female, male, open), and lastly **names** is the name of the participants and there can be one to n number of names in each competition. Thus the number of categories and names can vary for each competition but for each competition, there is at least one category, gender and name.
+
+\

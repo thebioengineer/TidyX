@@ -807,5 +807,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Training ML models often requires users to normalize their inputs, and z-scores are a powerful tool for this. But how do you normalize when you have a dataset where you want to only use a subset to normalize on to then predict on the next set? In this episode we talk about the process of building a function (or function factory) to do this easily and flexibly!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/139-Normalizing_with_z_scores)
 
+- [TidyX Episode 140 | Data Restructuring via Splits](https://bit.ly/TidyX_Ep140)
+
+  - A viewer sent in an interesting data processing question they had, where they wanted to take values from 4 columns and format them into a single column. Patrick and Ellis show several different approaches one could take to create a new data structure. If you have a data engineering question, please like, subscribe, and send us an email with your question, sample data, and example output!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/140-multilevel_groups)
+
+
+
 
 
