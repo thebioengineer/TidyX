@@ -812,6 +812,11 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - A viewer sent in an interesting data processing question they had, where they wanted to take values from 4 columns and format them into a single column. Patrick and Ellis show several different approaches one could take to create a new data structure. If you have a data engineering question, please like, subscribe, and send us an email with your question, sample data, and example output!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/140-multilevel_groups)
 
+- [TidyX Episode 141 |  Building Function Factories](https://bit.ly/TidyX_Ep141)
+
+  - In Episode 139 (bit.ly/TidyX_Ep139) we introduced the idea of a function factory - a function that returns another function. This is a powerful idea that allows you to set default values and apply them to new sets of data! This is a concept found all over programming, and you've probably been using them without realizing it! We do an intro to how they work and then ask you - what do you want to know about these cool powerhouses?
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/141-Building_Your_Factory)
+
 
 
 
