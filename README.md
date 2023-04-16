@@ -817,6 +817,11 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - In Episode 139 (bit.ly/TidyX_Ep139) we introduced the idea of a function factory - a function that returns another function. This is a powerful idea that allows you to set default values and apply them to new sets of data! This is a concept found all over programming, and you've probably been using them without realizing it! We do an intro to how they work and then ask you - what do you want to know about these cool powerhouses?
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/141-Building_Your_Factory)
 
+- [TidyX Episode 142 | Data from your Lists 4 ways](https://bit.ly/TidyX_Ep142)
+
+  - Loops are a tool that is super powerful and flexible, but pulling information from each loop is not always the simplest. Through the lens of a home-baked, artisinal k-folds for loop, we discuss four different methods you could use to store your predicted values from your fold to then investigate later.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/142-Storing_Data_From_a_Loop)
+
 
 
 
