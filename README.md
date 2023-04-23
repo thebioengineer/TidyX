@@ -822,6 +822,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Loops are a tool that is super powerful and flexible, but pulling information from each loop is not always the simplest. Through the lens of a home-baked, artisinal k-folds for loop, we discuss four different methods you could use to store your predicted values from your fold to then investigate later.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/142-Storing_Data_From_a_Loop)
 
+- [TidyX Episode 143 | For in for(loops)](https://bit.ly/TidyX_Ep143)
+
+  - Decisions in your code set up impact how you can structure your code later on. Loops are a flow control that can have a massive impact on what you can do later on, so how you set up your loop has a strong impact on code readability. Ellis and Patrick explore 4 different techniques on how you can set up the seemingly simple for(i in x).
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/143-Four_in_for_loops)
+
+
 
 
 
