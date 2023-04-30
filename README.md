@@ -827,6 +827,11 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Decisions in your code set up impact how you can structure your code later on. Loops are a flow control that can have a massive impact on what you can do later on, so how you set up your loop has a strong impact on code readability. Ellis and Patrick explore 4 different techniques on how you can set up the seemingly simple for(i in x).
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/143-Four_in_for_loops)
 
+- [TidyX Episode 144 | Nested for loops for Simulation](https://bit.ly/TidyX_Ep144)
+
+  - For loops are useful in a variety of different scenarios, but don't have to be restricted to just a single layer. Nested for loops allow you to iterate over muliple combinations of variables easily and quickly. In this episode we show how you might use a for loop to generate simulated data then apply three models to the newly simluated data to let you investigate your methods. We show where areas of this approach can generalize and be used for multiple data simulation and modeling techniques.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/144-Nested_for_loops)
+
 
 
 
