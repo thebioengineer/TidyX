@@ -832,6 +832,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - For loops are useful in a variety of different scenarios, but don't have to be restricted to just a single layer. Nested for loops allow you to iterate over muliple combinations of variables easily and quickly. In this episode we show how you might use a for loop to generate simulated data then apply three models to the newly simluated data to let you investigate your methods. We show where areas of this approach can generalize and be used for multiple data simulation and modeling techniques.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/144-Nested_for_loops)
 
+- [TidyX Episode 145 | Multi-Input Shiny](https://bit.ly/TidyX_Ep145)
+
+  - Most shiny apps are set up for only a single input creating a cascade of impacts. However, sometimes the UI of your app may require one input to impact another. In this episode we introduce the idea of multiple inputs causing a change on a single value!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/145-Multi-input_shiny)
 
 
 
