@@ -837,6 +837,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Most shiny apps are set up for only a single input creating a cascade of impacts. However, sometimes the UI of your app may require one input to impact another. In this episode we introduce the idea of multiple inputs causing a change on a single value!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/145-Multi-input_shiny)
 
+- [TidyX Episode 146 | Can You Download Handler This?](https://bit.ly/TidyX_Ep146)
+
+  - Shiny apps are a useful tool for your stakeholders or downstream users to self service and explore data. However, that is rarely where it ends. How do you get the data out of your shiny app and into their reports? We show two methods in this episode, capturing results and saving them into a PDF, and taking an automatic screenshot of the app as is!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/146-Can_You_Download_Handler_This)
+
+
 
 
 
