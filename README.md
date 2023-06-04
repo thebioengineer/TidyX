@@ -841,6 +841,11 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 
   - Shiny apps are a useful tool for your stakeholders or downstream users to self service and explore data. However, that is rarely where it ends. How do you get the data out of your shiny app and into their reports? We show two methods in this episode, capturing results and saving them into a PDF, and taking an automatic screenshot of the app as is!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/146-Can_You_Download_Handler_This)
+  
+- [TidyX Episode 147 | Shiny Markdown Report](https://bit.ly/TidyX_Ep147)
+
+  - Expanding on Episode 146, we show you some fun new techniques in shiny and generating outputs for your stakeholders. First, we talk about how you can use {shinyjs} by Dean Attali to enable or disable buttons in shiny apps to help ensure your users aren't clicking buttons at the right time. Then we get into the purpose of the episode, showing you how you can execute an Rmarkdown (or quarto) report through your shiny app, and present the values from the shiny app in a nice way!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/147-Shiny_Markdown_Report)
 
 
 
