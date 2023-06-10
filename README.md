@@ -847,6 +847,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Expanding on Episode 146, we show you some fun new techniques in shiny and generating outputs for your stakeholders. First, we talk about how you can use {shinyjs} by Dean Attali to enable or disable buttons in shiny apps to help ensure your users aren't clicking buttons at the right time. Then we get into the purpose of the episode, showing you how you can execute an Rmarkdown (or quarto) report through your shiny app, and present the values from the shiny app in a nice way!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/147-Shiny_Markdown_Report)
 
+- [TidyX Episode 148 | Shiny Model Builder](https://bit.ly/TidyX_Ep148)
+
+  - We embark on a journey of integrating statistics into a shiny app. But rather than displaying pre-defined models, we give the power to our users! In this episode we work on the scaffolding for the next several episodes of discussing shiny techniques as well as modeling tools. The code to upload a user-defined file, update your input options based on the user provided data, and generate a simple LM are all things you'll learn in this episode!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/148-Shiny_Model_Building)
+
+
 
 
 
