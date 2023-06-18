@@ -852,7 +852,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - We embark on a journey of integrating statistics into a shiny app. But rather than displaying pre-defined models, we give the power to our users! In this episode we work on the scaffolding for the next several episodes of discussing shiny techniques as well as modeling tools. The code to upload a user-defined file, update your input options based on the user provided data, and generate a simple LM are all things you'll learn in this episode!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/148-Shiny_Model_Building)
 
+- [TidyX Episode 149 | Shiny Model Builder - Test/Train Splits](https://bit.ly/TidyX_Ep149)
 
+  - Our second episode on embedding statistical tests into a shiny app. This time we apply good practices to our model building by splitting the datasets into testing and training sets.  Using a slider, the user can select the proportion of data to split into their training set to create the model, and their test set that then they can evaluate the performance of the regression. We also add in some additional tabs to our shiny app to help prevent our users from becoming overwhelmed!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/149-Shiny_Model_Test_Splits)
 
 
 
