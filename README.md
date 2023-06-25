@@ -857,6 +857,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - Our second episode on embedding statistical tests into a shiny app. This time we apply good practices to our model building by splitting the datasets into testing and training sets.  Using a slider, the user can select the proportion of data to split into their training set to create the model, and their test set that then they can evaluate the performance of the regression. We also add in some additional tabs to our shiny app to help prevent our users from becoming overwhelmed!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/149-Shiny_Model_Test_Splits)
 
+- [TidyX Episode 150 | Shiny Model Builder - Predictor Selection Protections](https://bit.ly/TidyX_Ep150)
+
+  - We have made it to 150 Episodes! We are so grateful for the support we have recieved thus far and hope to continue to do this for a long time coming! IN this episode we show how to protect our users from making a very understandable mistake given the original construction of the app. We show two methods for ensuring the user is unable to select the outcome variable in the predictor variables, updating the selectable values. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/150-Shiny_Model_Predictor_Selection)
 
 
 
