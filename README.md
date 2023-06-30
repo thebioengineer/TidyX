@@ -862,6 +862,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - We have made it to 150 Episodes! We are so grateful for the support we have recieved thus far and hope to continue to do this for a long time coming! IN this episode we show how to protect our users from making a very understandable mistake given the original construction of the app. We show two methods for ensuring the user is unable to select the outcome variable in the predictor variables, updating the selectable values. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/150-Shiny_Model_Predictor_Selection)
 
+- [TidyX Episode 151 | Shiny Model Builder - Tree Based Models](https://bit.ly/TidyX_Ep151)
+
+  - At long last, after setting up our shiny app to perform splits and protect our users, we get into providing different model selections! In this episode we focus on two types of tree-based models - a decision tree and random forest. We talk about how you set up your code to easily apply these different model functions, and have dynamic outputs based on the selected model, even a plot that only appears when a decision tree is selected!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/151-Shiny_Model_Tree_Models)
+
+
 
 
 
