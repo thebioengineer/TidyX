@@ -867,6 +867,10 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - At long last, after setting up our shiny app to perform splits and protect our users, we get into providing different model selections! In this episode we focus on two types of tree-based models - a decision tree and random forest. We talk about how you set up your code to easily apply these different model functions, and have dynamic outputs based on the selected model, even a plot that only appears when a decision tree is selected!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/151-Shiny_Model_Tree_Models)
 
+- [TidyX Episode 152 | Formula 1 Data Packaging - Getting the data](https://bit.ly/TidyX_152)
+
+  - This week we start a series on building a data package! A data package is a great tool for you to be able to share versioned data with a variety of people very easily. It also is a great way to learn about package building concepts. Our data package will contain historical Formula 1 we have scraped from online resources. So this first episode in the series will focus on getting the data from a website using {rvest}. Finally, we close by showing how to make a fun plot of each years constructor champion as a waffle plot, coloring each tile with the average livery color of the team.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/152-Data_Packaging_Part_1)
 
 
 
