@@ -1,0 +1,86 @@
+---
+title: "plotting_f1_constructors"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{plotting_f1_constructors}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(f1championships)
+library(tidyverse)
+```
+
+```{r}
+
+## winning_constructor over the years 
+constructors <- f1_championships %>% 
+  group_by(constructor, year) %>% 
+  summarize(points = sum(points)) %>% 
+  group_by(year) %>% 
+  filter(points == max(points)) %>% 
+  ungroup() %>% 
+  arrange(year)
+
+```
+
+
+
+```{r}
+## Make a waffle
+theme_set(theme_void())
+
+n_col = 10
+
+constructors %>% 
+  arrange(as.numeric(year)) %>% 
+  mutate(
+    col_idx = (row_number()-1) %% (n_col),
+    row_idx = -floor((row_number()-1)/(n_col))
+  ) %>% 
+  ggplot(
+    aes(
+      x = col_idx,
+      y = row_idx
+      )   
+  ) + 
+  geom_tile(
+    aes(
+      fill = constructor
+      )
+  ) + 
+  geom_text(
+    aes(
+      label = year
+    )
+  ) + 
+  scale_fill_manual(
+    name = NULL,
+    labels = c("Alfa Romeo", "Benetton", "Brabham-Repco","Brawn", "BRM",
+               "Cooper-Climax", "Ferrari", "Lotus-Climax", "Lotus-Ford", "Maserati",
+               "Matra-Ford", "McLaren", "Mercedes", "Red Bull", "Renault", "Team Lotus",
+               "Tyrrell", "Williams"),
+    ## Hex Codes based on Asking ChatGPT for hex codes best representative of
+    ## the livery of the team
+    values = c("#9B0000", "#0066CC", "#006600", "#C30000", "#FF0000",
+               "#003399", "#DC0000", "#006400", "#0000CD", "#1F4096",
+               "#FFD700", "#FF8700", "#00D2BE", "#0800FF", "#F9FF00",
+               "#006400", "#002055", "#FFFFFF")
+  ) +
+  labs(
+    title = "Eras of Dominance",
+    subtitle = "F1 Constructors Champions from 1950 to 2020"
+  )
+
+
+
+
+```

@@ -878,6 +878,12 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
 We show the tools available to create your basic R package by using the usethis package. We talk through the basic files required of any R package, and show how to store the R code from last week and the resulting data in a way that can then be called directly from the installed package!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/153-Data_Packaging_Part_2)
 
+- [TidyX Episode 154 | Formula 1 Data Packaging - Documenting and Sharing](https://bit.ly/TidyX_154)
+
+  - Now that we have the rough shell of a data package with the minimum requirements, lets make into an honest-to-god, sharable and useful package. We do this in a few ways, first we document our packages using Roxygen to make man pages, update our DESCRIPTION to include the packages we use, and finally offer up a usecase for the data in a vignette! Join us as we talk through all these steps and how to do it!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/154-Data_Packaging_Part_3)
+
+
 
 
 

@@ -1,0 +1,23 @@
+Package: f1championships
+Title: F1 Race Outcomes From 1950
+Version: 0.0.1
+Authors@R: c(
+   person("Ellis", "Hughes", role = c("aut", "cre"), email = "tidy.explained@gmail.com"),
+   person("Patrick", "Ward", role = c("aut"), email = "tidy.explained@gmail.com")
+   )
+Description: Access data from F1 Championships from 1950 until present.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Depends: 
+  R (>= 2.10)
+Suggests:
+  tidyverse,
+  rvest,
+  janitor,
+  usethis,
+  knitr,
+  rmarkdown
+LazyData: true
+VignetteBuilder: knitr
