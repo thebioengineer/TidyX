@@ -883,6 +883,11 @@ We show the tools available to create your basic R package by using the usethis 
   - Now that we have the rough shell of a data package with the minimum requirements, lets make into an honest-to-god, sharable and useful package. We do this in a few ways, first we document our packages using Roxygen to make man pages, update our DESCRIPTION to include the packages we use, and finally offer up a usecase for the data in a vignette! Join us as we talk through all these steps and how to do it!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/154-Data_Packaging_Part_3)
 
+- [TidyX Episode 155 | R Packages - Functions](https://bit.ly/TidyX_155)
+
+  - Our last series covered building a useful data package, but what about writing a normal package? This new series will be about writing an R package based on functions from TidyX! This episode we talk through a) what is a function b) how to think about a function and c) writing cohesive functions. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/155-Functions)
+
 
 
 
