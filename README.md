@@ -872,21 +872,27 @@ now we simulate tournament rounds, create new s4 classes and methods, and ultima
   - This week we start a series on building a data package! A data package is a great tool for you to be able to share versioned data with a variety of people very easily. It also is a great way to learn about package building concepts. Our data package will contain historical Formula 1 we have scraped from online resources. So this first episode in the series will focus on getting the data from a website using {rvest}. Finally, we close by showing how to make a fun plot of each years constructor champion as a waffle plot, coloring each tile with the average livery color of the team.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/152-Data_Packaging_Part_1)
 
-- [TidyX Episode 153 | Formula 1 Data Packaging - Initializing the package](https://bit.ly/TidyX_153)
+- [TidyX Episode 153 | Formula 1 Data Packaging - Initializing the package](https://bit.ly/TidyX_Ep153)
 
   - Last week we showed how we can scrape the web to pull in historical F1 Championship data into our R session. This week we building the initial files to create our data package! 
 We show the tools available to create your basic R package by using the usethis package. We talk through the basic files required of any R package, and show how to store the R code from last week and the resulting data in a way that can then be called directly from the installed package!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/153-Data_Packaging_Part_2)
 
-- [TidyX Episode 154 | Formula 1 Data Packaging - Documenting and Sharing](https://bit.ly/TidyX_154)
+- [TidyX Episode 154 | Formula 1 Data Packaging - Documenting and Sharing](https://bit.ly/TidyX_Ep154)
 
   - Now that we have the rough shell of a data package with the minimum requirements, lets make into an honest-to-god, sharable and useful package. We do this in a few ways, first we document our packages using Roxygen to make man pages, update our DESCRIPTION to include the packages we use, and finally offer up a usecase for the data in a vignette! Join us as we talk through all these steps and how to do it!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/154-Data_Packaging_Part_3)
 
-- [TidyX Episode 155 | R Packages - Functions](https://bit.ly/TidyX_155)
+- [TidyX Episode 155 | R Packages - Functions](https://bit.ly/TidyX_Ep155)
 
   - Our last series covered building a useful data package, but what about writing a normal package? This new series will be about writing an R package based on functions from TidyX! This episode we talk through a) what is a function b) how to think about a function and c) writing cohesive functions. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/155-Functions)
+
+- [TidyX Episode 156 | R Packages - Roxygenizing your Package](https://bit.ly/TidyX_Ep156)
+
+  - Providing a minimum set of documentation for your package is made incredibly easy through the use of the {roxygen2} package. We write specially formatted comments, called roxygen blocks, before each of the functions we would like to document and voila we get our help pages! We discuss a number of basic roxygen tags to use and a few methods for approaching documentation!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/156-Custom_package_start)
+
 
 
 
