@@ -893,6 +893,11 @@ We show the tools available to create your basic R package by using the usethis 
   - Providing a minimum set of documentation for your package is made incredibly easy through the use of the {roxygen2} package. We write specially formatted comments, called roxygen blocks, before each of the functions we would like to document and voila we get our help pages! We discuss a number of basic roxygen tags to use and a few methods for approaching documentation!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/156-Custom_package_start)
 
+- [TidyX Episode 157 | R Packages - Making an example of your Package](https://bit.ly/TidyX_Ep157)
+
+  - For the most part our journey of package documentation is coming to an end, a user can see the functions, go to a help page, and see what should be entered into every argument. HOWEVER, thats still not enough! Remember, users are not you, they need ot see how a function should be used to get a better idea of the inputs and expected outputs. To that end, we show how to use the @examples tag and show some additional interesting roxygen tags like @seealso, @noRd, and how to link to other function documentation.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/157-Custom_package_examples_and_linking)
+
 
 
 
