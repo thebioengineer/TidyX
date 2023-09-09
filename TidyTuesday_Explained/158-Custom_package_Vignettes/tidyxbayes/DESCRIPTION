@@ -1,0 +1,24 @@
+Package: tidyxbayes
+Title: TidyX Bayes Functions
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Ellis", "Hughes", , "tidy.explained@gmail.com", role = c("aut", "cre")),
+    person("Patrick", "Ward", , "tidy.explained@gmail.com", role = c("aut"))
+    )
+Description: A collection of useful functions from the TidyX Screencast series on
+  bayes theorem
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Suggests:
+    knitr,
+    lahman,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    tidyverse
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Config/testthat/edition: 3
+VignetteBuilder: knitr

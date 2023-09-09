@@ -898,6 +898,12 @@ We show the tools available to create your basic R package by using the usethis 
   - For the most part our journey of package documentation is coming to an end, a user can see the functions, go to a help page, and see what should be entered into every argument. HOWEVER, thats still not enough! Remember, users are not you, they need ot see how a function should be used to get a better idea of the inputs and expected outputs. To that end, we show how to use the @examples tag and show some additional interesting roxygen tags like @seealso, @noRd, and how to link to other function documentation.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/157-Custom_package_examples_and_linking)
 
+- [TidyX Episode 158 | R Packages - Write a vignette for yourself](https://bit.ly/TidyX_Ep158)
+
+  - Now that our package functions are fully documented, our job as a package author is done, right? wrong. The next level is at least one vignette. A vignette is long form documentation included in your package to help folks understand not only how each function works, but how they can work together or how they can apply your package more generally. In this episode we show how to create, make and document your vignettes!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/158-Custom_package_Vignette)
+
+
 
 
 
