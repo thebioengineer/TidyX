@@ -903,6 +903,10 @@ We show the tools available to create your basic R package by using the usethis 
   - Now that our package functions are fully documented, our job as a package author is done, right? wrong. The next level is at least one vignette. A vignette is long form documentation included in your package to help folks understand not only how each function works, but how they can work together or how they can apply your package more generally. In this episode we show how to create, make and document your vignettes!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/158-Custom_package_Vignette)
 
+- [TidyX Episode 159 |R Packages - Feeling a little Testy](https://bit.ly/TidyX_Ep159)
+
+  - Now that our package is documented, both at a function level and entire document, as well as containing data and useful functions, are we done? Well, by this video existing, you should answer NO! All of this is great, but how do we know that our functions are giving us correct answers and as we update or modify them they continue to behave as expected? Using the {testthat} package, we can write useful tests that get run as often as we'd like to confirm our expectations!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/159-Custom_package_tests)
 
 
 
