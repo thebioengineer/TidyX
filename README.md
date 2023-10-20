@@ -912,6 +912,11 @@ We show the tools available to create your basic R package by using the usethis 
 
   - Ever wonder how you could set up your shiny app to always have the values you want to look into right when you open it? It can be such a pain to always re-enter the values into your app. In this week's episode, we show how you can set up an observe to check the URL when someone opens your shiny app and pre-populate it with selected values. We also hint at other ways this could be used. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/160-shiny_query)
+  
+- [TidyX Episode 161 | Shinylive - Is this thing on?](https://bit.ly/TidyX_Ep161)
+
+  - Deploying shiny apps can be a pain, you need a server always running, the correct version of R, and making sure folks have access to it. Or you ask your users to download R and shiny locally, which we all know how that goes. Well, as of Posit::conf 2023, it was announced that shinylive is officially available for R! Hosting a shiny app directly from the browser! We take the opportunity to learn how to make a shinylive app, and take you through the steps of hosting it from github pages! Many thanks to Rami Krispin for his tutorial. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/161-shiny_live)
 
 
 
