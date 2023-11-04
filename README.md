@@ -918,6 +918,11 @@ We show the tools available to create your basic R package by using the usethis 
   - Deploying shiny apps can be a pain, you need a server always running, the correct version of R, and making sure folks have access to it. Or you ask your users to download R and shiny locally, which we all know how that goes. Well, as of Posit::conf 2023, it was announced that shinylive is officially available for R! Hosting a shiny app directly from the browser! We take the opportunity to learn how to make a shinylive app, and take you through the steps of hosting it from github pages! Many thanks to Rami Krispin for his tutorial. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/161-shiny_live)
 
+- [TidyX Episode 162 | Advanced Shiny - Web Scraping and Dynamic Linking](https://bit.ly/TidyX_Ep162)
+
+  - Sometimes you need to dynamically pull content for your shiny app, since you don't have it all locally. This could be a database, internal API, and in our case, an external website. Using Hockey-Reference.com, we create a simple shiny application to allow us to get the list of games from a season and then pull game-level information such as scoring and penalites. Of course we want to give credit and allow our user to see more information, so we create a nice link back to hockey-reference.com that allows the user to go directly to the game page.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/162-Connected_Shiny_Apps_Part1)
+
 
 
 
