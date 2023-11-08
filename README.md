@@ -923,6 +923,13 @@ We show the tools available to create your basic R package by using the usethis 
   - Sometimes you need to dynamically pull content for your shiny app, since you don't have it all locally. This could be a database, internal API, and in our case, an external website. Using Hockey-Reference.com, we create a simple shiny application to allow us to get the list of games from a season and then pull game-level information such as scoring and penalites. Of course we want to give credit and allow our user to see more information, so we create a nice link back to hockey-reference.com that allows the user to go directly to the game page.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/162-Connected_Shiny_Apps_Part1)
 
+- [TidyX Episode 163 | Advanced Shiny - Player links in DataTable](https://bit.ly/TidyX_Ep163)
+
+  - Going to player-level data after last weeks game level, we pull all the players for the 2024 Hockey Seaon, and generate a simple shiny app letting you filter down to keep just a few players to inspect. However, again the shiny app is only showing a small amount of information and we want to allow the user to see more information, so we provide a nice link in our datatable to link back to the player page on Hockey Reference to learn more about that particular player. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/163-Connected_Shiny_Apps_Part2)
+
+
+
 
 
 
