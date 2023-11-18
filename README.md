@@ -925,8 +925,15 @@ We show the tools available to create your basic R package by using the usethis 
 
 - [TidyX Episode 163 | Advanced Shiny - Player links in DataTable](https://bit.ly/TidyX_Ep163)
 
-  - Going to player-level data after last weeks game level, we pull all the players for the 2024 Hockey Seaon, and generate a simple shiny app letting you filter down to keep just a few players to inspect. However, again the shiny app is only showing a small amount of information and we want to allow the user to see more information, so we provide a nice link in our datatable to link back to the player page on Hockey Reference to learn more about that particular player. 
+  - Going to player-level data after last weeks game level, we pull all the players for the 2024 Hockey Season, and generate a simple shiny app letting you filter down to keep just a few players to inspect. However, again the shiny app is only showing a small amount of information and we want to allow the user to see more information, so we provide a nice link in our datatable to link back to the player page on Hockey Reference to learn more about that particular player. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/163-Connected_Shiny_Apps_Part2)
+
+- [TidyX Episode 164 | Advanced Shiny - Running Multiple Linked Shiny Apps](https://bit.ly/TidyX_Ep164)
+
+  - Running multiple shiny apps, and setting them up to link back to one another may sound like a tall task. BUT, it may be more approachable and powerful than you think. Building on the last few episodes, and sprinkling in some magic from episode 160, we updated our shiny apps from episode 162 and 163 to actually link together, adding a player roster in the Games Shiny app to link into the Player Shiny app. We also show how to run multiple apps using the {callr} R package!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/164-Connected_Shiny_Apps_Part3)
+
+
 
 
 
