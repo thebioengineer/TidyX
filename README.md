@@ -933,6 +933,10 @@ We show the tools available to create your basic R package by using the usethis 
   - Running multiple shiny apps, and setting them up to link back to one another may sound like a tall task. BUT, it may be more approachable and powerful than you think. Building on the last few episodes, and sprinkling in some magic from episode 160, we updated our shiny apps from episode 162 and 163 to actually link together, adding a player roster in the Games Shiny app to link into the Player Shiny app. We also show how to run multiple apps using the {callr} R package!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/164-Connected_Shiny_Apps_Part3)
 
+- [TidyX Episode 165 | The Power of Plotting Compels You](https://bit.ly/TidyX_Ep165)
+
+  - Sometimes you just want to make a simple, easy plot without having to load all those libraries. Other times you don't have access to all those libraries and you STILL need to make those nice plots. This week we talk a bit about Base R scatter plot building capabilities. We cover the basics of getting started, some tips and tricks, how to add a legend, and finally setting those nice labels, only using base R graphic tools.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/165-Plotting_1)
 
 
 
