@@ -938,6 +938,11 @@ We show the tools available to create your basic R package by using the usethis 
   - Sometimes you just want to make a simple, easy plot without having to load all those libraries. Other times you don't have access to all those libraries and you STILL need to make those nice plots. This week we talk a bit about Base R scatter plot building capabilities. We cover the basics of getting started, some tips and tricks, how to add a legend, and finally setting those nice labels, only using base R graphic tools.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/165-Plotting_1)
 
+- [TidyX Episode 166 | The Line Plot Saga](https://bit.ly/TidyX_Ep166)
+
+  - Working off of last weeks base R scatter plots, we look into how one might generate a line plot! Often for some process or time series, we take the Lahman batting datasets and generate trend data for hits from the year 2000 to 2020. We lean into our Base R use and show some fun ways to group and summarize data using the aggregate function. We make line plots of hits, show how to add confidence and prediction intervals, and finally how to save your hard work!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/166-Plotting_2)
+
 
 
 
