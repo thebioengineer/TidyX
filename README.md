@@ -943,6 +943,12 @@ We show the tools available to create your basic R package by using the usethis 
   - Working off of last weeks base R scatter plots, we look into how one might generate a line plot! Often for some process or time series, we take the Lahman batting datasets and generate trend data for hits from the year 2000 to 2020. We lean into our Base R use and show some fun ways to group and summarize data using the aggregate function. We make line plots of hits, show how to add confidence and prediction intervals, and finally how to save your hard work!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/166-Plotting_2)
 
+ [TidyX Episode 167 | Grand Slam - Knocking it Out of the Park with Base R Density Plots](https://bit.ly/TidyX_Ep167)
+
+  - In this thrilling R episode, we step up to the plate and hit a grand slam with base R's powerful capabilities for crafting stunning density and distribution plots. Using Lahman database baseball batting stats from 2010-2019, we dive into the world of data visualization, showcasing techniques like box plots, bar plots, and histograms. Special attention is given to the grandeur of density plots, all presented with the flair of RStats mastery. Join us on this home run journey into the art of visualizing data distributions with base R!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/167-Plotting_3)
+
+
 
 
 
