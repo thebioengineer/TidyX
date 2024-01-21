@@ -955,9 +955,13 @@ We show the tools available to create your basic R package by using the usethis 
 
 - [TidyX Episode 169 | Predicting Hall Of Famers in 20 Minutes](https://bit.ly/TidyX_Ep169)
 
-  -We undertake a predictive analysis focused on forecasting potential inductees for the Baseball Hall of Fame Class of 2024 and explain it in only 20-minutes! Using tidyverse for data processing, and base R for model fitting, and prediction, we generate predictions for newly eligible players as well as players we are still waiting to be inducted. The exploration centers on significant player statistics, offering insights into the determinants of Hall of Fame selections. Join us for a fast paced look at baseball analytics and predictive modeling. 
+  - We undertake a predictive analysis focused on forecasting potential inductees for the Baseball Hall of Fame Class of 2024 and explain it in only 20-minutes! Using tidyverse for data processing, and base R for model fitting, and prediction, we generate predictions for newly eligible players as well as players we are still waiting to be inducted. The exploration centers on significant player statistics, offering insights into the determinants of Hall of Fame selections. Join us for a fast paced look at baseball analytics and predictive modeling. 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/169-HOF_in_20)
 
+- [TidyX Episode 170 | Beyond Basic For loops - Tidy Expressions](https://bit.ly/TidyX_Ep170)
+
+  - We jump into the intricacies of for loops, pushing beyond the basics into the realm of Tidy Expressions, using the power of efficient coding using tidyverse functions, double curly embraces, and str2lang. By doing this, we can leverage tidyverse functions for efficient coding in custom functions and maintain the non standard evaluation tricks used by tidyverse!
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/170-Tidy_Expressions_and_For_loops)
 
 
 
