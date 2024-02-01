@@ -963,6 +963,12 @@ We show the tools available to create your basic R package by using the usethis 
   - We jump into the intricacies of for loops, pushing beyond the basics into the realm of Tidy Expressions, using the power of efficient coding using tidyverse functions, double curly embraces, and str2lang. By doing this, we can leverage tidyverse functions for efficient coding in custom functions and maintain the non standard evaluation tricks used by tidyverse!
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/170-Tidy_Expressions_and_For_loops)
 
+- [TidyX Episode 171 | Bae in the Fast Lane: Bayesian linear regression in 20-Minutes](https://bit.ly/TidyX_Ep171)
+
+  - Learn Bayes Regression in just 20 minutes! Leveraging the power of R and key libraries like tidyverse, rstanarm, tidybayes, and bayesplot, we guide you through fitting a Bayesian model for predicting car mileage based on weight on the mtcars dataset. Uncover insights as we interpret credible intervals, explore the posterior distribution, and make predictions with uncertainty.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/171-Bayes_linear_regression_in_20)
+
+
 
 
 
