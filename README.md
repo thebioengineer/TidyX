@@ -968,6 +968,12 @@ We show the tools available to create your basic R package by using the usethis 
   - Learn Bayes Regression in just 20 minutes! Leveraging the power of R and key libraries like tidyverse, rstanarm, tidybayes, and bayesplot, we guide you through fitting a Bayesian model for predicting car mileage based on weight on the mtcars dataset. Uncover insights as we interpret credible intervals, explore the posterior distribution, and make predictions with uncertainty.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/171-Bayes_linear_regression_in_20)
 
+- [TidyX Episode 172 | 20 minutes to Predict MLB HOF Pitchers - Class of 2024](https://bit.ly/TidyX_Ep172)
+
+  - Join us as we look into the numbers behind predicting MLB Hall of Fame pitchers! This episode includes crafting a dataset from the {Lahman} package, creating logistic regression models, and finally assessing them via model summary tools and visualizing techniques. Stay tuned for insights and adjustments as we navigate the challenges of forecasting HOF greatness!  
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/72-Pitcher_HOF_in_20)
+
+
 
 
 
