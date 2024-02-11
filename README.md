@@ -971,7 +971,12 @@ We show the tools available to create your basic R package by using the usethis 
 - [TidyX Episode 172 | 20 minutes to Predict MLB HOF Pitchers - Class of 2024](https://bit.ly/TidyX_Ep172)
 
   - Join us as we look into the numbers behind predicting MLB Hall of Fame pitchers! This episode includes crafting a dataset from the {Lahman} package, creating logistic regression models, and finally assessing them via model summary tools and visualizing techniques. Stay tuned for insights and adjustments as we navigate the challenges of forecasting HOF greatness!  
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/72-Pitcher_HOF_in_20)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/172-Pitcher_HOF_in_20)
+
+- [TidyX Episode 173 | Pitch into the Bayes - "20" minute MLB Hall of Fame Pitchers predictions](https://bit.ly/TidyX_Ep173)
+
+  - Step up to the mound in TidyX Episode 173 as we predict MLB Hall of Fame pitchers using the power of Bayesian models! Join us as we switch up our game plan, leaving no curveball unturned with rstanarm. We inspect the models and results with prediction intervals and probabilities, bringing a new dimension to player forecasts! We show how to apply this to new players, from randomly selected to a Seattle Favorite - King Felix. 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/173-Pitcher_HOF_in_20_with_bayes)
 
 
 
