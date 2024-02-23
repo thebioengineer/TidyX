@@ -979,6 +979,13 @@ We show the tools available to create your basic R package by using the usethis 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/173-Pitcher_HOF_in_20_with_bayes)
 
 
+- [TidyX Episode 174 | AI Speed Ball: Predicting the 2024 Pitcher HOF Class in 20 Minutes](https://bit.ly/TidyX_Ep174)
+
+  - We're bringing the heat with AI! Join us as we step up to the plate and predict the next MLB Hall of Fame pitchers using the power of TensorFlow and Keras. With a killer convolutional neural network in our arsenal, we're ready to knock it out of the park! We go over normalization techniques, how to set up your model, and use it to predict who should be in and who will be out! Don't miss this action-packed inning! 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/174-Pitcher_HOF_in_20_with_AI)
+
+
+
 
 
 
