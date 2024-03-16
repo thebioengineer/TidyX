@@ -984,10 +984,10 @@ We show the tools available to create your basic R package by using the usethis 
   - We're bringing the heat with AI! Join us as we step up to the plate and predict the next MLB Hall of Fame pitchers using the power of TensorFlow and Keras. With a killer convolutional neural network in our arsenal, we're ready to knock it out of the park! We go over normalization techniques, how to set up your model, and use it to predict who should be in and who will be out! Don't miss this action-packed inning! 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/174-Pitchers_HOF_in_20_with_AI)
 
-- [TidyX Episode 175 | Strike Zone Shenanigans: Tidyverse Takes on Hall of Fame Hurlers](https://bit.ly/TidyX_Ep15)
+- [TidyX Episode 175 | Strike Zone Shenanigans: Tidyverse Takes on Hall of Fame Hurlers](https://bit.ly/TidyX_Ep175)
 
   - We explored the world of data modeling using Tidyverse and Purrr to predict the next MLB Hall of Fame pitchers. Stay tuned for some fascinating insights into our modeling process! We use the same datasets as we have the last several weeks, and apply logic and code to create, evaluate, and tune our models.
-  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/174-Pitchers_HOF_in_20_Random_Forest)
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/175-Pitchers_HOF_in_20_Random_Forest)
 
 
 
