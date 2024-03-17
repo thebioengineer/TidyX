@@ -989,6 +989,11 @@ We show the tools available to create your basic R package by using the usethis 
   - We explored the world of data modeling using Tidyverse and Purrr to predict the next MLB Hall of Fame pitchers. Stay tuned for some fascinating insights into our modeling process! We use the same datasets as we have the last several weeks, and apply logic and code to create, evaluate, and tune our models.
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/175-Pitchers_HOF_in_20_Random_Forest)
 
+- [TidyX Episode 176 | Are you SUre?](https://bit.ly/TidyX_Ep176)
+
+  - In this episode, we're comparing pitchers using the power of Random Forests and bayesian statistics to make comparisons between pitchers likelihood of making it into the Hall of Fame! We show how to make simple simulations of individual player performance and differences, and finally make a function to let you easily compare players.
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/176-Are_you_sure)
+
 
 
 
