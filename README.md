@@ -999,6 +999,11 @@ We show the tools available to create your basic R package by using the usethis 
   - We tackle a real-world challenge brought to us by our viewer, Cohen MacDonald. Coehn found an undocumented API that has a bunch of game data from FIBA and has some great ideas on what to do with it. However, theres one problem: the dataset does not contain which players are on the court at what time, just who subs in or out. With an intriguing problem statement and example code from Cohen in hand, we delve into the intricacies of FIBA basketball game data. See how we harness the power of for loops to iteratively update values, addressing Cohen's query on player substitutions and lineup analysis.  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/177-Whos_Next_FIBA_API)
 
+- [TidyX Episode 178 | Player Time Chart - FIBA API Part 2](https://bit.ly/TidyX_Ep178)
+
+  - In this follow-up to Episode 177, we dive deeper into the intricacies of FIBA basketball game data. Building upon our previous exploration, we refine our methods to generate insightful player time charts. Join us as we unravel the complexities of lineup analysis and visualize player dynamics over the course of a game. Get ready for another insightful episode of TidyX! 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/178-Whos_Next_FIBA_API_Plotting)
+
 
 
 
