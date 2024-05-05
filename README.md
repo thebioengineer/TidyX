@@ -1004,6 +1004,12 @@ We show the tools available to create your basic R package by using the usethis 
   - In this follow-up to Episode 177, we dive deeper into the intricacies of FIBA basketball game data. Building upon our previous exploration, we refine our methods to generate insightful player time charts. Join us as we unravel the complexities of lineup analysis and visualize player dynamics over the course of a game. Get ready for another insightful episode of TidyX! 
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/178-Whos_Next_FIBA_API_Plotting)
 
+- [TidyX Episode 179 | How many SpaghettiOs does it take to write LOTR?](https://bit.ly/TidyX_Ep179)
+
+  - we embark on a hilarious journey to answer the age-old question: how many SpaghettiOs would it take to write a whole book?  Inspired by abstract_tyler's instagram reel (https://www.instagram.com/p/C6hUeRVp24H/), the we use the power of R to find out! Prepare for some serious spaghetti-fueled fun as we delve into the world of R for data wrangling.  We'll tackle skills like joining data sets, calculating frequencies, and writing functions to automate the analysis.
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/179-How_many_spaghettios)
+
 
 
 
