@@ -1006,10 +1006,15 @@ We show the tools available to create your basic R package by using the usethis 
 
 - [TidyX Episode 179 | How many SpaghettiOs does it take to write LOTR?](https://bit.ly/TidyX_Ep179)
 
-  - we embark on a hilarious journey to answer the age-old question: how many SpaghettiOs would it take to write a whole book?  Inspired by abstract_tyler's instagram reel (https://www.instagram.com/p/C6hUeRVp24H/), the we use the power of R to find out! Prepare for some serious spaghetti-fueled fun as we delve into the world of R for data wrangling.  We'll tackle skills like joining data sets, calculating frequencies, and writing functions to automate the analysis.
+  - We embark on a hilarious journey to answer the age-old question: how many SpaghettiOs would it take to write a whole book?  Inspired by abstract_tyler's instagram reel (https://www.instagram.com/p/C6hUeRVp24H/), the we use the power of R to find out! Prepare for some serious spaghetti-fueled fun as we delve into the world of R for data wrangling.  We'll tackle skills like joining data sets, calculating frequencies, and writing functions to automate the analysis.
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/179-How_many_spaghettios)
 
+- [TidyX Episode 180 | How much stuff have we sent to Space?](https://bit.ly/TidyX_Ep180)
+
+  - Ever wondered how much stuff has rocketed into space?  This episode we do a 180 and look at how we started TidyX by looking at a TidyTuesday dataset to explore objects launched into space!  We'll learn how to wrangle the data, calculate launch counts by year, and create  visualizations with ggplot2.  Plus, we'll discover a cool trick for faceting plots with independent y-axes, and finally show a fun way to interact with facets using the trelliscopejs package.  Join us for a stellar exploration of space exploration data!
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/180-Going_to_Space)
 
 
 
