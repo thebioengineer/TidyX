@@ -1016,6 +1016,12 @@ We show the tools available to create your basic R package by using the usethis 
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/180-Going_to_Space)
 
+- [TidyX Episode 181 | I Likert Coffee](https://bit.ly/TidyX_Ep181)
+
+  - Calling all coffee lovers! ☕️ This episode of TidyX gets to the grounds of coffee expertise with a TidyTuesday survey. We'll brew up some data analysis to see if age affects how people rate their coffee knowledge.  Get ready for Likert scales, wrangling data, and statistical throwdowns to see which age group claims coffee crown!
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/181-I_Likert_Coffee)
+
 
 
 
