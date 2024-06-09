@@ -1022,6 +1022,13 @@ We show the tools available to create your basic R package by using the usethis 
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/181-I_Likert_Coffee)
 
+- [TidyX Episode 182 | Turbocharge Your Simulations with Parallel Processing! ⚡️](https://bit.ly/TidyX_Ep182)
+
+  - Ever feel like your simulations take forever to run? This TidyX episode injects a dose of speed with parallel processing using the snowfall package!   We'll revisit nested for loops for simulation, then supercharge them to run across multiple cores. Learn how to run simulations in parallel for faster results using the snowfall package, and combine and analyze simulation outputs for deeper insights.
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/182-Parallel_Sim)
+
+
 
 
 
