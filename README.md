@@ -1028,6 +1028,12 @@ We show the tools available to create your basic R package by using the usethis 
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/182-Parallel_Sim)
 
+- [TidyX Episode 183 | Within-group regression using {purrr}](https://bit.ly/TidyX_Ep183)
+
+  - Unleash the power of {purrr} to perform within-group regressions! This episode we'll explore fitting separate linear models for different groups in your data, using the Palmer Penguins dataset as an example. Using map(), we'll quickly build models, extract key statistics, and visualize how groups differ. Join us to start the journey on master this great package and become a {purrr}fect data scientist!
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/183-Within_group_purrr)
+
 
 
 
