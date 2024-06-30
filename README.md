@@ -1034,6 +1034,14 @@ We show the tools available to create your basic R package by using the usethis 
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/183-Within_group_purrr)
 
+- [TidyX Episode 184 | Within-group regression using {purrr}](https://youtu.be/020nLEdVyq0)
+
+  - This intro highlights purrr's core functionalities and different ways to write the functions, from named to anonymous functions, keeping types consistent, or even applying functions to filter and pull out contents from lists. Learn the basics to understand how we can apply these techniques to more complicated structures!
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/184-Hello_Kitty)
+
+
+
 
 
 
