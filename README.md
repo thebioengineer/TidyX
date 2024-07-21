@@ -1034,12 +1034,18 @@ We show the tools available to create your basic R package by using the usethis 
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/183-Within_group_purrr)
 
-- [TidyX Episode 184 | Within-group regression using {purrr}](https://youtu.be/020nLEdVyq0)
+- [TidyX Episode 184 | Hello Kitty: Intro to {purrr}](https://bit.ly/TidyX_Ep184)
 
   - This intro highlights purrr's core functionalities and different ways to write the functions, from named to anonymous functions, keeping types consistent, or even applying functions to filter and pull out contents from lists. Learn the basics to understand how we can apply these techniques to more complicated structures!
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/184-Hello_Kitty)
 
+
+- [TidyX Episode 185 | Independence Days with {purrr}](https://bit.ly/TidyX_Ep185)
+
+  - Using Wikipedia's list of independence days, we'll sho wyou have to use some asdanved {purrr} to wokr with the data, construct new functions, and work with extracted data from webpages to transform it into usable formats. We aim to answer the amusing quip that every 4 days a country celebrates its independence from the UK with this dataset!
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/185-global_independence_days)
 
 
 
