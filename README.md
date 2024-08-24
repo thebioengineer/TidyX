@@ -1043,9 +1043,16 @@ We show the tools available to create your basic R package by using the usethis 
 
 - [TidyX Episode 185 | Independence Days with {purrr}](https://bit.ly/TidyX_Ep185)
 
-  - Using Wikipedia's list of independence days, we'll sho wyou have to use some asdanved {purrr} to wokr with the data, construct new functions, and work with extracted data from webpages to transform it into usable formats. We aim to answer the amusing quip that every 4 days a country celebrates its independence from the UK with this dataset!
+  - Using Wikipedia's list of independence days, we'll show you have to use some advanced {purrr} to work with the data, construct new functions, and work with extracted data from webpages to transform it into usable formats. We aim to answer the amusing quip that every 4 days a country celebrates its independence from the UK with this dataset!
  
   - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/185-global_independence_days)
+
+
+- [TidyX Episode 186 | Gapminder Camcorder - Be Kind Rewind Code Explanation](https://bit.ly/TidyX_Ep186)
+
+  - In this episode, we start a series explaining the examples Ellis showed from his "Be Kind, Rewind" talk at posit::conf(2024). First up, we jump into creating a captivating animated visualization of the Gapminder dataset using R and the {camcorder} package. We break down the code step-by-step, from setting up the animation recording to customizing the plot aesthetics. Learn how to generate smooth and informative animations that tell a compelling story about global trends in GDP per capita and life expectancy.
+ 
+  - [Source Code](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/186-Gapminder_Camcorder)
 
 
 
